@@ -1,5 +1,5 @@
-import { directusServer, readItems, withToken } from '~~/server/utils/directus-server';
-import { resolveUsernameToDirectusUserId } from '~~/server/utils/resolve-username';
+import { getItems } from '~~/server/utils/payload-server';
+import { resolveUsernameToPayloadUserId } from '~~/server/utils/resolve-username';
 
 export default defineEventHandler(async (event) => {
   const username = getRouterParam(event, 'username');
@@ -15,85 +15,74 @@ export default defineEventHandler(async (event) => {
   const token = preview === 'true' && rawToken ? String(rawToken) : undefined;
 
   try {
-    // Resolve username to Directus user ID
-    const ownerId = await resolveUsernameToDirectusUserId(username);
+    // Resolve username to Payload user ID
+    const ownerId = await resolveUsernameToPayloadUserId(username);
 
     if (!ownerId) {
       throw createError({ statusCode: 404, message: 'User not found' });
     }
 
     // Find user's default "articles" space
-    const spaces = await directusServer.request(
-      readItems('spaces', {
-        filter: {
-          owner: { _eq: ownerId },
-          is_default: { _eq: true },
+    const spacesResult = await getItems('spaces', {
+      where: {
+        owner: {
+          equals: ownerId,
         },
-        limit: 1,
-        fields: ['id'],
-      })
-    );
+        isDefault: {
+          equals: true,
+        },
+      },
+      limit: 1,
+    });
 
-    if (!spaces.length) {
+    if (!spacesResult.docs.length) {
       throw createError({ statusCode: 404, message: 'Default articles space not found' });
     }
 
-    const articlesSpaceId = spaces[0].id;
+    const articlesSpaceId = spacesResult.docs[0].id;
 
     // Find post in the articles space
-    const postQuery = {
-      filter: {
-        slug: { _eq: slug },
-        space: { _eq: articlesSpaceId },
+    const postsResult = await getItems('posts', {
+      where: {
+        slug: {
+          equals: slug,
+        },
+        space: {
+          equals: articlesSpaceId,
+        },
       },
       limit: 1,
-      fields: [
-        'id',
-        'title',
-        'content',
-        'status',
-        'published_at',
-        'image',
-        'description',
-        'seo',
-        {
-          author: ['id', 'first_name', 'last_name', 'avatar'],
-        },
-        {
-          space: ['id', 'slug', 'name'],
-        },
-        {
-          categories: ['id', 'title', 'slug'],
-        } as any,
-      ],
-    };
+      depth: 2, // Include relationships (author, space, categories)
+    });
 
-    const postsPromise = token
-      ? directusServer.request(withToken(token, readItems('posts' as any, postQuery)))
-      : directusServer.request(readItems('posts' as any, postQuery));
-
-    // Related posts in the same space
-    const relatedPostsQuery = {
-      filter: {
-        slug: { _neq: slug },
-        space: { _eq: articlesSpaceId },
-        status: { _eq: 'published' },
-      },
-      fields: ['id', 'title', 'image', 'slug'],
-      limit: 2,
-    };
-
-    const relatedPostsPromise = token
-      ? directusServer.request(withToken(token, readItems('posts' as any, relatedPostsQuery)))
-      : directusServer.request(readItems('posts' as any, relatedPostsQuery));
-
-    const [posts, relatedPosts] = await Promise.all([postsPromise, relatedPostsPromise]);
-
-    if (!posts.length) {
+    if (!postsResult.docs.length) {
       throw createError({ statusCode: 404, message: 'Article not found' });
     }
 
-    return { post: posts[0], relatedPosts };
+    const post = postsResult.docs[0];
+
+    // Related posts in the same space
+    const relatedPostsResult = await getItems('posts', {
+      where: {
+        slug: {
+          not_equals: slug,
+        },
+        space: {
+          equals: articlesSpaceId,
+        },
+        status: {
+          equals: 'published',
+        },
+      },
+      limit: 2,
+      sort: '-publishedAt',
+      depth: 2, // Include relationships (author, categories)
+    });
+
+    return {
+      post,
+      relatedPosts: relatedPostsResult.docs,
+    };
   } catch (error: any) {
     if (error.statusCode) {
       throw error;

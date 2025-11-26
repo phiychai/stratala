@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import type { Schema, Post } from '@turborepo-saas-starter/shared-types/schema';
+import { getItems } from '~~/server/utils/payload-server';
 
 const querySchema = z.object({
   limit: z.coerce.number().min(1).max(100).default(12),
@@ -16,115 +16,43 @@ export default defineCachedEventHandler(async (event) => {
 
   const { limit, page, category } = query.data;
 
-  // Build filter - include category filter if provided
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const filter: Record<string, any> = { status: { _eq: 'published' } };
+  // Build Payload where filter
+  const where: Record<string, any> = {
+    status: {
+      equals: 'published',
+    },
+  };
 
   if (category) {
-    // Filter by category slug (categories field uses M2M relationship)
-    filter.categories = {
-      _some: {
-        slug: { _eq: category },
+    // Filter by category slug (categories is a relationship field in Payload)
+    where.categories = {
+      slug: {
+        equals: category,
       },
     };
   }
 
   try {
-    // Try to fetch with categories first, fallback without if permissions issue
-    // The response may include additional fields from Directus, so we use a more flexible type
-    let posts: Post[] | unknown[];
-    try {
-      posts = await directusServer.request(
-        readItems('posts', {
-          limit,
-          page,
-          sort: ['-published_at'],
-          fields: [
-            'id',
-            'title',
-            'description',
-            'slug',
-            'image',
-            'categories',
-            'published_at',
-            {
-              author: ['id', 'first_name', 'last_name', 'avatar'],
-            },
-            {
-              categories: {
-                categories_id: ['id', 'title', 'slug'],
-              },
-            } as any,
-          ],
-          filter,
-        } as any)
-      );
-    } catch (error: unknown) {
-      // If categories field causes permission error, fetch without it
-      const errorMessage = error instanceof Error ? error.message : String(error);
-      if (errorMessage.includes('403') || errorMessage.includes('Forbidden')) {
-        console.warn('Categories field requires permissions, fetching posts without categories');
-        posts = await directusServer.request(
-          readItems('posts', {
-            limit,
-            page,
-            sort: ['-published_at'],
-            fields: [
-              'id',
-              'title',
-              'description',
-              'slug',
-              'image',
-              'published_at',
-              {
-                author: ['id', 'first_name', 'last_name', 'avatar'],
-              },
-            ],
-            filter: { status: { _eq: 'published' } }, // Remove category filter if no categories
-          })
-        );
-      } else {
-        throw error;
-      }
-    }
-
-    const countPromise = directusServer.request(
-      readItems('posts', {
-        aggregate: { count: '*' },
-        filter: { status: { _eq: 'published' } }, // Use basic filter for count
-      })
-    );
-
-    const countResult = await countPromise;
-    const count =
-      Array.isArray(countResult) && countResult[0] && 'count' in countResult[0]
-        ? Number(countResult[0].count)
-        : 0;
+    const result = await getItems('posts', {
+      where,
+      limit,
+      page,
+      sort: '-publishedAt',
+      depth: 2, // Include relationships (author, categories)
+    });
 
     return {
-      posts: posts as Post[],
-      count,
+      posts: result.docs,
+      count: result.totalDocs,
     };
   } catch (error: unknown) {
     console.error('Error fetching posts:', error);
     const errorMessage = error instanceof Error ? error.message : String(error);
-    const errorResponse =
-      error && typeof error === 'object' && 'response' in error
-        ? (error as { response?: { data?: unknown; status?: number } }).response
-        : undefined;
-    console.error('Error details:', {
-      message: errorMessage,
-      response: errorResponse?.data,
-      status: errorResponse?.status,
-      filter,
-      category,
-    });
     throw createError({
       statusCode: 500,
       message: 'Failed to fetch paginated posts',
       data: {
         error: errorMessage,
-        details: errorResponse?.data || errorResponse,
       },
     });
   }

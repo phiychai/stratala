@@ -1,99 +1,23 @@
+import { getGlobal } from '../utils/payload-server';
+
 export default defineEventHandler(async (event) => {
   try {
-    const [globals, headerNavigation, footerNavigation] = await Promise.all([
-      directusServer.request(
-        readSingleton('globals', {
-          fields: [
-            'title',
-            'description',
-            'logo',
-            'logo_dark_mode',
-            'social_links',
-            'accent_color',
-            'favicon',
-          ],
-        })
-      ),
-      directusServer.request(
-        readItem('navigation', 'main', {
-          fields: [
-            'id',
-            'title',
-            {
-              items: [
-                'id',
-                'title',
-                'url',
-                'type',
-                {
-                  page: ['id', 'permalink'],
-                  post: ['id', 'slug'],
-                  children: [
-                    'id',
-                    'title',
-                    'url',
-                    'type',
-                    {
-                      page: ['id', 'permalink'],
-                      post: ['id', 'slug'],
-                    },
-                  ],
-                },
-              ],
-            },
-          ],
-          deep: {
-            items: {
-              _sort: ['sort'],
-              children: {
-                _sort: ['sort'],
-              },
-            },
-          },
-        })
-      ),
-
-      directusServer.request(
-        readItem('navigation', 'footer', {
-          fields: [
-            'id',
-            'title',
-            {
-              items: [
-                'id',
-                'title',
-                'url',
-                'type',
-                {
-                  page: ['id', 'permalink'],
-                  post: ['id', 'slug'],
-                  children: [
-                    'id',
-                    'title',
-                    'url',
-                    'type',
-                    {
-                      page: ['id', 'permalink'],
-                      post: ['id', 'slug'],
-                    },
-                  ],
-                },
-              ],
-            },
-          ],
-          deep: {
-            items: {
-              _sort: ['sort'],
-              children: {
-                _sort: ['sort'],
-              },
-            },
-          },
-        })
-      ),
+    // Payload globals are accessed via /api/globals/{global-slug}
+    const [siteSettings, navigation] = await Promise.all([
+      getGlobal('site-settings', {
+        depth: 1,
+      }),
+      getGlobal('navigation', {
+        depth: 2, // Include nested navigation items
+      }),
     ]);
 
-    return { globals, headerNavigation, footerNavigation };
+    // Payload navigation structure may be different - adjust as needed
+    return {
+      globals: siteSettings,
+      headerNavigation: navigation,
+      footerNavigation: navigation, // Adjust if you have separate footer navigation
+    };
   } catch {
     throw createError({ statusCode: 500, statusMessage: 'Internal Server Error' });
   }

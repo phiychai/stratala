@@ -1,5 +1,5 @@
-import { directusServer, readItems } from '~~/server/utils/directus-server';
-import { resolveUsernameToDirectusUserId } from '~~/server/utils/resolve-username';
+import { getItems } from '~~/server/utils/payload-server';
+import { resolveUsernameToPayloadUserId } from '~~/server/utils/resolve-username';
 
 export default defineEventHandler(async (event) => {
   const username = getRouterParam(event, 'username');
@@ -43,14 +43,14 @@ export default defineEventHandler(async (event) => {
       throw createError({ statusCode: 404, message: `User "${username}" not found` });
     }
 
-    // Step 2: Resolve to Directus user ID
-    const directusUserId = await resolveUsernameToDirectusUserId(username);
+    // Step 2: Resolve to Payload user ID
+    const payloadUserId = await resolveUsernameToPayloadUserId(username);
 
-    if (!directusUserId) {
+    if (!payloadUserId) {
       console.warn(
-        `User "${username}" found in AdonisJS but not in Directus. Email: ${adonisUser.email}`
+        `User "${username}" found in AdonisJS but not in Payload. Email: ${adonisUser.email}`
       );
-      // Return profile with empty spaces/posts if user exists in AdonisJS but not in Directus
+      // Return profile with empty spaces/posts if user exists in AdonisJS but not in Payload
       return {
         user: {
           id: adonisUser.id,
@@ -71,38 +71,30 @@ export default defineEventHandler(async (event) => {
     }
 
     // Step 3: Get user's spaces
-    const spaces = await directusServer.request(
-      readItems('spaces', {
-        filter: {
-          owner: { _eq: directusUserId },
+    const spacesResult = await getItems('spaces', {
+      where: {
+        owner: {
+          equals: payloadUserId,
         },
-        fields: ['id', 'slug', 'name', 'description', 'is_default'],
-        sort: ['is_default', 'name'],
-      })
-    );
+      },
+      sort: 'isDefault,-name',
+      depth: 1,
+    });
 
     // Step 4: Get recent posts across all spaces (limit to 10 most recent)
-    const recentPosts = await directusServer.request(
-      readItems('posts', {
-        filter: {
-          author: { _eq: directusUserId },
-          status: { _eq: 'published' },
+    const recentPostsResult = await getItems('posts', {
+      where: {
+        author: {
+          equals: payloadUserId,
         },
-        fields: [
-          'id',
-          'title',
-          'description',
-          'slug',
-          'image',
-          'published_at',
-          {
-            space: ['id', 'slug', 'name', 'is_default'],
-          },
-        ],
-        sort: ['-published_at'],
-        limit: 10,
-      })
-    );
+        status: {
+          equals: 'published',
+        },
+      },
+      sort: '-publishedAt',
+      limit: 10,
+      depth: 2, // Include space relationship
+    });
 
     return {
       user: {
@@ -118,8 +110,8 @@ export default defineEventHandler(async (event) => {
         bio: adonisUser.bio,
         email: adonisUser.email, // Include for display name fallback
       },
-      spaces,
-      recentPosts,
+      spaces: spacesResult.docs,
+      recentPosts: recentPostsResult.docs,
     };
   } catch (error: any) {
     if (error.statusCode) {

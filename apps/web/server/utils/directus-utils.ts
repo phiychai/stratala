@@ -1,4 +1,4 @@
-import type { DirectusFile } from '@turborepo-saas-starter/shared-types/schema';
+import type { DirectusFile } from '@turborepo-saas-starter/shared-types';
 
 export function getDirectusAssetURL(
   fileOrString: string | DirectusFile | null | undefined

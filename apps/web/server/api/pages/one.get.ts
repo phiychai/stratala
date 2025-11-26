@@ -1,5 +1,5 @@
 import { withoutTrailingSlash, withLeadingSlash } from 'ufo';
-import type { PageBlock, BlockPost, Post } from '@turborepo-saas-starter/shared-types/schema';
+import { getItems } from '~~/server/utils/payload-server';
 
 export default defineCachedEventHandler(async (event) => {
   const query = getQuery(event);
@@ -13,165 +13,52 @@ export default defineCachedEventHandler(async (event) => {
   const token = preview === 'true' && rawToken ? String(rawToken) : null;
 
   try {
-    const pageData = await directusServer.request(
-      withToken(
-        token as string,
-        readItems('pages', {
-          filter: { permalink: { _eq: permalink } },
-          limit: 1,
-          fields: [
-            'title',
-            'id',
-            {
-              blocks: [
-                'id',
-                'background',
-                'collection',
-                'item',
-                'sort',
-                'hide_block',
-                {
-                  item: {
-                    block_richtext: ['id', 'tagline', 'headline', 'content', 'alignment'],
-                    block_gallery: [
-                      'id',
-                      'tagline',
-                      'headline',
-                      { items: ['id', 'directus_file', 'sort'] },
-                    ],
-                    block_pricing: [
-                      'id',
-                      'tagline',
-                      'headline',
-                      {
-                        pricing_cards: [
-                          'id',
-                          'sort',
-                          'title',
-                          'description',
-                          'price',
-                          'badge',
-                          'features',
-                          'is_highlighted',
-                          {
-                            button: [
-                              'id',
-                              'label',
-                              'variant',
-                              'url',
-                              'type',
-                              { page: ['permalink'] },
-                              { post: ['slug'] },
-                            ],
-                          },
-                        ],
-                      },
-                    ],
-                    block_hero: [
-                      'id',
-                      'tagline',
-                      'headline',
-                      'description',
-                      'layout',
-                      'image',
-                      {
-                        button_group: [
-                          'id',
-                          {
-                            buttons: [
-                              'id',
-                              'label',
-                              'variant',
-                              'url',
-                              'type',
-                              { page: ['permalink'] },
-                              { post: ['slug'] },
-                            ],
-                          },
-                        ],
-                      },
-                    ],
-                    block_posts: ['id', 'tagline', 'headline', 'collection', 'limit'],
-                    block_form: [
-                      'id',
-                      'tagline',
-                      'headline',
-                      {
-                        form: [
-                          'id',
-                          'title',
-                          'submit_label',
-                          'success_message',
-                          'on_success',
-                          'success_redirect_url',
-                          'is_active',
-                          {
-                            fields: [
-                              'id',
-                              'name',
-                              'type',
-                              'label',
-                              'placeholder',
-                              'help',
-                              'validation',
-                              'width',
-                              'choices',
-                              'required',
-                              'sort',
-                            ],
-                          },
-                        ],
-                      },
-                    ],
-                  },
-                },
-              ],
-            },
-          ],
-          deep: {
-            blocks: { _sort: ['sort'], _filter: { hide_block: { _neq: true } } },
-          },
-        })
-      )
-    );
+    // Find page by permalink
+    const pagesResult = await getItems('pages', {
+      where: {
+        permalink: {
+          equals: permalink,
+        },
+        status: {
+          equals: 'published',
+        },
+      },
+      limit: 1,
+      depth: 3, // Deep depth to include all block relationships
+    });
 
-    if (!pageData.length) {
+    if (!pagesResult.docs.length) {
       throw createError({ statusCode: 404, statusMessage: 'Page not found' });
     }
 
-    const page = pageData[0];
+    const page = pagesResult.docs[0];
 
-    // Replace the loop with parallel fetching
+    // Fetch posts for block_posts blocks
     if (Array.isArray(page?.blocks)) {
       const postBlockPromises = page.blocks
-        .filter((block): block is PageBlock & { collection: 'block_posts'; item: BlockPost } => {
-          if (typeof block === 'string') return false;
-          if (!('collection' in block)) return false;
-          if (block.collection !== 'block_posts') return false;
-          if (!block.item || typeof block.item === 'string') return false;
-          if (!('collection' in block.item)) return false;
-          return block.item.collection === 'posts';
-        })
-        .map(async (block) => {
-          const blockPost = block.item as BlockPost;
-          const limit = blockPost.limit ?? 12;
+        .filter((block: any) => block.blockType === 'posts')
+        .map(async (block: any) => {
+          const limit = block.limit ?? 12;
 
-          const posts = await directusServer.request(
-            readItems('posts', {
-              fields: ['id', 'title', 'description', 'slug', 'image', 'published_at', 'type'],
-              filter: { status: { _eq: 'published' } },
-              sort: ['-published_at'],
-              limit,
-            })
-          );
+          const postsResult = await getItems('posts', {
+            where: {
+              status: {
+                equals: 'published',
+              },
+            },
+            sort: '-publishedAt',
+            limit,
+            depth: 2, // Include relationships (author, categories)
+          });
 
-          return { block, posts };
+          return { block, posts: postsResult.docs };
         });
 
       const results = await Promise.all(postBlockPromises);
 
       results.forEach(({ block, posts }) => {
-        (block.item as BlockPost & { posts: Post[] }).posts = posts;
+        // Attach posts to the block
+        block.posts = posts;
       });
     }
 

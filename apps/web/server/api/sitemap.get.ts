@@ -1,78 +1,77 @@
 /**
- * Sitemap source for dynamic pages and posts from Directus
+ * Sitemap source for dynamic pages and posts from Payload
  * Used by @nuxtjs/seo sitemap module
  */
-import { directusServer, readItems } from '../utils/directus-server';
-import type { Page, Post, Space } from '@turborepo-saas-starter/shared-types/schema';
+import { getItems } from '../utils/payload-server';
 
 export default defineEventHandler(async () => {
   try {
-    const pagesPromise = directusServer.request(
-      readItems('pages', {
-        fields: ['permalink', 'date_updated'],
-      })
-    );
-
-    // Get posts with space and author info
-    const postsPromise = directusServer.request(
-      readItems('posts', {
-        filter: { status: { _eq: 'published' } },
-        fields: [
-          'slug',
-          'date_updated',
-          {
-            author: ['id', 'email'],
+    const [pagesResult, postsResult] = await Promise.all([
+      getItems('pages', {
+        where: {
+          status: {
+            equals: 'published',
           },
-          {
-            space: ['id', 'slug', 'owner', 'is_default'],
+        },
+        limit: 1000,
+      }),
+
+      // Get posts with space and author info
+      getItems('posts', {
+        where: {
+          status: {
+            equals: 'published',
           },
-        ],
-      })
-    );
+        },
+        limit: 1000,
+        depth: 2, // Include author and space relationships
+      }),
+    ]);
 
-    const [pages, posts] = await Promise.all([pagesPromise, postsPromise]);
+    const pages = pagesResult.docs;
+    const posts = postsResult.docs;
 
-    const pageUrls = (pages as Page[]).map((page: Page) => ({
+    const pageUrls = pages.map((page: any) => ({
       loc: page.permalink,
-      lastmod: page.date_updated,
+      lastmod: page.updatedAt || page.createdAt,
     }));
 
     // Legacy blog URLs (for backward compatibility)
-    const legacyPostUrls = (posts as Post[])
-      .filter((post: Post) => !post.space) // Posts without spaces
-      .map((post: Post) => ({
+    const legacyPostUrls = posts
+      .filter((post: any) => !post.space) // Posts without spaces
+      .map((post: any) => ({
         loc: `/blog/${post.slug}`,
-        lastmod: post.date_updated,
+        lastmod: post.updatedAt || post.createdAt,
       }));
 
     // New space-based URLs
     // TODO: Resolve username from author/owner - for now using email prefix as placeholder
     const spacePostUrls: Array<{ loc: string; lastmod: string | null }> = [];
 
-    for (const post of posts as Post[]) {
+    for (const post of posts) {
       if (!post.space || !post.author) continue;
 
-      const space = typeof post.space === 'string' ? null : (post.space as Space);
-      const author = typeof post.author === 'string' ? null : post.author;
+      const space = typeof post.space === 'object' ? post.space : null;
+      const author = typeof post.author === 'object' ? post.author : null;
 
       if (!space || !author) continue;
 
       // TODO: Get username from author - for now using email prefix
       // This needs proper username resolution implementation
-      const authorEmail = typeof author === 'object' && 'email' in author ? author.email : null;
-      const username = (authorEmail as string)?.split('@')[0] || 'user';
+      const authorEmail = author.email;
+      const username = authorEmail?.split('@')[0] || 'user';
 
-      if (space.is_default) {
+      if (space.isDefault) {
         // General article: /@username/article/slug
         spacePostUrls.push({
           loc: `/@${username}/article/${post.slug}`,
-          lastmod: post.date_updated || null,
+          lastmod: post.updatedAt || post.createdAt || null,
         });
       } else {
         // Space post: /@username/space-slug/slug
         spacePostUrls.push({
           loc: `/@${username}/${space.slug}/${post.slug}`,
-          lastmod: post.date_updated || null,
+          lastmod: post.updatedAt || post.createdAt || null,
         });
       }
     }
@@ -81,15 +80,15 @@ export default defineEventHandler(async () => {
     const profileUrls: Array<{ loc: string; lastmod: string | null }> = [];
     const processedUsernames = new Set<string>();
 
-    for (const post of posts as Post[]) {
+    for (const post of posts) {
       if (!post.author) continue;
 
-      const author = typeof post.author === 'string' ? null : post.author;
+      const author = typeof post.author === 'object' ? post.author : null;
       if (!author) continue;
 
       // TODO: Get username from author - for now using email prefix
-      const authorEmail = typeof author === 'object' && 'email' in author ? author.email : null;
-      const username = (authorEmail as string)?.split('@')[0] || 'user';
+      const authorEmail = author.email;
+      const username = authorEmail?.split('@')[0] || 'user';
 
       // Add profile URL once per user
       if (!processedUsernames.has(username)) {

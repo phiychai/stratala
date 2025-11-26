@@ -1,4 +1,4 @@
-import type { Page, Post } from '@turborepo-saas-starter/shared-types';
+import { getItems } from '~~/server/utils/payload-server';
 
 export default defineCachedEventHandler(
   async (event) => {
@@ -10,38 +10,38 @@ export default defineCachedEventHandler(
     }
 
     try {
-      const [pages, posts] = await Promise.all([
-        directusServer.request(
-          readItems('pages', {
-            filter: {
-              _or: [{ title: { _contains: search } }, { permalink: { _contains: search } }],
-            },
-            fields: ['id', 'title', 'permalink'],
-          })
-        ),
+      // Payload search uses where filters with contains
+      const [pagesResult, postsResult] = await Promise.all([
+        getItems('pages', {
+          where: {
+            or: [
+              { title: { contains: search } },
+              { permalink: { contains: search } },
+            ],
+          },
+          limit: 50,
+        }),
 
-        directusServer.request(
-          readItems('posts', {
-            filter: {
-              _and: [
-                { status: { _eq: 'published' } },
-                {
-                  _or: [
-                    { title: { _contains: search } },
-                    { description: { _contains: search } },
-                    { slug: { _contains: search } },
-                    { content: { _contains: search } },
-                  ],
-                },
-              ],
-            },
-            fields: ['id', 'title', 'description', 'slug', 'content', 'status', 'type'],
-          })
-        ),
+        getItems('posts', {
+          where: {
+            and: [
+              { status: { equals: 'published' } },
+              {
+                or: [
+                  { title: { contains: search } },
+                  { description: { contains: search } },
+                  { slug: { contains: search } },
+                ],
+              },
+            ],
+          },
+          limit: 50,
+          depth: 2, // Include relationships (author, categories)
+        }),
       ]);
 
       const results = [
-        ...pages.map((page: Page) => ({
+        ...pagesResult.docs.map((page: any) => ({
           id: page.id,
           title: page.title,
           type: 'Page',
@@ -49,13 +49,13 @@ export default defineCachedEventHandler(
           content: '',
         })),
 
-        ...posts.map((post: Post) => ({
+        ...postsResult.docs.map((post: any) => ({
           id: post.id,
           title: post.title,
           description: post.description,
           type: 'Post',
           link: `/blog/${post.slug}`,
-          content: post.content,
+          content: post.content || '',
         })),
       ];
 

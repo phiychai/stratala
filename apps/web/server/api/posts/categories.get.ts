@@ -1,21 +1,22 @@
-import type { Schema } from '@turborepo-saas-starter/shared-types/schema';
-
-type Category = Schema['categories'][number];
+import { getItems } from '~~/server/utils/payload-server';
 
 export default defineEventHandler(async (event) => {
   try {
     // Query categories collection directly
-    const categories = await directusServer.request(
-      readItems('categories', {
-        fields: ['id', 'title', 'slug'],
-        sort: ['title'],
-        limit: -1,
-      })
-    );
+    const result = await getItems('categories', {
+      sort: 'title',
+      limit: 1000, // Payload doesn't support -1, use a large number
+    });
 
-    // Convert to expected format (ensure slug exists, generate from title if not)
-    const formattedCategories = categories
-      .map((cat: Category) => ({
+    // Check if result is valid and has docs property
+    if (!result || !result.docs || !Array.isArray(result.docs)) {
+      console.warn('Categories API returned unexpected format:', result);
+      return { categories: [] };
+    }
+
+    // Convert to expected format
+    const formattedCategories = result.docs
+      .map((cat: any) => ({
         id: String(cat.id),
         name: String(cat.title || ''),
         slug: cat.slug
@@ -30,15 +31,11 @@ export default defineEventHandler(async (event) => {
     return { categories: formattedCategories };
   } catch (error: unknown) {
     const errorMessage = error instanceof Error ? error.message : String(error);
-    const errorResponse =
-      error && typeof error === 'object' && 'response' in error
-        ? (error as { response?: { status?: number; url?: string } }).response
-        : undefined;
-
+    const errorStack = error instanceof Error ? error.stack : undefined;
     console.error('Failed to fetch categories collection:', {
       message: errorMessage,
-      status: errorResponse?.status,
-      url: errorResponse?.url,
+      stack: errorStack,
+      error,
     });
 
     return { categories: [] };
