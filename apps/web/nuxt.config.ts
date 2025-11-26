@@ -33,10 +33,9 @@ export default defineNuxtConfig({
     public: {
       siteUrl: process.env.NUXT_PUBLIC_SITE_URL || 'http://localhost:3000',
       apiUrl: process.env.NUXT_PUBLIC_API_URL || 'http://localhost:3333',
-      directusUrl: process.env.DIRECTUS_URL || 'http://localhost:8055',
+      payloadUrl: process.env.NUXT_PUBLIC_PAYLOAD_URL || 'http://localhost:3002',
       enableVisualEditing: process.env.NUXT_PUBLIC_ENABLE_VISUAL_EDITING !== 'false',
     },
-    directusServerToken: process.env.DIRECTUS_SERVER_TOKEN || '',
   },
 
   routeRules: {
@@ -55,6 +54,10 @@ export default defineNuxtConfig({
       crawlLinks: false, // Disable link crawling to avoid prerender failures for dynamic pages
       failOnError: false, // Don't fail build on prerender errors
     },
+    // Workaround for oxc-parser optional dependency resolution
+    experimental: {
+      wasm: true,
+    },
   },
 
   vue: {
@@ -64,14 +67,13 @@ export default defineNuxtConfig({
   // typescript: {
   //   typeCheck: true,
   // },
-  // Image Configuration - https://image.nuxt.com/providers/directus
+  // Image Configuration
   image: {
     providers: {
-      directus: {
-        provider: 'directus',
-        options: {
-          baseURL: `${process.env.DIRECTUS_URL}/assets/`,
-        },
+      payload: {
+        provider: 'ipx',
+        // Payload serves media at /media/{filename}
+        // We'll use the Payload URL for media
       },
       local: {
         provider: 'ipx',

@@ -18,8 +18,6 @@
     "type-check": "nuxt typecheck"
   },
   "dependencies": {
-    "@directus/sdk": "19.1.0",
-    "@directus/visual-editing": "^1.1.0",
     "@iconify-json/lucide": "^1.2.57",
     "@iconify-json/simple-icons": "^1.2.43",
     "@iconify-json/tabler": "^1.2.23",
@@ -28,6 +26,7 @@
     "@nuxt/scripts": "^0.13.0",
     "@nuxt/ui": "^4.1.0",
     "@nuxtjs/seo": "3.2.2",
+    "@payloadcms/richtext-lexical": "3.64.0",
     "@pinia/nuxt": "^0.11.3",
     "@standard-schema/spec": "^1.0.0",
     "@turborepo-saas-starter/shared-types": "workspace:*",
@@ -48,19 +47,19 @@
     "nuxt-security": "^2.2.0",
     "pinia": "^3.0.4",
     "pinia-plugin-persistedstate": "^4.7.1",
+    "turndown": "^7.2.2",
     "unhead": "^2.0.19",
     "vee-validate": "^4.15.1",
     "zod": "^3.25.76",
     "zxcvbn": "^4.4.2"
   },
   "devDependencies": {
-    "@directus/types": "13.1.1",
     "@nuxt/eslint": "^1.10.0",
     "@nuxt/test-utils": "^3.20.1",
+    "@oxc-parser/binding-darwin-x64": "0.96.0",
     "@turborepo-saas-starter/eslint-config": "workspace:*",
     "@vitest/ui": "^4.0.10",
     "@vue/test-utils": "^2.4.6",
-    "directus-sdk-typegen": "^0.2.0",
     "eslint": "^9.39.1",
     "happy-dom": "^20.0.10",
     "prettier": "3.6.2",

@@ -4,7 +4,7 @@
   "description": "SaaS Starter template",
   "private": true,
   "workspaces": [
-    "apps/*",
+    "apps/*/**",
     "packages/*",
     "tools/*"
   ],
@@ -54,6 +54,7 @@
   },
   "pnpm": {
     "onlyBuiltDependencies": [
+      "@oxc-parser/binding-darwin-x64",
       "@parcel/watcher",
       "@scarf/scarf",
       "@tailwindcss/oxide",
@@ -75,5 +76,8 @@
   "engines": {
     "node": ">=18.0.0",
     "pnpm": ">=9.0.0"
+  },
+  "dependencies": {
+    "@lexical/html": "^0.38.2"
   }
 }

@@ -1,5 +1,24 @@
-// Re-export schema types
-export type { DirectusFile, DirectusUser, Page, PageBlock, Post } from './schema';
+// Re-export Payload types
+export type {
+  Post,
+  Page,
+  PageBlock,
+  Space,
+  Media,
+  DirectusFile,
+  User,
+  DirectusUser,
+  Category,
+  Tag,
+  Form,
+  FormField,
+  BlockHero,
+  BlockRichtext,
+  BlockGallery,
+  BlockPricing,
+  BlockPost,
+  BlockForm,
+} from './payload-types';
 
 // Re-export billing types
 export type { Invoice, Plan, Subscription } from './billing';

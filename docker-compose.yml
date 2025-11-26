@@ -12,7 +12,7 @@ services:
     environment:
       POSTGRES_USER: ${POSTGRES_USER:-postgres}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
-      POSTGRES_MULTIPLE_DATABASES: adonis_db,directus_db,lago_db
+      POSTGRES_MULTIPLE_DATABASES: adonis_db,payload_db,lago_db
     volumes:
       - postgres_data:/var/lib/postgresql/data
       - ./scripts/init-db.sh:/docker-entrypoint-initdb.d/init-db.sh
@@ -41,56 +41,39 @@ services:
     networks:
       - saas-network
 
-  # Directus CMS
-  directus:
-    image: directus/directus:11.12.0
-    container_name: saas-directus
+  # Payload CMS
+  payload:
+    build:
+      context: .
+      dockerfile: ./apps/cms/payload/Dockerfile
+    container_name: saas-payload
     restart: unless-stopped
     ports:
-      - '${DIRECTUS_PORT:-8055}:8055'
+      - '${PAYLOAD_PORT:-3001}:3001'
     depends_on:
       postgres:
         condition: service_healthy
       redis:
         condition: service_healthy
     environment:
-      SECRET: ${DIRECTUS_SECRET}
-      ADMIN_EMAIL: ${DIRECTUS_ADMIN_EMAIL:-admin@example.com}
-      ADMIN_PASSWORD: ${DIRECTUS_ADMIN_PASSWORD:-admin}
-
-      DB_CLIENT: pg
-      DB_HOST: postgres
-      DB_PORT: 5432
-      DB_DATABASE: directus_db
-      DB_USER: ${POSTGRES_USER:-postgres}
-      DB_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
-
-      CACHE_ENABLED: true
-      CACHE_AUTO_PURGE: true
-      CACHE_STORE: redis
-      REDIS: redis://redis:6379
-
-      WEBSOCKETS_ENABLED: true
-      PUBLIC_URL: ${DIRECTUS_PUBLIC_URL:-http://localhost:8055}
-
-      CORS_ENABLED: ${CORS_ENABLED}
-      CORS_ORIGIN: ${CORS_ORIGIN}
-
-      REFRESH_TOKEN_COOKIE_SECURE: ${REFRESH_TOKEN_COOKIE_SECURE:-false}
-      REFRESH_TOKEN_COOKIE_SAME_SITE: ${REFRESH_TOKEN_COOKIE_SAME_SITE:-lax}
-
-      SESSION_COOKIE_SECURE: ${SESSION_COOKIE_SECURE:-false}
-      SESSION_COOKIE_SAME_SITE: ${SESSION_COOKIE_SAME_SITE:-lax}
-
-      # Content Security Policy
-      CONTENT_SECURITY_POLICY_DIRECTIVES__FRAME_SRC: ${CONTENT_SECURITY_POLICY_DIRECTIVES__FRAME_SRC}
-
-      EXTENSIONS_AUTO_RELOAD: true
+      NODE_ENV: ${NODE_ENV:-development}
+      PORT: 3001
+      PAYLOAD_SECRET: ${PAYLOAD_SECRET}
+      PAYLOAD_DATABASE_URI: postgresql://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-postgres}@postgres:5432/payload_db
+      PAYLOAD_PUBLIC_SERVER_URL: ${PAYLOAD_PUBLIC_SERVER_URL:-http://localhost:3001}
     volumes:
-      - directus_uploads:/directus/uploads
-      - directus_extensions:/directus/extensions
+      # Mount entire monorepo to preserve workspace structure
+      - .:/app
+      # Preserve node_modules at root level (workspace hoisting)
+      - /app/node_modules
+      # Preserve payload-specific node_modules
+      - /app/apps/cms/payload/node_modules
+      # Payload media uploads
+      - payload_uploads:/app/apps/cms/payload/media
+    working_dir: /app/apps/cms/payload
     networks:
       - saas-network
+    command: pnpm dev
 
   # Lago - Billing & Subscription Management (All-in-One)
   # This single container includes API (port 3000 internal) and Frontend (port 80 internal)
@@ -169,7 +152,7 @@ services:
         condition: service_healthy
       redis:
         condition: service_healthy
-      directus:
+      payload:
         condition: service_started
       lago:
         condition: service_healthy
@@ -191,11 +174,11 @@ services:
       REDIS_HOST: redis
       REDIS_PORT: 6379
 
-      # Directus
-      DIRECTUS_URL: http://directus:8055
-      DIRECTUS_ADMIN_EMAIL: ${DIRECTUS_ADMIN_EMAIL:-admin@example.com}
-      DIRECTUS_ADMIN_PASSWORD: ${DIRECTUS_ADMIN_PASSWORD:-admin}
-      DIRECTUS_STATIC_TOKEN: ${DIRECTUS_STATIC_TOKEN}
+      # Payload CMS
+      PAYLOAD_URL: http://payload:3001
+      PAYLOAD_SECRET: ${PAYLOAD_SECRET}
+      PAYLOAD_DATABASE_URI: postgresql://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-postgres}@postgres:5432/payload_db
+      PAYLOAD_PUBLIC_SERVER_URL: ${PAYLOAD_PUBLIC_SERVER_URL:-http://localhost:3001}
 
       # Lago Billing
       LAGO_API_URL: http://lago:3000
@@ -268,9 +251,7 @@ volumes:
     driver: local
   redis_data:
     driver: local
-  directus_uploads:
-    driver: local
-  directus_extensions:
+  payload_uploads:
     driver: local
 
 networks:

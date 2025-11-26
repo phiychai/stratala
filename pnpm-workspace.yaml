@@ -1,5 +1,7 @@
 packages:
-  - apps/*
+  - apps/backend
+  - apps/web
+  - apps/cms/*
   - packages/**
 
 onlyBuiltDependencies:

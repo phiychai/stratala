@@ -56,13 +56,13 @@ export default await Env.create(new URL('../', import.meta.url), {
 
   /*
   |----------------------------------------------------------
-  | Variables for Directus integration
+  | Variables for Payload CMS integration
   |----------------------------------------------------------
   */
-  DIRECTUS_URL: Env.schema.string(),
-  DIRECTUS_ADMIN_EMAIL: Env.schema.string(),
-  DIRECTUS_ADMIN_PASSWORD: Env.schema.string(),
-  DIRECTUS_STATIC_TOKEN: Env.schema.string.optional(),
+  PAYLOAD_URL: Env.schema.string(),
+  PAYLOAD_SECRET: Env.schema.string(),
+  PAYLOAD_DATABASE_URI: Env.schema.string(),
+  PAYLOAD_PUBLIC_SERVER_URL: Env.schema.string(),
 
   /*
   |----------------------------------------------------------
