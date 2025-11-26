@@ -3,7 +3,7 @@ import db from '@adonisjs/lucid/services/db';
 
 import User from '#models/user';
 import { AuthErrorLogger } from '#services/auth_error_logger';
-import { DirectusUserSyncService } from '#services/directus_user_sync_service';
+import { PayloadUserSyncService } from '#services/payload_user_sync_service';
 
 export interface BetterAuthUser {
   id: string;
@@ -122,17 +122,20 @@ export class UserSyncService {
             failedAttempts: 0,
             lockedUntil: null,
             preferences: null,
-            directusUserId: null, // Will be set if Directus user is created
+            payloadUserId: null, // Will be set if Payload user is created
           });
           return newUser;
         }
       });
 
-      // If role requires Directus user, sync to Directus
+      // If role requires Payload user, sync to Payload
       // This happens for admin-created users with content roles
-      if (role && DirectusUserSyncService.requiresDirectusUser(role)) {
+      if (role && PayloadUserSyncService.requiresPayloadUser(role)) {
         const finalRole = role || user.role;
-        await DirectusUserSyncService.syncUserToDirectus(user, finalRole);
+        // Note: Password sync depends on authentication strategy
+        // For now, we'll sync without password (Option B: Passwordless)
+        // Admin can set password separately in Payload admin UI
+        await PayloadUserSyncService.syncUserToPayload(user, finalRole);
       }
 
       logger.info(`User synced successfully: ${user.id} (${user.email})`);

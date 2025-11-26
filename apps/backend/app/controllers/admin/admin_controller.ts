@@ -8,7 +8,7 @@ import User from '#models/user';
 import UserPolicy from '#policies/user_policy';
 import { AuthReconciliationService } from '#services/auth_reconciliation_service';
 import { BetterAuthSyncService } from '#services/better_auth_sync_service';
-import { DirectusUserSyncService } from '#services/directus_user_sync_service';
+import { PayloadUserSyncService } from '#services/payload_user_sync_service';
 import { EmailSyncService } from '#services/email_sync_service';
 import { UserSyncService } from '#services/user_sync_service';
 import { createUserValidator } from '#validators/admin_validator';
@@ -188,12 +188,14 @@ export default class AdminController {
         await BetterAuthSyncService.syncRole(adonisUser.id, data.role, request);
       }
 
-      // If role requires Directus, create Directus user
-      if (DirectusUserSyncService.requiresDirectusUser(data.role)) {
-        await DirectusUserSyncService.syncUserToDirectus(adonisUser, data.role);
+      // If role requires Payload, create Payload user
+      if (PayloadUserSyncService.requiresPayloadUser(data.role)) {
+        // Sync password if available (Option A: Password Sync)
+        // Otherwise user will need to set password in Payload admin UI (Option B: Passwordless)
+        await PayloadUserSyncService.syncUserToPayload(adonisUser, data.role, data.password);
       }
 
-      // Reload user to get Directus user ID if created
+      // Reload user to get Payload user ID if created
       await adonisUser.refresh();
 
       return response.created({
@@ -266,9 +268,9 @@ export default class AdminController {
     if (firstName !== undefined) targetUser.firstName = firstName;
     if (lastName !== undefined) targetUser.lastName = lastName;
     if (email !== undefined && email !== targetUser.email) {
-      // Email change - sync to Directus
+      // Email change - sync to Payload
       // Note: Better Auth email should be updated via Better Auth's email change flow
-      await EmailSyncService.syncEmailToAdonisAndDirectus(targetUser, email);
+      await EmailSyncService.syncEmailToAdonisAndPayload(targetUser, email);
     }
     if (role !== undefined) {
       targetUser.role = role as 'user' | 'admin' | 'content_admin' | 'editor' | 'writer';
@@ -282,28 +284,28 @@ export default class AdminController {
       await BetterAuthSyncService.syncRole(targetUser.id, role, request);
     }
 
-    // Handle Directus role changes
+    // Handle Payload role changes
     if (role !== undefined && oldRole !== role) {
-      const requiresDirectus = DirectusUserSyncService.requiresDirectusUser(role);
-      const oldRequiresDirectus = DirectusUserSyncService.requiresDirectusUser(oldRole);
+      const requiresPayload = PayloadUserSyncService.requiresPayloadUser(role);
+      const oldRequiresPayload = PayloadUserSyncService.requiresPayloadUser(oldRole);
 
-      if (requiresDirectus && !oldRequiresDirectus) {
-        // Role changed to content role - create Directus user
-        await DirectusUserSyncService.syncUserToDirectus(targetUser, role);
-      } else if (!requiresDirectus && oldRequiresDirectus) {
-        // Role changed from content role to general user - Directus user remains but role updated
-        // (We don't delete Directus users, just update their role if they exist)
-        if (targetUser.directusUserId) {
+      if (requiresPayload && !oldRequiresPayload) {
+        // Role changed to content role - create Payload user
+        await PayloadUserSyncService.syncUserToPayload(targetUser, role);
+      } else if (!requiresPayload && oldRequiresPayload) {
+        // Role changed from content role to general user - Payload user remains but role updated
+        // (We don't delete Payload users, just update their role if they exist)
+        if (targetUser.payloadUserId) {
           // Update to a general role or leave as is
-          // Actually, we should probably leave the Directus user but note they're no longer active
+          // Actually, we should probably leave the Payload user but note they're no longer active
         }
-      } else if (requiresDirectus && oldRequiresDirectus) {
-        // Role changed between content roles - update Directus role
-        if (targetUser.directusUserId) {
-          await DirectusUserSyncService.updateDirectusUserRole(targetUser.directusUserId, role);
+      } else if (requiresPayload && oldRequiresPayload) {
+        // Role changed between content roles - update Payload role
+        if (targetUser.payloadUserId) {
+          await PayloadUserSyncService.updatePayloadUserRole(targetUser.payloadUserId, role);
         } else {
-          // Create Directus user if it doesn't exist
-          await DirectusUserSyncService.syncUserToDirectus(targetUser, role);
+          // Create Payload user if it doesn't exist
+          await PayloadUserSyncService.syncUserToPayload(targetUser, role);
         }
       }
     }

@@ -4,7 +4,7 @@ import type { CommandOptions } from '@adonisjs/core/types/ace';
 
 import { auth } from '#config/better_auth';
 import User from '#models/user';
-import { DirectusUserSyncService } from '#services/directus_user_sync_service';
+import { PayloadUserSyncService } from '#services/payload_user_sync_service';
 import { UserSyncService, type BetterAuthUser } from '#services/user_sync_service';
 
 export default class CreateAdmin extends BaseCommand {
@@ -41,12 +41,12 @@ export default class CreateAdmin extends BaseCommand {
         existingUser.role = 'admin';
         await existingUser.save();
 
-        // Sync to Directus if role requires it
-        if (DirectusUserSyncService.requiresDirectusUser('admin')) {
-          this.logger.info('Syncing user to Directus...');
-          await DirectusUserSyncService.syncUserToDirectus(existingUser, 'admin');
-          await existingUser.refresh(); // Refresh to get directusUserId
-          this.logger.success(`User synced to Directus (ID: ${existingUser.directusUserId})`);
+        // Sync to Payload if role requires it
+        if (PayloadUserSyncService.requiresPayloadUser('admin')) {
+          this.logger.info('Syncing user to Payload...');
+          await PayloadUserSyncService.syncUserToPayload(existingUser, 'admin', this.password);
+          await existingUser.refresh(); // Refresh to get payloadUserId
+          this.logger.success(`User synced to Payload (ID: ${existingUser.payloadUserId})`);
         }
 
         this.logger.success(`User ${this.email} updated to admin role`);
@@ -157,11 +157,11 @@ export default class CreateAdmin extends BaseCommand {
       adonisUser.role = 'admin';
       await adonisUser.save();
 
-      // Sync to Directus if role requires it
-      if (DirectusUserSyncService.requiresDirectusUser('admin')) {
-        this.logger.info('Syncing user to Directus...');
-        await DirectusUserSyncService.syncUserToDirectus(adonisUser, 'admin');
-        await adonisUser.refresh(); // Refresh to get directusUserId
+      // Sync to Payload if role requires it
+      if (PayloadUserSyncService.requiresPayloadUser('admin')) {
+        this.logger.info('Syncing user to Payload...');
+        await PayloadUserSyncService.syncUserToPayload(adonisUser, 'admin', this.password);
+        await adonisUser.refresh(); // Refresh to get payloadUserId
       }
 
       this.logger.success(`Admin user created successfully!`);
@@ -173,8 +173,8 @@ export default class CreateAdmin extends BaseCommand {
         this.logger.info(`  Username: ${adonisUser.username}`);
       }
 
-      if (adonisUser.directusUserId) {
-        this.logger.info(`  Directus User ID: ${adonisUser.directusUserId}`);
+      if (adonisUser.payloadUserId) {
+        this.logger.info(`  Payload User ID: ${adonisUser.payloadUserId}`);
       }
     } catch (error: unknown) {
       this.logger.error(

@@ -10,12 +10,12 @@ import {
   type DirectusClient,
 } from '@directus/sdk';
 
-import type { Schema } from '@turborepo-saas-starter/shared-types/schema';
-
 import env from '#start/env';
 
+// Note: This service is legacy code for Directus. Consider removing if not used.
+// Payload CMS is now the primary CMS.
 class DirectusService {
-  private client: DirectusClient<Schema>;
+  private client: DirectusClient<any>;
   private adminToken: string | null = null;
 
   constructor() {
