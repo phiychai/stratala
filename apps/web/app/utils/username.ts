@@ -1,4 +1,4 @@
-import type { DirectusUser } from '@turborepo-saas-starter/shared-types/schema';
+import type { DirectusUser } from '@turborepo-saas-starter/shared-types';
 
 interface UserNameOptions {
   abbrev?: boolean;
@@ -12,12 +12,12 @@ export function userName(
     return 'Unknown User' as string;
   }
 
-  if (user.first_name && user.last_name) {
-    return `${user.first_name} ${abbrev ? `${user.last_name[0]}.` : user.last_name}`;
+  if (user.firstName && user.lastName) {
+    return `${user.firstName} ${abbrev ? `${user.lastName[0]}.` : user.lastName}`;
   }
 
-  if (user.first_name) {
-    return user.first_name;
+  if (user.firstName) {
+    return user.firstName;
   }
 
   if (user.email) {
@@ -32,12 +32,12 @@ export function userInitials(user: Partial<DirectusUser>): string {
     return 'NA' as string;
   }
 
-  if (user.first_name && user.last_name) {
-    return `${user.first_name[0]}${user.last_name[0]}`;
+  if (user.firstName && user.lastName) {
+    return `${user.firstName[0]}${user.lastName[0]}`;
   }
 
-  if (user.first_name) {
-    return user.first_name[0] || 'NA';
+  if (user.firstName) {
+    return user.firstName[0] || 'NA';
   }
 
   if (user.email) {

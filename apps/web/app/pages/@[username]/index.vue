@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { Space, Post } from '@turborepo-saas-starter/shared-types/schema';
+import type { Space, Post } from '@turborepo-saas-starter/shared-types';
 
 const route = useRoute();
 const username = route.params.username as string;

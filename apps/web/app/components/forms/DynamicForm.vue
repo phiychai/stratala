@@ -2,7 +2,7 @@
 import { useForm } from 'vee-validate';
 import { toTypedSchema } from '@vee-validate/zod';
 import { buildZodSchema } from '~/lib/zodSchemaBuilder';
-import type { FormField } from '@turborepo-saas-starter/shared-types/schema';
+import type { FormField } from '@turborepo-saas-starter/shared-types';
 import BaseFormField from './BaseFormField.vue';
 import BaseButton from '../base/BaseButton.vue';
 
@@ -92,14 +92,6 @@ const onSubmitForm = handleSubmit(async (formValues) => {
     v-if="schema"
     :validation-schema="schema"
     :initial-values="initialValues"
-    :data-directus="
-      setAttr({
-        collection: 'forms',
-        item: props.formId || null,
-        fields: 'fields',
-        mode: 'popover',
-      })
-    "
     @submit.prevent="onSubmitForm"
   >
     <div class="flex flex-wrap gap-4">

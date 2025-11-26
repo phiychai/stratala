@@ -70,32 +70,16 @@ defineShortcuts({
   },
 });
 
-const { setAttr } = useVisualEditing();
 </script>
 
 <template>
   <section class="relative">
-    <Tagline
-      v-if="data.tagline"
-      :tagline="data.tagline"
-      :data-directus="
-        setAttr({ collection: 'block_gallery', item: data.id, fields: 'tagline', mode: 'popover' })
-      "
-    />
-    <Headline
-      v-if="data.headline"
-      :headline="data.headline"
-      :data-directus="
-        setAttr({ collection: 'block_gallery', item: data.id, fields: 'headline', mode: 'popover' })
-      "
-    />
+    <Tagline v-if="data.tagline" :tagline="data.tagline" />
+    <Headline v-if="data.headline" :headline="data.headline" />
 
     <div
       v-if="sortedItems.length"
       class="mt-8 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6"
-      :data-directus="
-        setAttr({ collection: 'block_gallery', item: data.id, fields: 'items', mode: 'modal' })
-      "
     >
       <div
         v-for="(item, index) in sortedItems"

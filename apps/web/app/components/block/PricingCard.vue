@@ -7,8 +7,6 @@ import Button from '../base/BaseButton.vue';
 import type { PricingCardProps } from '~/types/components';
 
 defineProps<PricingCardProps>();
-
-const { setAttr } = useVisualEditing();
 </script>
 
 <template>
@@ -19,17 +17,7 @@ const { setAttr } = useVisualEditing();
     ]"
   >
     <div class="flex justify-between items-start gap-2 mb-4">
-      <h3
-        class="text-xl font-heading text-foreground"
-        :data-directus="
-          setAttr({
-            collection: 'block_pricing_cards',
-            item: card.id,
-            fields: ['title'],
-            mode: 'popover',
-          })
-        "
-      >
+      <h3 class="text-xl font-heading text-foreground">
         {{ card.title }}
       </h3>
       <div class="flex-shrink-0">
@@ -38,65 +26,24 @@ const { setAttr } = useVisualEditing();
           :color="card.is_highlighted ? 'primary' : 'neutral'"
           variant="subtle"
           class="text-xs font-medium uppercase"
-          :data-directus="
-            setAttr({
-              collection: 'block_pricing_cards',
-              item: card.id,
-              fields: ['badge'],
-              mode: 'popover',
-            })
-          "
         >
           {{ card.badge }}
         </UBadge>
       </div>
     </div>
 
-    <p
-      v-if="card.price"
-      class="text-h2 mt-2 font-semibold"
-      :data-directus="
-        setAttr({
-          collection: 'block_pricing_cards',
-          item: card.id,
-          fields: ['price'],
-          mode: 'popover',
-        })
-      "
-    >
+    <p v-if="card.price" class="text-h2 mt-2 font-semibold">
       {{ card.price }}
     </p>
 
-    <p
-      v-if="card.description"
-      class="text-description mt-2 line-clamp-2"
-      :data-directus="
-        setAttr({
-          collection: 'block_pricing_cards',
-          item: card.id,
-          fields: ['description'],
-          mode: 'popover',
-        })
-      "
-    >
+    <p v-if="card.description" class="text-description mt-2 line-clamp-2">
       {{ card.description }}
     </p>
 
     <hr class="my-4" />
 
     <div class="flex-grow">
-      <ul
-        v-if="card.features"
-        class="space-y-4"
-        :data-directus="
-          setAttr({
-            collection: 'block_pricing_cards',
-            item: card.id,
-            fields: ['features'],
-            mode: 'popover',
-          })
-        "
-      >
+      <ul v-if="card.features" class="space-y-4">
         <li
           v-for="(feature, index) in card.features"
           :key="index"
@@ -116,14 +63,6 @@ const { setAttr } = useVisualEditing();
         v-if="card.button"
         id="card.button.uuid"
         class="w-full"
-        :data-directus="
-          setAttr({
-            collection: 'block_button',
-            item: card.button.id,
-            fields: ['type', 'label', 'variant', 'url', 'page', 'post'],
-            mode: 'popover',
-          })
-        "
         :label="card.button.label"
         :variant="card.button.variant"
       />

@@ -4,7 +4,7 @@ import { useTableOfContents } from '~/composables/useTableOfContents';
 
 const route = useRoute();
 const { enabled, state } = useLivePreview();
-const { isVisualEditingEnabled, apply, setAttr } = useVisualEditing();
+const { isVisualEditingEnabled, apply } = useVisualEditing();
 const postUrl = useRequestURL();
 const loading = ref(false);
 
@@ -126,14 +126,6 @@ useSeoMeta({
         <UPageHeader
           :title="post.title"
           :description="post.description || undefined"
-          :data-directus="
-            setAttr({
-              collection: 'posts',
-              item: post.id,
-              fields: ['headline', 'description'],
-              mode: 'popover',
-            })
-          "
         >
           <template #headline>
             <UBadge
@@ -161,7 +153,7 @@ useSeoMeta({
           <div class="flex flex-wrap items-center gap-3 mt-4">
             <UButton color="neutral" variant="subtle" target="_blank" size="sm">
               <template v-if="author && typeof author !== 'string'">
-                {{ author.first_name }}{{ author.last_name }}
+                {{ author.firstName }}{{ author.lastName }}
               </template>
               <template v-else>
                 {{ author || 'Unknown Author' }}
@@ -187,13 +179,7 @@ useSeoMeta({
 
         <UPage>
           <UPageBody>
-            <Text
-              v-if="post.content"
-              :content="post.content"
-              :data-directus="
-                setAttr({ collection: 'posts', item: post.id, fields: ['content'], mode: 'drawer' })
-              "
-            />
+            <Text v-if="post.content" :content="post.content" />
             <div v-else class="text-center text-muted py-8">
               <p>No content available for this post.</p>
             </div>

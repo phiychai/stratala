@@ -6,7 +6,6 @@
 import type { HeroProps } from '~/types/components';
 
 defineProps<HeroProps>();
-const { setAttr } = useVisualEditing();
 </script>
 
 <template>
@@ -17,31 +16,13 @@ const { setAttr } = useVisualEditing();
       </template>
 
       <template #title>
-        <span
-          :data-directus="
-            setAttr({
-              collection: 'block_hero',
-              item: data.id,
-              fields: 'headline',
-              mode: 'popover',
-            })
-          "
-        >
+        <span>
           <MDC :value="data.headline" unwrap="p" />
         </span>
       </template>
 
       <template #description>
-        <span
-          :data-directus="
-            setAttr({
-              collection: 'block_hero',
-              item: data.id,
-              fields: 'description',
-              mode: 'popover',
-            })
-          "
-        >
+        <span>
           <MDC :value="data.description" unwrap="p" />
         </span>
       </template>
@@ -64,30 +45,9 @@ const { setAttr } = useVisualEditing();
         'md:w-1/2 items-start': data.layout !== 'image_center',
       }"
     >
-      <Tagline
-        :tagline="data.tagline"
-        :data-directus="
-          setAttr({ collection: 'block_hero', item: data.id, fields: 'tagline', mode: 'popover' })
-        "
-      />
-      <Headline
-        :headline="data.headline"
-        :data-directus="
-          setAttr({ collection: 'block_hero', item: data.id, fields: 'headline', mode: 'popover' })
-        "
-      />
-      <Text
-        v-if="data.description"
-        :content="data.description"
-        :data-directus="
-          setAttr({
-            collection: 'block_hero',
-            item: data.id,
-            fields: 'description',
-            mode: 'popover',
-          })
-        "
-      />
+      <Tagline :tagline="data.tagline" />
+      <Headline :headline="data.headline" />
+      <Text v-if="data.description" :content="data.description" />
 
       <div
         v-if="data.button_group?.buttons?.length"
@@ -96,9 +56,6 @@ const { setAttr } = useVisualEditing();
       >
         <!-- <UButtonGroup
 					:buttons="data.description"
-					:data-directus="
-						setAttr({ collection: 'block_button_group', item: data.button_group?.id, fields: 'buttons', mode: 'modal' })
-					"
 				/> -->
       </div>
     </div>
@@ -117,14 +74,6 @@ const { setAttr } = useVisualEditing();
         :fill="true"
         :sizes="data.layout === 'image_center' ? '100vw' : '(max-width: 768px) 100vw, 50vw'"
         class="object-contain"
-        :data-directus="
-          setAttr({
-            collection: 'block_hero',
-            item: data.id,
-            fields: ['image', 'layout'],
-            mode: 'modal',
-          })
-        "
       />
     </div>
   </section>

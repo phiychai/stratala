@@ -4,7 +4,7 @@ import { useTableOfContents } from '~/composables/useTableOfContents';
 
 const route = useRoute();
 const { enabled, state } = useLivePreview();
-const { isVisualEditingEnabled, apply, setAttr } = useVisualEditing();
+const { isVisualEditingEnabled, apply } = useVisualEditing();
 const postUrl = useRequestURL();
 const loading = ref(false);
 
@@ -21,12 +21,35 @@ const { data, error, refresh } = await useFetch<{
   post: Post;
   relatedPosts: Post[];
 }>(() => `/api/posts/${slug}`, {
-  key: `posts-${slug}`,
+  key: `posts-${slug}-${enabled.value ? 'preview' : 'live'}`,
   query: {
     preview: enabled.value ? true : undefined,
     token: enabled.value ? state.token : undefined,
+    // Add timestamp for cache busting in preview mode
+    _t: enabled.value ? Date.now() : undefined,
   },
+  // Watch for route changes and refresh
+  watch: [() => route.params.slug],
+  // Enable revalidation on focus/network reconnect
+  lazy: false,
 });
+
+// Auto-refresh when window gains focus (helps catch updates after editing)
+if (import.meta.client) {
+  onMounted(() => {
+    // Refresh data when window regains focus (user might have edited in another tab)
+    window.addEventListener('focus', () => {
+      refresh();
+    });
+
+    // Also refresh on visibility change (tab becomes visible)
+    document.addEventListener('visibilitychange', () => {
+      if (!document.hidden) {
+        refresh();
+      }
+    });
+  });
+}
 
 if (!data.value || error.value) {
   throw createError({ statusCode: 404, statusMessage: 'Post not found', fatal: true });
@@ -224,18 +247,7 @@ useSeoMeta({
     </template>
     <template #body>
       <UContainer v-if="post" ref="articleContentRef" class="max-w-[680px]">
-        <UPageHeader
-          :title="post.title"
-          :description="post.description || undefined"
-          :data-directus="
-            setAttr({
-              collection: 'posts',
-              item: post.id,
-              fields: ['headline', 'description'],
-              mode: 'popover',
-            })
-          "
-        >
+        <UPageHeader :title="post.title" :description="post.description || undefined">
           <template #headline>
             <UBadge
               v-for="(category, index) in post.categories || []"
@@ -271,7 +283,7 @@ useSeoMeta({
               <!-- <UAvatar v-bind="post.author.avatar" alt="Author avatar" size="2xs" /> -->
 
               <template v-if="author && typeof author !== 'string'">
-                {{ author.first_name }}{{ author.last_name }}
+                {{ author.firstName }}{{ author.lastName }}
               </template>
               <template v-else>
                 {{ author || 'Unknown Author' }}
@@ -352,10 +364,7 @@ useSeoMeta({
         </UPageHeader>
 
         <!-- <div v-if="post.image" class="mb-8 w-full">
-			<div
-				class="relative w-full h-[400px] overflow-hidden rounded-lg"
-				:data-directus="setAttr({ collection: 'posts', item: post.id, fields: ['image'], mode: 'modal' })"
-			>
+			<div class="relative w-full h-[400px] overflow-hidden rounded-lg">
 				<DirectusImage
 					:uuid="post.image as string"
 					:alt="post.title || 'post header image'"
@@ -371,13 +380,7 @@ useSeoMeta({
             <!-- <ContentRenderer v-if="post" :value="post.content" /> -->
             <!-- <UContentSurround :surround="surround" /> -->
 
-            <Text
-              v-if="post.content"
-              :content="post.content"
-              :data-directus="
-                setAttr({ collection: 'posts', item: post.id, fields: ['content'], mode: 'drawer' })
-              "
-            />
+            <Text v-if="post.content" :content="post.content" />
             <div v-else class="text-center text-muted py-8">
               <p>No content available for this post.</p>
             </div>

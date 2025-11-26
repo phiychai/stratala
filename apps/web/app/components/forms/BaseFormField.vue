@@ -3,7 +3,7 @@
  * BaseFormField - Migrated to Nuxt UI v4
  * Uses UFormField with UInput, UTextarea, and custom field components
  */
-import type { FormField } from '@turborepo-saas-starter/shared-types/schema';
+import type { FormField } from '@turborepo-saas-starter/shared-types';
 import { useField } from 'vee-validate';
 import CheckboxField from './fields/CheckboxField.vue';
 import CheckboxGroupField from './fields/CheckboxGroupField.vue';

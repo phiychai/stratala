@@ -14,7 +14,7 @@ import type {
   BlockPricing,
   BlockPost,
   BlockForm,
-} from '@turborepo-saas-starter/shared-types/schema';
+} from '@turborepo-saas-starter/shared-types';
 
 export interface ButtonProps {
   id: string;
@@ -211,19 +211,19 @@ export interface TaglineProps {
 }
 
 export interface DirectusImageProps {
-  uuid: string;
+  uuid: string | number | object | null | undefined; // Can be UUID string, ID number, or Media object
   alt: string;
   width?: number;
   height?: number;
   className?: string;
   loading?: 'lazy' | 'eager';
   objectFit?: 'contain' | 'cover' | 'fill' | 'none' | 'scale-down';
-  [key: string]: string | number | boolean | undefined;
+  [key: string]: string | number | boolean | object | undefined;
 }
 
 // Text (Prose)
 export interface ProseProps {
-  content: string;
+  content: string | object | null | undefined; // Can be markdown string or Lexical JSON object
   size?: 'sm' | 'md' | 'lg';
   itemId?: string;
   collection?: string;

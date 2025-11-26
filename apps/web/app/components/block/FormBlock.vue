@@ -6,47 +6,15 @@
 import type { CustomFormData } from '~/types/components';
 
 defineProps<{ data: CustomFormData }>();
-const { setAttr } = useVisualEditing();
 </script>
 
 <template>
   <section v-if="data.form" class="mx-auto">
-    <Tagline
-      v-if="data.tagline"
-      :tagline="data.tagline"
-      :data-directus="
-        setAttr({
-          collection: 'block_form',
-          item: data.id,
-          fields: 'tagline',
-          mode: 'popover',
-        })
-      "
-    />
+    <Tagline v-if="data.tagline" :tagline="data.tagline" />
 
-    <Headline
-      v-if="data.headline"
-      :headline="data.headline"
-      :data-directus="
-        setAttr({
-          collection: 'block_form',
-          item: data.id,
-          fields: 'headline',
-          mode: 'popover',
-        })
-      "
-    />
+    <Headline v-if="data.headline" :headline="data.headline" />
 
-    <div
-      :data-directus="
-        setAttr({
-          collection: 'block_form',
-          item: data.id,
-          fields: ['form'],
-          mode: 'popover',
-        })
-      "
-    >
+    <div>
       <FormBuilder :form="data.form" class="mt-8" />
     </div>
   </section>

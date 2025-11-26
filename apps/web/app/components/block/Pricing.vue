@@ -6,35 +6,12 @@
 import type { PricingProps } from '~/types/components';
 
 defineProps<PricingProps>();
-const { setAttr } = useVisualEditing();
 </script>
 
 <template>
   <section>
-    <Tagline
-      v-if="data.tagline"
-      :tagline="data.tagline"
-      :data-directus="
-        setAttr({
-          collection: 'block_pricing',
-          item: data.id || null,
-          fields: 'tagline',
-          mode: 'popover',
-        })
-      "
-    />
-    <Headline
-      v-if="data.headline"
-      :headline="data.headline"
-      :data-directus="
-        setAttr({
-          collection: 'block_pricing',
-          item: data.id || null,
-          fields: 'headline',
-          mode: 'popover',
-        })
-      "
-    />
+    <Tagline v-if="data.tagline" :tagline="data.tagline" />
+    <Headline v-if="data.headline" :headline="data.headline" />
 
     <div
       class="grid gap-6 mt-8"
@@ -44,14 +21,6 @@ const { setAttr } = useVisualEditing();
         'grid-cols-1 sm:grid-cols-2':
           data.pricing_cards.length % 2 !== 0 && data.pricing_cards.length !== 1,
       }"
-      :data-directus="
-        setAttr({
-          collection: 'block_pricing',
-          item: data.id || null,
-          fields: ['pricing_cards'],
-          mode: 'modal',
-        })
-      "
     >
       <UPricingPlans scale>
         <UPricingPlan

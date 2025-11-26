@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { Page, PageBlock } from '@turborepo-saas-starter/shared-types/schema';
+import type { Page, PageBlock } from '@turborepo-saas-starter/shared-types';
 import { withLeadingSlash, withoutTrailingSlash } from 'ufo';
 
 const { isAuthenticated } = useAuth();
@@ -7,7 +7,7 @@ const { isAuthenticated } = useAuth();
 const route = useRoute();
 const { enabled, state } = useLivePreview();
 const pageUrl = useRequestURL();
-const { isVisualEditingEnabled, apply, setAttr } = useVisualEditing();
+const { isVisualEditingEnabled, apply } = useVisualEditing();
 
 const permalink = withoutTrailingSlash(withLeadingSlash(route.path));
 
@@ -87,18 +87,7 @@ onMounted(() => {
   <div v-if="isVisualEditingEnabled && page">
     <!-- If you're not using the visual editor it's safe to remove this element. Just a helper to let editors add edit / add new blocks to a page. -->
     <div class="relative">
-      <UButton
-        id="visual-editing-button"
-        variant="ghost"
-        :data-directus="
-          setAttr({
-            collection: 'pages',
-            item: page.id,
-            fields: ['blocks', 'meta_m2a_button'],
-            mode: 'modal',
-          })
-        "
-      >
+      <UButton id="visual-editing-button" variant="ghost">
         <Icon name="lucide:pencil" />
         Edit All Blocks
       </UButton>

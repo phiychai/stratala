@@ -1,11 +1,18 @@
-import { apply as applyVisualEditing, setAttr } from '@directus/visual-editing';
 import type { ApplyOptions } from '~/types/composables';
+
+/**
+ * Visual Editing composable for Payload CMS
+ *
+ * Note: Payload doesn't have built-in visual editing like Directus.
+ * This composable is kept for compatibility but may need custom implementation
+ * or integration with Payload's preview mode.
+ */
 export default function useVisualEditing() {
   // Use useState for state that persists across navigation
   const isVisualEditingEnabled = useState('visual-editing-enabled', () => false);
   const route = useRoute();
   const {
-    public: { enableVisualEditing, directusUrl },
+    public: { enableVisualEditing },
   } = useRuntimeConfig();
 
   // Check query param on composable initialization.
@@ -17,11 +24,14 @@ export default function useVisualEditing() {
 
   const apply = (options: Pick<ApplyOptions, 'elements' | 'onSaved' | 'customClass'>) => {
     if (!isVisualEditingEnabled.value) return;
-    // Type assertion needed due to @directus/visual-editing type mismatch
-    applyVisualEditing({
-      ...options,
-      directusUrl,
-    } as Parameters<typeof applyVisualEditing>[0]);
+    // TODO: Implement visual editing for Payload
+    // Payload doesn't have built-in visual editing, so this would need custom implementation
+    console.warn('Visual editing not yet implemented for Payload CMS');
+  };
+
+  const setAttr = (element: HTMLElement, key: string, value: string) => {
+    if (!isVisualEditingEnabled.value) return;
+    element.setAttribute(key, value);
   };
 
   return {

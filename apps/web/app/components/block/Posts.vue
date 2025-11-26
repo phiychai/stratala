@@ -4,7 +4,7 @@
  * Uses UPagination for pagination controls
  */
 import { formatDistanceToNow } from 'date-fns';
-import type { Post, DirectusFile, DirectusUser } from '@turborepo-saas-starter/shared-types/schema';
+import type { Post } from '@turborepo-saas-starter/shared-types';
 import type { PostsProps } from '~/types/components';
 
 const props = defineProps<PostsProps>();
@@ -21,7 +21,7 @@ const { data: postsData, error } = await useFetch<{
   posts: Post[];
   count: number;
 }>('/api/posts', {
-  key: `block-posts-${props.data?.id}-${currentPage.value}-${selectedCategory.value || 'all'}`,
+  key: `block-posts-${route.path}-${props.data?.id || 'default'}-${currentPage.value}-${selectedCategory.value || 'all'}`,
   query: {
     page: currentPage,
     limit: perPage,
@@ -158,39 +158,73 @@ const items = computed(() => {
   return menuItems;
 });
 
-const { setAttr } = useVisualEditing();
 const {
-  public: { directusUrl },
+  public: { payloadUrl },
 } = useRuntimeConfig();
 
-// Helper function to convert Directus image to URL
-function getImageUrl(image: string | DirectusFile | null | undefined): string | undefined {
+// Helper function to convert Payload media to URL
+function getImageUrl(
+  image: number | { id: number; url?: string | null; filename?: string | null } | null | undefined
+): string | undefined {
   if (!image) return undefined;
 
-  if (typeof image === 'string') {
-    return `${directusUrl}/assets/${image}`;
+  // If it's a Payload Media object with a url property, use it directly (best case - populated with depth)
+  if (typeof image === 'object' && 'url' in image && image.url) {
+    return image.url;
   }
 
-  return `${directusUrl}/assets/${image.id}`;
+  // If it's a Media object with a filename but no url, construct the URL
+  if (typeof image === 'object' && 'filename' in image && image.filename) {
+    const baseUrl = (payloadUrl as string) || 'http://localhost:3002';
+    return `${baseUrl}/api/media/file/${image.filename}`;
+  }
+
+  // If it's a Media object with just an id, we need to fetch it or use a fallback
+  // For now, return undefined - the image should be populated with depth: 2
+  if (typeof image === 'object' && 'id' in image) {
+    console.warn(
+      'Payload image object missing url/filename, ensure depth: 2 is used when fetching posts'
+    );
+    return undefined;
+  }
+
+  // If it's just a number (ID), we can't construct URL without filename
+  // This shouldn't happen if depth: 2 is used, but handle gracefully
+  if (typeof image === 'number') {
+    console.warn('Payload image is just an ID, ensure depth: 2 is used when fetching posts');
+    return undefined;
+  }
+
+  return undefined;
 }
 
 // Transform posts to include image URLs and properly formatted authors
 const postsWithImageUrls = computed(() =>
   posts.value.map((post) => {
-    const imageUrl = getImageUrl(post.image);
+    // Handle Payload image format (number ID or Media object)
+    const imageUrl = getImageUrl(
+      typeof post.image === 'object' && post.image !== null
+        ? post.image
+        : typeof post.image === 'number'
+          ? post.image
+          : null
+    );
     const author = post.author && typeof post.author === 'object' ? post.author : null;
-    const authorAvatarUrl = author ? getImageUrl(author.avatar) : undefined;
+    // Author avatar might be in a different format, handle accordingly
+    const authorAvatarUrl =
+      author && 'avatar' in author ? getImageUrl(author.avatar as any) : undefined;
 
     return {
       ...post,
-      imageUrl,
+      // Only include imageUrl if it's a valid string (not undefined or empty)
+      ...(imageUrl ? { imageUrl } : {}),
       author: author
         ? {
             ...author,
             avatar: authorAvatarUrl
               ? {
                   src: authorAvatarUrl,
-                  alt: `${author.first_name || ''} ${author.last_name || ''}`.trim() || 'Author',
+                  alt: `${author.firstName || ''} ${author.lastName || ''}`.trim() || 'Author',
                 }
               : undefined,
           }
@@ -231,7 +265,7 @@ const feedOrientation = ref<'vertical' | 'horizontal'>('horizontal');
         :to="`/blog/${post.slug}`"
         :title="post.title"
         :description="post.description || undefined"
-        :image="post.imageUrl"
+        v-bind="post.imageUrl ? { image: post.imageUrl } : {}"
         :date="
           post.published_at
             ? formatDistanceToNow(new Date(post.published_at), { addSuffix: true })
@@ -241,7 +275,7 @@ const feedOrientation = ref<'vertical' | 'horizontal'>('horizontal');
           post.author && typeof post.author === 'object'
             ? [
                 {
-                  name: `${post.author.first_name || ''} ${post.author.last_name || ''}`.trim(),
+                  name: `${post.author.firstName || ''} ${post.author.lastName || ''}`.trim(),
                   avatar: post.author.avatar, // Use the already-transformed value
                 },
               ]

@@ -11,8 +11,6 @@ withDefaults(defineProps<RichTextProps>(), {
     alignment: 'left',
   }),
 });
-
-const { setAttr } = useVisualEditing();
 </script>
 
 <template>
@@ -27,41 +25,8 @@ const { setAttr } = useVisualEditing();
       data.className,
     ]"
   >
-    <Tagline
-      v-if="data.tagline"
-      :tagline="data.tagline"
-      :data-directus="
-        setAttr({
-          collection: 'block_richtext',
-          item: data.id || null,
-          fields: 'tagline',
-          mode: 'popover',
-        })
-      "
-    />
-    <Headline
-      v-if="data.headline"
-      :headline="data.headline"
-      :data-directus="
-        setAttr({
-          collection: 'block_richtext',
-          item: data.id || null,
-          fields: 'headline',
-          mode: 'popover',
-        })
-      "
-    />
-    <Text
-      v-if="data.content"
-      :content="data.content"
-      :data-directus="
-        setAttr({
-          collection: 'block_richtext',
-          item: data.id || null,
-          fields: 'content',
-          mode: 'drawer',
-        })
-      "
-    />
+    <Tagline v-if="data.tagline" :tagline="data.tagline" />
+    <Headline v-if="data.headline" :headline="data.headline" />
+    <Text v-if="data.content" :content="data.content" />
   </div>
 </template>
