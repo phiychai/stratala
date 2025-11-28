@@ -9,7 +9,7 @@ import type { CollectionConfig } from 'payload';
  * - Users can only read/edit their own posts
  * - Admins and content admins can read/edit all posts
  * - Editors can read/edit all posts (or can be restricted to own)
- * - Writers can only access their own posts
+ * - Publishers can only access their own posts
  */
 const Posts: CollectionConfig = {
   slug: 'posts',
@@ -30,8 +30,8 @@ const Posts: CollectionConfig = {
       if (user?.role === 'editor') {
         return true; // Or restrict to own: { author: { equals: user.id } }
       }
-      // Writers can only read their own posts
-      if (user?.role === 'writer') {
+      // Publishers can only read their own posts
+      if (user?.role === 'publisher') {
         return {
           author: {
             equals: user.id,
@@ -56,8 +56,8 @@ const Posts: CollectionConfig = {
       if (user?.role === 'editor') {
         return true; // Or restrict to own: { author: { equals: user.id } }
       }
-      // Writers can only update their own posts
-      if (user?.role === 'writer') {
+      // Publishers can only update their own posts
+      if (user?.role === 'publisher') {
         return {
           author: {
             equals: user.id,

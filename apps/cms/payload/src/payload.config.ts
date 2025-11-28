@@ -1,6 +1,7 @@
 // storage-adapter-import-placeholder
 import { postgresAdapter } from '@payloadcms/db-postgres'
 import { lexicalEditor } from '@payloadcms/richtext-lexical'
+import { multiTenantPlugin } from '@payloadcms/plugin-multi-tenant'
 import path from 'path'
 import { buildConfig } from 'payload'
 import { fileURLToPath } from 'url'
@@ -9,6 +10,7 @@ import sharp from 'sharp'
 // Collections
 import { Users } from './collections/Users'
 import { Media } from './collections/Media'
+import Tenants from './collections/Tenants'
 import Spaces from './collections/Spaces'
 import Posts from './collections/Posts'
 import Pages from './collections/Pages'
@@ -35,6 +37,7 @@ export default buildConfig({
     },
   },
   collections: [
+    Tenants,
     Users,
     Media,
     Spaces,
@@ -74,6 +77,30 @@ export default buildConfig({
     enabled: true,
   },
   plugins: [
+    multiTenantPlugin({
+      // Collections that should be tenant-scoped
+      collections: {
+        'spaces': {},
+        'posts': {},
+        'pages': {},
+        'categories': {},
+        'tags': {},
+        'forms': {},
+        'form-fields': {},
+        'form-submissions': {},
+        'form-submission-values': {},
+      },
+      // Allow admins to access all tenants
+      userHasAccessToAllTenants: ({ user }) => {
+        return user?.role === 'admin' || user?.role === 'content_admin';
+      },
+      // Configure the tenants field on users
+      tenantsArrayField: {
+        // Make tenants optional during registration
+        // Users can be assigned to tenants later by admins
+        required: false,
+      },
+    }),
     // storage-adapter-placeholder
   ],
 })

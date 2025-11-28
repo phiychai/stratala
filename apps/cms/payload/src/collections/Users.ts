@@ -52,8 +52,8 @@ export const Users: CollectionConfig = {
           value: 'editor',
         },
         {
-          label: 'Writer',
-          value: 'writer',
+          label: 'Publisher',
+          value: 'publisher',
         },
         {
           label: 'User',
@@ -75,6 +75,44 @@ export const Users: CollectionConfig = {
       type: 'text',
     },
     // Email and password are added by default by auth: true
+    // The multi-tenant plugin will automatically add a 'tenants' field
   ],
+  hooks: {
+    beforeChange: [
+      async ({ data, req, operation, payload }) => {
+        // During registration (create operation without existing user),
+        // automatically assign default tenant if none provided
+        // Based on official Payload multi-tenant example:
+        // https://github.com/payloadcms/payload/tree/main/examples/multi-tenant
+        if (operation === 'create' && !req.user) {
+          // If no tenants provided, assign default tenant
+          if (!data.tenants || (Array.isArray(data.tenants) && data.tenants.length === 0)) {
+            try {
+              // Find default tenant
+              const defaultTenant = await payload.find({
+                collection: 'tenants',
+                where: {
+                  slug: {
+                    equals: 'default',
+                  },
+                },
+                limit: 1,
+              });
+
+              if (defaultTenant.docs && defaultTenant.docs.length > 0) {
+                // Assign tenant ID directly (plugin handles the relationship)
+                data.tenants = [defaultTenant.docs[0].id];
+              }
+            } catch (error) {
+              // If tenant lookup fails, allow empty tenants (will be assigned later)
+              console.warn('Could not assign default tenant:', error);
+              data.tenants = [];
+            }
+          }
+        }
+        return data;
+      },
+    ],
+  },
   timestamps: true,
 }

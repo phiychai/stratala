@@ -9,7 +9,7 @@ import type { CollectionConfig } from 'payload';
  * - Users can only read/edit their own pages
  * - Admins and content admins can read/edit all pages
  * - Editors can read/edit all pages
- * - Writers can only access their own pages
+ * - Publishers can only access their own pages
  */
 const Pages: CollectionConfig = {
   slug: 'pages',
@@ -30,8 +30,8 @@ const Pages: CollectionConfig = {
       if (user?.role === 'editor') {
         return true;
       }
-      // Writers can only read their own pages
-      if (user?.role === 'writer') {
+      // Publishers can only read their own pages
+      if (user?.role === 'publisher') {
         return {
           createdBy: {
             equals: user.id,
@@ -56,8 +56,8 @@ const Pages: CollectionConfig = {
       if (user?.role === 'editor') {
         return true;
       }
-      // Writers can only update their own pages
-      if (user?.role === 'writer') {
+      // Publishers can only update their own pages
+      if (user?.role === 'publisher') {
         return {
           createdBy: {
             equals: user.id,
