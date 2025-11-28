@@ -16,7 +16,7 @@ export interface UserProfile {
   displayName: string;
 
   // Authorization (from Adonis User)
-  role: 'user' | 'admin' | 'content_admin' | 'editor' | 'writer';
+  role: import('./roles').UserRoleType;
   isActive: boolean;
 
   // Preferences (from Adonis User)

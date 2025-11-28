@@ -6,6 +6,7 @@ import type { UserProfile } from '@turborepo-saas-starter/shared-types';
 export type * from './components';
 export type * from './stores';
 export type * from './composables';
+export * from './enums';
 
 export interface BlogPost extends ParsedContentv2 {
   title: string;
@@ -28,7 +29,8 @@ export interface BlogPost extends ParsedContentv2 {
 export interface User extends UserProfile {}
 
 // Dashboard types
-export type UserStatus = 'subscribed' | 'unsubscribed' | 'bounced';
+// UserStatus is now exported from ./enums.ts
+export type { UserStatusType as UserStatus } from './enums';
 export type SaleStatus = 'paid' | 'failed' | 'refunded';
 
 export interface DashboardUser {
