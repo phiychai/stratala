@@ -118,3 +118,4 @@ public/uploads/
 *.tsbuildinfo
 *.code-workspace
 
+.cursor/rules/documentation.mdc
