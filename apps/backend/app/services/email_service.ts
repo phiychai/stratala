@@ -73,13 +73,25 @@ export class EmailService {
       await this.initialize();
     }
 
+    // In development or when EMAIL_MODE=console, always log OTP to console
+    const emailMode = env.get('EMAIL_MODE', env.get('NODE_ENV') === 'development' ? 'console' : 'auto');
+    if (emailMode === 'console' || (!this.provider && env.get('NODE_ENV') === 'development')) {
+      const logger = await this.getLogger();
+      const typeLabel = options.type === 'email-verification' ? 'Email Verification'
+        : options.type === 'sign-in' ? 'Sign In'
+        : 'Password Reset';
+      logger.info(`━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━`);
+      logger.info(`📧 ${typeLabel} OTP Code`);
+      logger.info(`━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━`);
+      logger.info(`Email: ${options.to}`);
+      logger.info(`OTP Code: ${options.otp}`);
+      logger.info(`Type: ${options.type}`);
+      logger.info(`Expires in: 10 minutes`);
+      logger.info(`━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━`);
+      return;
+    }
+
     if (!this.provider) {
-      // In development, log OTP to console instead of failing
-      if (env.get('NODE_ENV') === 'development') {
-        const logger = await this.getLogger();
-        logger.info(`[DEV] OTP for ${options.to}: ${options.otp} (type: ${options.type})`);
-        return;
-      }
       throw new Error('Email service not configured. Please set EMAIL_PROVIDER and API keys.');
     }
 
@@ -101,6 +113,23 @@ export class EmailService {
       const logger = await this.getLogger();
       logger.info(`OTP email sent to ${options.to} (type: ${options.type})`);
     } catch (error: unknown) {
+      // In development, fallback to console logging instead of failing
+      if (env.get('NODE_ENV') === 'development') {
+        const logger = await this.getLogger();
+        logger.warn(`Failed to send OTP via ${this.provider}, logging to console instead`);
+        const typeLabel = options.type === 'email-verification' ? 'Email Verification'
+          : options.type === 'sign-in' ? 'Sign In'
+          : 'Password Reset';
+        logger.info(`━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━`);
+        logger.info(`📧 ${typeLabel} OTP Code (Fallback)`);
+        logger.info(`━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━`);
+        logger.info(`Email: ${options.to}`);
+        logger.info(`OTP Code: ${options.otp}`);
+        logger.info(`Type: ${options.type}`);
+        logger.info(`Expires in: 10 minutes`);
+        logger.info(`━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━`);
+        return;
+      }
       const logger = await this.getLogger();
       const errorMessage = error instanceof Error ? error.message : 'Unknown error';
       logger.error(`Failed to send OTP email: ${errorMessage}`);

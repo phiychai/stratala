@@ -10,6 +10,6 @@ export const createUserValidator = vine.compile(
     firstName: vine.string().trim().minLength(1).maxLength(100).optional(),
     lastName: vine.string().trim().minLength(1).maxLength(100).optional(),
     username: vine.string().trim().minLength(3).maxLength(30).optional(),
-    role: vine.enum(['user', 'admin', 'content_admin', 'editor', 'writer']),
+    role: vine.enum(['user', 'admin', 'content_admin', 'editor', 'publisher']),
   })
 );

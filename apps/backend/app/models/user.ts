@@ -1,7 +1,7 @@
 import { BaseModel, column } from '@adonisjs/lucid/orm';
 import { DateTime } from 'luxon';
 
-import type { UserPreferences } from '@turborepo-saas-starter/shared-types';
+import type { UserPreferences, UserRoleType } from '@turborepo-saas-starter/shared-types';
 
 export default class User extends BaseModel {
   @column({ isPrimary: true })
@@ -32,7 +32,7 @@ export default class User extends BaseModel {
 
   // Authorization
   @column()
-  declare role: 'user' | 'admin' | 'content_admin' | 'editor' | 'writer';
+  declare role: UserRoleType;
 
   // Link to Payload user (for content roles)
   @column()

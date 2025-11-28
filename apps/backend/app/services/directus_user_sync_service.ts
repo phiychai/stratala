@@ -8,7 +8,7 @@ import directusService from '#services/directus_service';
  * Directus User Sync Service
  *
  * Handles synchronization of users between AdonisJS and Directus.
- * Only users with content roles (admin, content_admin, editor, writer) are synced to Directus.
+ * Only users with content roles (admin, content_admin, editor, publisher) are synced to Directus.
  */
 export class DirectusUserSyncService {
   // Directus role IDs (from apps/cms/directus/template/src/roles.json)
@@ -17,7 +17,7 @@ export class DirectusUserSyncService {
     administrator: 'ef049c8b-546b-4bbc-9cd7-b05d77e58b66',
     content_admin: 'd70780bd-f3ed-418b-98c2-f5354fd3fa68',
     editor: '4516009c-8a04-49e4-b4ac-fd4883da6064',
-    writer: '3a4464fb-2189-4710-a164-2503eed88ae7',
+    publisher: '3a4464fb-2189-4710-a164-2503eed88ae7',
   } as const;
 
   // Cache for role IDs fetched from Directus
@@ -34,8 +34,8 @@ export class DirectusUserSyncService {
         return 'Content Admin';
       case 'editor':
         return 'Editor';
-      case 'writer':
-        return 'Writer';
+      case 'publisher':
+        return 'Publisher';
       case 'user':
         return null; // General users don't get Directus accounts
       default:
@@ -78,7 +78,7 @@ export class DirectusUserSyncService {
         Administrator: this.FALLBACK_ROLE_IDS.administrator,
         'Content Admin': this.FALLBACK_ROLE_IDS.content_admin,
         Editor: this.FALLBACK_ROLE_IDS.editor,
-        Writer: this.FALLBACK_ROLE_IDS.writer,
+        Publisher: this.FALLBACK_ROLE_IDS.publisher,
       };
 
       if (fallbackMap[roleName]) {
@@ -97,7 +97,7 @@ export class DirectusUserSyncService {
         Administrator: this.FALLBACK_ROLE_IDS.administrator,
         'Content Admin': this.FALLBACK_ROLE_IDS.content_admin,
         Editor: this.FALLBACK_ROLE_IDS.editor,
-        Writer: this.FALLBACK_ROLE_IDS.writer,
+        Publisher: this.FALLBACK_ROLE_IDS.publisher,
       };
 
       if (fallbackMap[roleName]) {
@@ -125,7 +125,7 @@ export class DirectusUserSyncService {
    * Check if a role requires Directus user
    */
   static requiresDirectusUser(role: string): boolean {
-    return ['admin', 'content_admin', 'editor', 'writer'].includes(role);
+    return ['admin', 'content_admin', 'editor', 'publisher'].includes(role);
   }
 
   /**

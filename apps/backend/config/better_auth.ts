@@ -238,6 +238,7 @@ export const auth = betterAuth({
       /**
        * Send OTP via email
        * Better Auth handles OTP generation, validation, and expiration
+       * In development mode, OTP codes are logged to console instead of sending emails
        */
       async sendVerificationOTP({ email, otp, type }) {
         try {
@@ -247,6 +248,25 @@ export const auth = betterAuth({
             type: type as 'email-verification' | 'sign-in' | 'password-reset',
           });
         } catch (error: unknown) {
+          // In development, log OTP to console as fallback
+          if (env.get('NODE_ENV') === 'development') {
+            const typeLabel =
+              type === 'email-verification'
+                ? 'Email Verification'
+                : type === 'sign-in'
+                  ? 'Sign In'
+                  : 'Password Reset';
+            console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+            console.log(`📧 ${typeLabel} OTP Code (Error Fallback)`);
+            console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+            console.log(`Email: ${email}`);
+            console.log(`OTP Code: ${otp}`);
+            console.log(`Type: ${type}`);
+            console.log(`Expires in: 10 minutes`);
+            console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+            // Don't throw error in development - allow user creation to proceed
+            return;
+          }
           console.error('Failed to send OTP:', error);
           throw new Error('Failed to send verification code. Please try again.');
         }
