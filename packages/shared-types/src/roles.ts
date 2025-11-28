@@ -7,7 +7,7 @@
  * Roles are used across:
  * - AdonisJS backend (canonical source)
  * - Payload CMS (content management)
- * - Directus (legacy content management)
+ * - Payload CMS (content management)
  * - Better Auth (simplified to admin/user)
  */
 
@@ -38,7 +38,7 @@ export type UserRoleType = (typeof UserRole)[keyof typeof UserRole];
 export const USER_ROLES = Object.values(UserRole) as readonly UserRoleType[];
 
 /**
- * Array of content roles (roles that require Payload/Directus user)
+ * Array of content roles (roles that require Payload user)
  * These roles have access to content management systems
  */
 export const CONTENT_ROLES: readonly UserRoleType[] = [
@@ -49,7 +49,7 @@ export const CONTENT_ROLES: readonly UserRoleType[] = [
 ] as const;
 
 /**
- * Check if a role is a content role (requires Payload/Directus user)
+ * Check if a role is a content role (requires Payload user)
  */
 export function isContentRole(role: string): role is UserRoleType {
   return CONTENT_ROLES.includes(role as UserRoleType);

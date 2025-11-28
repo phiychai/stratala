@@ -121,7 +121,6 @@ export default defineNuxtConfig({
                 "'self'",
                 'http://localhost:8055',
                 'http://localhost:3333',
-                process.env.DIRECTUS_URL || '',
                 process.env.NUXT_PUBLIC_API_URL || '',
                 process.env.NUXT_PUBLIC_PAYLOAD_URL || 'http://localhost:3002',
               ],

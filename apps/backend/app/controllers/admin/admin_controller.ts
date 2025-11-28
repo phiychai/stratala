@@ -95,7 +95,7 @@ export default class AdminController {
   /**
    * @createUser
    * @summary Create new user (admin)
-   * @description Creates a new user account in the system. The user is created in Better Auth first, then synced to AdonisJS and Directus (if role requires it). Admin only endpoint.
+   * @description Creates a new user account in the system. The user is created in Better Auth first, then synced to AdonisJS and Payload CMS (if role requires it). Admin only endpoint.
    * @tag Admin
    * @requestBody {object} body - User creation data
    * @requestBody {string} body.email - User's email address (required, must be unique)
@@ -255,7 +255,7 @@ export default class AdminController {
   /**
    * @updateUser
    * @summary Update user (admin)
-   * @description Updates a user's information including name, email, role, and active status. Changes are synced to Better Auth and Directus as needed. Admin only endpoint.
+   * @description Updates a user's information including name, email, role, and active status. Changes are synced to Better Auth and Payload CMS as needed. Admin only endpoint.
    * @tag Admin
    * @paramPath {string} id - User ID (UUID, required)
    * @requestBody {object} body - User update data (all fields optional)

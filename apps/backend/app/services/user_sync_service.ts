@@ -51,8 +51,8 @@ export class UserSyncService {
    * Upsert Adonis User from Better Auth user data
    * Uses database transaction to prevent race conditions
    *
-   * For frontend registrations: role defaults to 'user' (no Directus user created)
-   * For admin-created users: role can be specified (Directus user created if content role)
+   * For frontend registrations: role defaults to 'user' (no Payload user created)
+   * For admin-created users: role can be specified (Payload user created if content role)
    */
   static async syncUser(options: SyncUserOptions): Promise<User | null> {
     const { betterAuthUser, provider, requestPath, clientIp, role } = options;

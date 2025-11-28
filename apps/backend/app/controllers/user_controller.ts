@@ -105,9 +105,9 @@ export default class UserController {
       if (data.email !== undefined && data.email !== user.email) {
         // Note: Email changes should go through Better Auth's email change flow for verification
         // This endpoint allows email updates in Adonis, but Better Auth email should be updated separately
-        // For now, we update Adonis email and sync to Directus
+        // For now, we update Adonis email and sync to Payload CMS
         // Better Auth email should be updated via Better Auth's email change API which includes verification
-        await EmailSyncService.syncEmailToAdonisAndDirectus(user, data.email);
+        await EmailSyncService.syncEmailToAdonisAndPayload(user, data.email);
       }
       if (data.avatarUrl !== undefined) {
         user.avatarUrl = data.avatarUrl;

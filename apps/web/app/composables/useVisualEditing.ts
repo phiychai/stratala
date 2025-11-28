@@ -3,9 +3,8 @@ import type { ApplyOptions } from '~/types/composables';
 /**
  * Visual Editing composable for Payload CMS
  *
- * Note: Payload doesn't have built-in visual editing like Directus.
- * This composable is kept for compatibility but may need custom implementation
- * or integration with Payload's preview mode.
+ * Note: Payload has preview mode for content preview.
+ * This composable may need custom implementation or integration with Payload's preview mode.
  */
 export default function useVisualEditing() {
   // Use useState for state that persists across navigation

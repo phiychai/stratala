@@ -76,7 +76,7 @@ export default defineEventHandler(async (event) => {
       }
     }
 
-    // Note: Payload doesn't have a built-in forms system like Directus
+    // Note: Payload forms system implementation
     // You may need to create a form_submissions collection in Payload
     // or handle form submissions differently
     const payload = {

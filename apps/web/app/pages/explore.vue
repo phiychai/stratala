@@ -11,8 +11,8 @@ const { isVisualEditingEnabled, apply } = useVisualEditing();
 
 const permalink = withoutTrailingSlash(withLeadingSlash(route.path));
 
-// Try to fetch page from Directus, but don't fail if it doesn't exist
-// This allows explore.vue to work as a standalone page or with Directus content
+// Try to fetch page from Payload, but don't fail if it doesn't exist
+// This allows explore.vue to work as a standalone page or with Payload content
 const {
   data: page,
   error,
@@ -81,7 +81,7 @@ onMounted(() => {
   <UDashboardPanel v-if="isAuthenticated" class="pb-[64px]" variant="ghost">
     <Posts :data="postsData" />
   </UDashboardPanel>
-  <!-- Show Directus page content if available, otherwise show posts directly -->
+  <!-- Show Payload page content if available, otherwise show posts directly -->
   <PageBuilder v-else-if="page && pageBlocks.length > 0" :sections="pageBlocks" />
   <div v-else>
     <Posts :data="postsData" />

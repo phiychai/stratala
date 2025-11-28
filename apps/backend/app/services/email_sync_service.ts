@@ -12,7 +12,7 @@ import { PayloadUserSyncService } from '#services/payload_user_sync_service';
  */
 export class EmailSyncService {
   /**
-   * Sync email from Better Auth to Adonis and Directus
+   * Sync email from Better Auth to Adonis and Payload
    * Called after Better Auth email is verified and updated
    */
   static async syncEmailFromBetterAuth(
