@@ -130,10 +130,10 @@ onMounted(async () => {
               </UButton>
             </NuxtLink>
 
-            <NuxtLink to="/admin/content">
+            <NuxtLink to="/publish">
               <UButton variant="outline" block>
                 <Icon name="lucide:file-text" class="mr-2" />
-                Content Management
+                Content Management (Payload CMS)
               </UButton>
             </NuxtLink>
 

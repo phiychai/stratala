@@ -16,17 +16,12 @@ useSeoMeta({
 const route = useRoute();
 const router = useRouter();
 const toast = useToast();
-const { isAuthenticated, resetPassword } = useAuth();
+const { resetPassword } = useAuth();
 
 // Redirect if already authenticated
-onMounted(() => {
-  if (isAuthenticated.value) {
-    router.push('/');
-  }
-});
+useAuthRedirect('/');
 
 const email = (route.query.email as string) || '';
-const otp = ref('');
 const passwordValue = ref('');
 const confirmPassword = ref('');
 const { score, feedback, validatePassword } = usePasswordValidation();
@@ -81,54 +76,28 @@ const schema = z
 
 type Schema = z.output<typeof schema>;
 
-const resetting = ref(false);
-const error = ref('');
+const { submitting: resetting, error, submit: submitForm } = useFormSubmission<Schema>({
+  onSubmit: async (data) => {
+    // Validate password strength before submitting
+    validatePassword(data.password);
+    passwordValue.value = data.password;
 
-async function onSubmit(payload: FormSubmitEvent<Schema>) {
-  // Validate password strength before submitting
-  validatePassword(payload.data.password);
-  passwordValue.value = payload.data.password;
-
-  if (payload.data.password !== payload.data.confirmPassword) {
-    error.value = "Passwords don't match";
-    return;
-  }
-
-  resetting.value = true;
-  error.value = '';
-
-  try {
-    const result = await resetPassword(payload.data.email, payload.data.otp, payload.data.password);
-
-    if (!result.success) {
-      error.value = result.error || 'Password reset failed';
-      toast.add({
-        title: 'Error',
-        description: result.error || 'Password reset failed',
-        color: 'error',
-      });
-      return;
+    if (data.password !== data.confirmPassword) {
+      throw new Error("Passwords don't match");
     }
 
-    toast.add({
-      title: 'Success',
-      description: 'Your password has been reset successfully',
-      color: 'success',
-    });
-
+    return await resetPassword(data.email, data.otp, data.password);
+  },
+  onSuccess: () => {
     // Redirect to login page
     router.push('/login');
-  } catch (err: unknown) {
-    const errorMessage = err instanceof Error ? err.message : 'Password reset failed';
-    error.value = errorMessage;
-    toast.add({
-      title: 'Error',
-      description: errorMessage,
-      color: 'error',
-    });
-  } finally {
-    resetting.value = false;
-  }
+  },
+  successMessage: 'Your password has been reset successfully',
+  errorMessage: 'Password reset failed',
+});
+
+async function onSubmit(payload: FormSubmitEvent<Schema>) {
+  await submitForm(payload.data);
 }
 </script>
 

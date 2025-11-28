@@ -13,14 +13,10 @@ useSeoMeta({
 
 const toast = useToast();
 const router = useRouter();
-const { isAuthenticated, requestPasswordReset } = useAuth();
+const { requestPasswordReset } = useAuth();
 
 // Redirect if already authenticated
-onMounted(() => {
-  if (isAuthenticated.value) {
-    router.push('/');
-  }
-});
+useAuthRedirect('/');
 
 const fields = [
   {
@@ -38,24 +34,11 @@ const schema = z.object({
 
 type Schema = z.output<typeof schema>;
 
-const submitting = ref(false);
 const success = ref(false);
 
-async function onSubmit(payload: FormSubmitEvent<Schema>) {
-  submitting.value = true;
-
-  try {
-    const result = await requestPasswordReset(payload.data.email);
-
-    if (!result.success) {
-      toast.add({
-        title: 'Error',
-        description: result.error || 'Failed to send password reset code',
-        color: 'error',
-      });
-      return;
-    }
-
+const { submitting, submit: submitForm } = useFormSubmission<Schema>({
+  onSubmit: async (data) => await requestPasswordReset(data.email),
+  onSuccess: (data) => {
     success.value = true;
     toast.add({
       title: 'Code Sent',
@@ -67,18 +50,16 @@ async function onSubmit(payload: FormSubmitEvent<Schema>) {
     setTimeout(() => {
       router.push({
         path: '/reset-password',
-        query: { email: payload.data.email },
+        query: { email: data.email },
       });
     }, 2000);
-  } catch (error: unknown) {
-    toast.add({
-      title: 'Error',
-      description: error instanceof Error ? error.message : 'Failed to send password reset code',
-      color: 'error',
-    });
-  } finally {
-    submitting.value = false;
-  }
+  },
+  successMessage: '', // We handle success message manually
+  errorMessage: 'Failed to send password reset code',
+});
+
+async function onSubmit(payload: FormSubmitEvent<Schema>) {
+  await submitForm(payload.data);
 }
 </script>
 

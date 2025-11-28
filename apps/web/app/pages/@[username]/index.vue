@@ -1,54 +1,8 @@
 <script setup lang="ts">
-import type { Space, Post } from '@turborepo-saas-starter/shared-types';
-
 const route = useRoute();
 const username = route.params.username as string;
 
-const { data, error } = await useFetch<{
-  user: {
-    id: number;
-    username: string;
-    firstName: string | null;
-    lastName: string | null;
-    fullName: string;
-    avatarUrl: string | null;
-    bio: string | null;
-    email: string;
-  };
-  spaces: Space[];
-  recentPosts: Post[];
-}>(() => `/api/users/${username}`, {
-  key: `user-profile-${username}`,
-});
-
-if (error.value) {
-  const statusCode = error.value.statusCode || error.value.status || 404;
-  const message = error.value.message || error.value.statusMessage || 'User not found';
-  throw createError({ statusCode, statusMessage: message, fatal: true });
-}
-
-if (!data.value) {
-  throw createError({
-    statusCode: 404,
-    statusMessage: `User "${username}" not found`,
-    fatal: true,
-  });
-}
-
-const user = computed(() => data.value?.user);
-const spaces = computed(() => data.value?.spaces || []);
-const recentPosts = computed(() => data.value?.recentPosts || []);
-
-const displayName = computed(
-  () => user.value?.fullName || user.value?.username || user.value?.email?.split('@')[0] || 'User'
-);
-
-useSeoMeta({
-  title: `${displayName.value} - Profile`,
-  description: user.value?.bio || `View ${displayName.value}'s spaces and articles`,
-  ogTitle: `${displayName.value} - Profile`,
-  ogDescription: user.value?.bio || `View ${displayName.value}'s spaces and articles`,
-});
+const { user, spaces, recentPosts, displayName } = useUserProfile(username);
 </script>
 
 <template>

@@ -71,15 +71,28 @@ export default defineEventHandler(async (event) => {
     }
 
     // Step 3: Get user's spaces
-    const spacesResult = await getItems('spaces', {
-      where: {
-        owner: {
-          equals: payloadUserId,
+    // Note: Spaces collection requires authentication, so this may fail for public requests
+    // We'll handle the error gracefully and return empty spaces array
+    let spacesResult;
+    try {
+      spacesResult = await getItems('spaces', {
+        where: {
+          owner: {
+            equals: payloadUserId,
+          },
         },
-      },
-      sort: 'isDefault,-name',
-      depth: 1,
-    });
+        sort: 'isDefault,-name',
+        depth: 1,
+      });
+    } catch (error: unknown) {
+      // If spaces query fails (e.g., 403 Forbidden due to access control),
+      // return empty spaces array - this is a public endpoint
+      console.warn(
+        `Failed to fetch spaces for user ${payloadUserId}:`,
+        error instanceof Error ? error.message : String(error)
+      );
+      spacesResult = { docs: [], totalDocs: 0, limit: 10, totalPages: 0 };
+    }
 
     // Step 4: Get recent posts across all spaces (limit to 10 most recent)
     const recentPostsResult = await getItems('posts', {

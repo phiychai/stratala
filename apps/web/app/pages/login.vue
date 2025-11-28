@@ -14,16 +14,13 @@ useSeoMeta({
 const toast = useToast();
 const router = useRouter();
 const route = useRoute();
-const { login, isAuthenticated } = useAuth();
+const { login } = useAuth();
 
 // Redirect if already authenticated
-onMounted(() => {
-  if (isAuthenticated.value) {
-    router.push('/');
-    return;
-  }
+useAuthRedirect('/');
 
-  // Show success message if coming from email verification
+// Show success message if coming from email verification
+onMounted(() => {
   if (route.query.verified === 'true') {
     toast.add({
       title: 'Email Verified',
@@ -56,22 +53,7 @@ const fields = [
   },
 ];
 
-const providers = [
-  {
-    label: 'Google',
-    icon: 'i-simple-icons-google',
-    onClick: () => {
-      toast.add({ title: 'Google', description: 'Login with Google - Coming soon' });
-    },
-  },
-  {
-    label: 'GitHub',
-    icon: 'i-simple-icons-github',
-    onClick: () => {
-      toast.add({ title: 'GitHub', description: 'Login with GitHub - Coming soon' });
-    },
-  },
-];
+const { providers } = useOAuthProviders();
 
 const schema = z.object({
   email: z.string().email('Invalid email'),
@@ -80,25 +62,21 @@ const schema = z.object({
 
 type Schema = z.output<typeof schema>;
 
-async function onSubmit(payload: FormSubmitEvent<Schema>) {
-  const result = await login(payload.data.email, payload.data.password);
-
-  if (result.success) {
-    toast.add({
-      title: 'Success',
-      description: 'Login successful!',
-      color: 'success',
-    });
+const { submit: submitForm } = useFormSubmission({
+  onSubmit: async (data) => {
+    return await login(data.email, data.password);
+  },
+  onSuccess: () => {
     // Redirect to / - it will show dashboard for authenticated users
     // or /admin for admin users
     router.push('/');
-  } else {
-    toast.add({
-      title: 'Error',
-      description: result.error || 'Login failed',
-      color: 'error',
-    });
-  }
+  },
+  successMessage: 'Login successful!',
+  errorMessage: 'Login failed',
+});
+
+async function onSubmit(payload: FormSubmitEvent<Schema>) {
+  await submitForm(payload.data);
 }
 </script>
 

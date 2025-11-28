@@ -14,7 +14,7 @@ export const useAuthStore = defineStore('auth', {
     isAuthenticated: (state) => !!state.user && state.user.isActive,
     currentUser: (state) => state.user,
     isLoading: (state) => state.loading,
-    isAdmin: (state) => state.user?.role === 'admin',
+    isAdmin: (state) => state.user?.role === UserRole.ADMIN,
     // Auth metadata getters
     authProvider: (state) => state.user?.auth?.provider || null,
     isEmailVerified: (state) => state.user?.auth?.emailVerified || false,

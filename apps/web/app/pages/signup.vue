@@ -16,14 +16,10 @@ useSeoMeta({
 
 const toast = useToast();
 const router = useRouter();
-const { register, isAuthenticated } = useAuth();
+const { register } = useAuth();
 
 // Redirect if already authenticated
-onMounted(() => {
-  if (isAuthenticated.value) {
-    router.push('/');
-  }
-});
+useAuthRedirect('/');
 
 const username = ref('');
 const passwordValue = ref('');
@@ -55,22 +51,7 @@ const fields = [
   },
 ];
 
-const providers = [
-  {
-    label: 'Google',
-    icon: 'i-simple-icons-google',
-    onClick: () => {
-      toast.add({ title: 'Google', description: 'Sign up with Google - Coming soon' });
-    },
-  },
-  {
-    label: 'GitHub',
-    icon: 'i-simple-icons-github',
-    onClick: () => {
-      toast.add({ title: 'GitHub', description: 'Sign up with GitHub - Coming soon' });
-    },
-  },
-];
+const { providers } = useOAuthProviders();
 
 const schema = z.object({
   name: z.string().min(1, 'Name is required'),
@@ -80,50 +61,61 @@ const schema = z.object({
 
 type Schema = z.output<typeof schema>;
 
-async function onSubmit(payload: FormSubmitEvent<Schema>) {
-  // Validate password strength before submitting
-  validatePassword(payload.data.password);
-  passwordValue.value = payload.data.password;
+const { submit: submitForm } = useFormSubmission({
+  onSubmit: async (data) => {
+    // Validate password strength before submitting
+    validatePassword(data.password);
+    passwordValue.value = data.password;
 
-  const result = await register({
-    email: payload.data.email,
-    password: payload.data.password,
-    fullName: payload.data.name,
-    username: username.value.trim() || undefined,
-  });
-
-  if (result.success) {
-    // Better Auth automatically sends verification OTP when sendOnSignUp: true
-    // No need to manually send it here
-    toast.add({
-      title: 'Account Created',
-      description: 'Please check your email for a verification code',
-      color: 'primary',
+    const result = await register({
+      email: data.email,
+      password: data.password,
+      fullName: data.name,
+      username: username.value.trim() || undefined,
     });
 
-    // Redirect to verification page
-    router.push({
-      path: '/verify-email',
-      query: { email: payload.data.email },
-    });
-  } else {
+    if (result.success) {
+      // Better Auth automatically sends verification OTP when sendOnSignUp: true
+      // No need to manually send it here
+      toast.add({
+        title: 'Account Created',
+        description: 'Please check your email for a verification code',
+        color: 'primary',
+      });
+
+      // Redirect to verification page
+      router.push({
+        path: '/verify-email',
+        query: { email: data.email },
+      });
+    }
+
+    return result;
+  },
+  onError: (errorMessage) => {
     // Handle Better Auth errors
-    let errorMessage = result.error || 'Registration failed';
+    let message = errorMessage;
 
     // Check for password-related errors
-    if (result.error?.includes('PASSWORD_COMPROMISED') || result.error?.includes('data breach')) {
-      errorMessage =
+    if (errorMessage.includes('PASSWORD_COMPROMISED') || errorMessage.includes('data breach')) {
+      message =
         'This password has been exposed in a data breach. Please choose a different password.';
-    } else if (result.error?.includes('too weak') || result.error?.includes('strength')) {
-      errorMessage = result.error || 'Password is too weak. Please use a stronger password.';
+    } else if (errorMessage.includes('too weak') || errorMessage.includes('strength')) {
+      message = errorMessage || 'Password is too weak. Please use a stronger password.';
     }
 
     toast.add({
       title: 'Error',
-      description: errorMessage,
+      description: message,
       color: 'error',
     });
-  }
+  },
+  successMessage: '', // We handle success message manually
+  errorMessage: 'Registration failed',
+});
+
+async function onSubmit(payload: FormSubmitEvent<Schema>) {
+  await submitForm(payload.data);
 }
 </script>
 

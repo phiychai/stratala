@@ -26,6 +26,17 @@ export type { Invoice, Plan, Subscription } from './billing';
 // Re-export user types
 export type { UserProfile } from './user';
 
+// Re-export role types and constants
+export {
+  UserRole,
+  USER_ROLES,
+  CONTENT_ROLES,
+  ROLE_LABELS,
+  ROLE_DESCRIPTIONS,
+  isContentRole,
+  type UserRoleType,
+} from './roles';
+
 // Re-export preferences types
 export type {
   AuthSyncErrorPayload,
