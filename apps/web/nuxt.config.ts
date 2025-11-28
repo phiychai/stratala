@@ -44,6 +44,12 @@ export default defineNuxtConfig({
     '/api/pages/**': { cors: true, headers: { 'Cache-Control': 's-maxage=300' } },
     '/api/posts/**': { cors: true, headers: { 'Cache-Control': 's-maxage=60' } },
     '/api/posts/categories': { cors: true, headers: { 'Cache-Control': 's-maxage=600' } },
+    // Tenant-aware Payload CMS admin proxy
+    '/publish/**': {
+      cors: true,
+      headers: { 'Cache-Control': 'no-cache, no-store, must-revalidate' },
+      prerender: false,
+    },
   },
 
   compatibilityDate: '2024-07-11',
@@ -117,6 +123,12 @@ export default defineNuxtConfig({
                 'http://localhost:3333',
                 process.env.DIRECTUS_URL || '',
                 process.env.NUXT_PUBLIC_API_URL || '',
+                process.env.NUXT_PUBLIC_PAYLOAD_URL || 'http://localhost:3002',
+              ],
+              'frame-ancestors': [
+                "'self'",
+                'http://localhost:8055',
+                process.env.NUXT_PUBLIC_PAYLOAD_URL || 'http://localhost:3002',
               ],
               'frame-ancestors': ["'self'", 'http://localhost:8055'],
             }

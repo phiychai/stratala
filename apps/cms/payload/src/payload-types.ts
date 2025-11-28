@@ -67,6 +67,7 @@ export interface Config {
   };
   blocks: {};
   collections: {
+    tenants: Tenant;
     users: User;
     media: Media;
     spaces: Space;
@@ -86,6 +87,7 @@ export interface Config {
   };
   collectionsJoins: {};
   collectionsSelect: {
+    tenants: TenantsSelect<false> | TenantsSelect<true>;
     users: UsersSelect<false> | UsersSelect<true>;
     media: MediaSelect<false> | MediaSelect<true>;
     spaces: SpacesSelect<false> | SpacesSelect<true>;
@@ -106,6 +108,7 @@ export interface Config {
   db: {
     defaultIDType: number;
   };
+  fallbackLocale: null;
   globals: {
     'site-settings': SiteSetting;
     navigation: Navigation;
@@ -143,13 +146,40 @@ export interface UserAuthOperations {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "tenants".
+ */
+export interface Tenant {
+  id: number;
+  /**
+   * Display name for the tenant/site
+   */
+  name: string;
+  /**
+   * URL-friendly identifier for the tenant
+   */
+  slug: string;
+  /**
+   * Custom domain for this tenant
+   */
+  domain: string;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "users".
  */
 export interface User {
   id: number;
-  role: 'admin' | 'content_admin' | 'editor' | 'writer' | 'user';
+  role: 'admin' | 'content_admin' | 'editor' | 'publisher' | 'user';
   firstName?: string | null;
   lastName?: string | null;
+  tenants?:
+    | {
+        tenant: number | Tenant;
+        id?: string | null;
+      }[]
+    | null;
   updatedAt: string;
   createdAt: string;
   email: string;
@@ -193,6 +223,7 @@ export interface Media {
  */
 export interface Space {
   id: number;
+  tenant?: (number | null) | Tenant;
   /**
    * URL-friendly identifier (unique per owner)
    */
@@ -206,7 +237,7 @@ export interface Space {
    */
   description?: string | null;
   /**
-   * User who owns this space
+   * User who owns this space (synced with tenant from multi-tenant plugin)
    */
   owner: number | User;
   /**
@@ -222,6 +253,7 @@ export interface Space {
  */
 export interface Post {
   id: number;
+  tenant?: (number | null) | Tenant;
   /**
    * Title of the blog post
    */
@@ -305,6 +337,7 @@ export interface Post {
  */
 export interface Category {
   id: number;
+  tenant?: (number | null) | Tenant;
   /**
    * Category title
    */
@@ -326,6 +359,7 @@ export interface Category {
  */
 export interface Tag {
   id: number;
+  tenant?: (number | null) | Tenant;
   /**
    * Tag name
    */
@@ -347,6 +381,7 @@ export interface Tag {
  */
 export interface Page {
   id: number;
+  tenant?: (number | null) | Tenant;
   /**
    * The title of this page
    */
@@ -496,6 +531,7 @@ export interface Page {
  */
 export interface Form {
   id: number;
+  tenant?: (number | null) | Tenant;
   /**
    * Form name (for internal reference).
    */
@@ -547,6 +583,7 @@ export interface Form {
  */
 export interface FormField {
   id: number;
+  tenant?: (number | null) | Tenant;
   /**
    * Unique field identifier, not shown to users (lowercase, hyphenated)
    */
@@ -628,6 +665,7 @@ export interface Redirect {
  */
 export interface FormSubmission {
   id: number;
+  tenant?: (number | null) | Tenant;
   form: number | Form;
   values?: (number | FormSubmissionValue)[] | null;
   ip?: string | null;
@@ -641,6 +679,7 @@ export interface FormSubmission {
  */
 export interface FormSubmissionValue {
   id: number;
+  tenant?: (number | null) | Tenant;
   submission: number | FormSubmission;
   field: number | FormField;
   value: string;
@@ -671,6 +710,10 @@ export interface PayloadKv {
 export interface PayloadLockedDocument {
   id: number;
   document?:
+    | ({
+        relationTo: 'tenants';
+        value: number | Tenant;
+      } | null)
     | ({
         relationTo: 'users';
         value: number | User;
@@ -763,12 +806,29 @@ export interface PayloadMigration {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "tenants_select".
+ */
+export interface TenantsSelect<T extends boolean = true> {
+  name?: T;
+  slug?: T;
+  domain?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "users_select".
  */
 export interface UsersSelect<T extends boolean = true> {
   role?: T;
   firstName?: T;
   lastName?: T;
+  tenants?:
+    | T
+    | {
+        tenant?: T;
+        id?: T;
+      };
   updatedAt?: T;
   createdAt?: T;
   email?: T;
@@ -809,6 +869,7 @@ export interface MediaSelect<T extends boolean = true> {
  * via the `definition` "spaces_select".
  */
 export interface SpacesSelect<T extends boolean = true> {
+  tenant?: T;
   slug?: T;
   name?: T;
   description?: T;
@@ -822,6 +883,7 @@ export interface SpacesSelect<T extends boolean = true> {
  * via the `definition` "posts_select".
  */
 export interface PostsSelect<T extends boolean = true> {
+  tenant?: T;
   title?: T;
   slug?: T;
   description?: T;
@@ -850,6 +912,7 @@ export interface PostsSelect<T extends boolean = true> {
  * via the `definition` "pages_select".
  */
 export interface PagesSelect<T extends boolean = true> {
+  tenant?: T;
   title?: T;
   permalink?: T;
   status?: T;
@@ -970,6 +1033,7 @@ export interface PagesSelect<T extends boolean = true> {
  * via the `definition` "categories_select".
  */
 export interface CategoriesSelect<T extends boolean = true> {
+  tenant?: T;
   title?: T;
   slug?: T;
   description?: T;
@@ -981,6 +1045,7 @@ export interface CategoriesSelect<T extends boolean = true> {
  * via the `definition` "tags_select".
  */
 export interface TagsSelect<T extends boolean = true> {
+  tenant?: T;
   name?: T;
   slug?: T;
   color?: T;
@@ -1004,6 +1069,7 @@ export interface RedirectsSelect<T extends boolean = true> {
  * via the `definition` "forms_select".
  */
 export interface FormsSelect<T extends boolean = true> {
+  tenant?: T;
   title?: T;
   isActive?: T;
   fields?: T;
@@ -1033,6 +1099,7 @@ export interface FormsSelect<T extends boolean = true> {
  * via the `definition` "form-fields_select".
  */
 export interface FormFieldsSelect<T extends boolean = true> {
+  tenant?: T;
   name?: T;
   label?: T;
   type?: T;
@@ -1058,6 +1125,7 @@ export interface FormFieldsSelect<T extends boolean = true> {
  * via the `definition` "form-submissions_select".
  */
 export interface FormSubmissionsSelect<T extends boolean = true> {
+  tenant?: T;
   form?: T;
   values?: T;
   ip?: T;
@@ -1070,6 +1138,7 @@ export interface FormSubmissionsSelect<T extends boolean = true> {
  * via the `definition` "form-submission-values_select".
  */
 export interface FormSubmissionValuesSelect<T extends boolean = true> {
+  tenant?: T;
   submission?: T;
   field?: T;
   value?: T;

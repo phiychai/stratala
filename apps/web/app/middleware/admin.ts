@@ -1,3 +1,5 @@
+import { UserRole } from '~/types/enums';
+
 /**
  * Admin Middleware
  *
@@ -17,7 +19,7 @@ export default defineNuxtRouteMiddleware((to, from) => {
   }
 
   // Check if user has admin role
-  if (authStore.user?.role !== 'admin') {
+  if (authStore.user?.role !== UserRole.ADMIN) {
     // Not an admin - redirect to regular dashboard
     return navigateTo('/dashboard');
   }
