@@ -2,6 +2,7 @@
 import * as z from 'zod';
 import type { FormSubmitEvent } from '@nuxt/ui';
 import type { DashboardUser } from '~/types';
+import { UserRole, UserStatus, getRoleOptions } from '~/types/enums';
 
 const props = defineProps<{
   user: DashboardUser | null;
@@ -14,7 +15,7 @@ const emit = defineEmits<{
 const schema = z.object({
   firstName: z.string().min(1, 'First name is required'),
   lastName: z.string().min(1, 'Last name is required'),
-  role: z.enum(['user', 'admin']),
+  role: z.enum([UserRole.USER, UserRole.ADMIN]),
   isActive: z.boolean(),
 });
 
@@ -27,7 +28,7 @@ type Schema = z.output<typeof schema>;
 const state = reactive<Partial<Schema>>({
   firstName: undefined,
   lastName: undefined,
-  role: 'user',
+  role: UserRole.USER,
   isActive: true,
 });
 
@@ -41,7 +42,9 @@ watch(
       state.firstName = nameParts[0] || '';
       state.lastName = nameParts.slice(1).join(' ') || '';
       state.role =
-        'role' in user && (user.role === 'user' || user.role === 'admin') ? user.role : 'user';
+        'role' in user && (user.role === UserRole.USER || user.role === UserRole.ADMIN)
+          ? user.role
+          : UserRole.USER;
       state.isActive =
         'isActive' in user && typeof user.isActive === 'boolean' ? user.isActive : true;
 
@@ -83,7 +86,7 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
       id: props.user.id,
       name: `${event.data.firstName} ${event.data.lastName}`,
       email: props.user.email,
-      status: event.data.isActive ? 'subscribed' : 'unsubscribed',
+      status: event.data.isActive ? UserStatus.SUBSCRIBED : UserStatus.UNSUBSCRIBED,
       location: props.user.location,
       avatar: props.user.avatar,
       role: props.user.role,
@@ -112,7 +115,7 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
 function reset() {
   state.firstName = undefined;
   state.lastName = undefined;
-  state.role = 'user';
+  state.role = UserRole.USER;
   state.isActive = true;
 }
 
@@ -147,10 +150,8 @@ watch(open, (isOpen) => {
         <UFormField label="Role" name="role">
           <USelect
             v-model="state.role"
-            :options="[
-              { label: 'User', value: 'user' },
-              { label: 'Admin', value: 'admin' },
-            ]"
+            :items="getRoleOptions(false)"
+            value-key="value"
             class="w-full"
           />
         </UFormField>

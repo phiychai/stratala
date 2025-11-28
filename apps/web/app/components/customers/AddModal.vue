@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import * as z from 'zod';
 import type { FormSubmitEvent } from '@nuxt/ui';
+import { UserRole, USER_ROLES, getRoleOptions } from '~/types/enums';
 
 const emit = defineEmits<{
   created: [];
@@ -11,7 +12,7 @@ const schema = z.object({
   lastName: z.string().min(1, 'Last name is required'),
   email: z.string().email('Invalid email'),
   password: z.string().min(8, 'Password must be at least 8 characters'),
-  role: z.enum(['user', 'admin', 'content_admin', 'editor', 'writer']),
+  role: z.enum(USER_ROLES as [string, ...string[]]),
 });
 
 const open = ref(false);
@@ -25,7 +26,7 @@ const state = reactive<Partial<Schema>>({
   lastName: undefined,
   email: undefined,
   password: undefined,
-  role: 'user',
+  role: UserRole.USER,
 });
 
 async function onSubmit(event: FormSubmitEvent<Schema>) {
@@ -54,7 +55,7 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
     state.lastName = undefined;
     state.email = undefined;
     state.password = undefined;
-    state.role = 'user';
+    state.role = UserRole.USER;
 
     // Emit event to refresh table
     emit('created');
@@ -129,13 +130,8 @@ watch(open, (isOpen) => {
           <UFormField label="Role" name="role">
             <USelect
               v-model="state.role"
-              :options="[
-                { label: 'User', value: 'user' },
-                { label: 'Admin', value: 'admin' },
-                { label: 'Content Admin', value: 'content_admin' },
-                { label: 'Editor', value: 'editor' },
-                { label: 'Writer', value: 'writer' },
-              ]"
+              :items="getRoleOptions(true)"
+              value-key="value"
               class="w-full"
             />
           </UFormField>

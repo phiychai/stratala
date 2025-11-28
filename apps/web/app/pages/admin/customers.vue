@@ -5,6 +5,13 @@ import type { Row } from '@tanstack/table-core';
 import type { DashboardUser } from '~/types';
 import CustomersEditModal from '~/components/customers/EditModal.vue';
 import CustomersAddModal from '~/components/customers/AddModal.vue';
+import {
+  UserStatus,
+  USER_STATUS_COLORS,
+  getUserStatusOptions,
+  UserRole,
+  type UserStatusType,
+} from '~/types/enums';
 
 definePageMeta({
   layout: 'admin',
@@ -16,6 +23,7 @@ const UButton = resolveComponent('UButton');
 const UBadge = resolveComponent('UBadge');
 const UDropdownMenu = resolveComponent('UDropdownMenu');
 const UCheckbox = resolveComponent('UCheckbox');
+const UIcon = resolveComponent('UIcon');
 
 const toast = useToast();
 const table = useTemplateRef('table');
@@ -143,7 +151,9 @@ const data = computed<DashboardUser[]>(() => {
     email?: string | null;
     avatarUrl?: string | null;
     isActive?: boolean;
-    role?: 'user' | 'admin';
+    role?: string;
+    betterAuthUserId?: string | null;
+    payloadUserId?: string | null;
   };
 
   let usersArray: BackendUser[] = [];
@@ -166,11 +176,11 @@ const data = computed<DashboardUser[]>(() => {
   }
 
   return usersArray.map((user: BackendUser) => {
+    // Compute display name using the same logic as useUserDisplayName
     const fullName =
-      [user.firstName, user.lastName].filter(Boolean).join(' ') ||
-      user.username ||
-      user.email?.split('@')[0] ||
-      'User';
+      user.firstName && user.lastName
+        ? `${user.firstName} ${user.lastName}`
+        : user.firstName || user.lastName || user.username || user.email?.split('@')[0] || 'User';
 
     return {
       id: user.id,
@@ -180,11 +190,18 @@ const data = computed<DashboardUser[]>(() => {
         src: user.avatarUrl || `https://i.pravatar.cc/128?u=${user.id}`,
         alt: fullName,
       },
-      status: user.isActive ? 'subscribed' : 'unsubscribed',
+      status: user.isActive ? UserStatus.SUBSCRIBED : UserStatus.UNSUBSCRIBED,
       location: '—', // Not available in user model
-      role: user.role || 'user',
+      role: user.role || UserRole.USER,
       isActive: user.isActive !== false,
-    } as DashboardUser & { role: string; isActive: boolean };
+      betterAuthUserId: user.betterAuthUserId || null,
+      payloadUserId: user.payloadUserId || null,
+    } as DashboardUser & {
+      role: string;
+      isActive: boolean;
+      betterAuthUserId: string | null;
+      payloadUserId: string | null;
+    };
   });
 });
 
@@ -363,10 +380,11 @@ const columns: TableColumn<DashboardUser>[] = [
     accessorKey: 'role',
     header: 'Role',
     cell: ({ row }) => {
-      const role = (
-        'role' in row.original && typeof row.original.role === 'string' ? row.original.role : 'user'
-      ) as 'user' | 'admin';
-      const color = role === 'admin' ? 'primary' : 'neutral';
+      const role =
+        'role' in row.original && typeof row.original.role === 'string'
+          ? row.original.role
+          : UserRole.USER;
+      const color = role === UserRole.ADMIN ? 'primary' : 'neutral';
 
       return h(UBadge, { class: 'capitalize', variant: 'subtle', color }, () => role);
     },
@@ -376,19 +394,68 @@ const columns: TableColumn<DashboardUser>[] = [
     header: 'Status',
     filterFn: 'equals',
     cell: ({ row }) => {
-      const statusColors: Record<DashboardUser['status'], 'success' | 'error' | 'warning'> = {
-        subscribed: 'success',
-        unsubscribed: 'error',
-        bounced: 'warning',
+      const status = row.original.status as UserStatusType;
+      const color = USER_STATUS_COLORS[status] || 'error';
+
+      return h(UBadge, { class: 'capitalize', variant: 'subtle', color }, () => status);
+    },
+  },
+  {
+    id: 'syncStatus',
+    header: 'Sync Status',
+    cell: ({ row }) => {
+      const user = row.original as DashboardUser & {
+        betterAuthUserId?: string | null;
+        payloadUserId?: string | null;
       };
+      const adonisSynced = true; // Always true since we're viewing Adonis users
+      const betterAuthSynced = !!user.betterAuthUserId;
+      const payloadSynced = !!user.payloadUserId;
 
-      const color = statusColors[row.original.status] || 'error';
-
-      return h(
-        UBadge,
-        { class: 'capitalize', variant: 'subtle', color },
-        () => row.original.status
-      );
+      return h('div', { class: 'flex items-center gap-1.5 flex-wrap' }, [
+        h(
+          UBadge,
+          {
+            variant: 'subtle',
+            color: adonisSynced ? 'success' : 'error',
+            class: 'text-xs',
+          },
+          () =>
+            h('span', { class: 'flex items-center gap-1' }, [
+              h(UIcon, { name: adonisSynced ? 'i-lucide-check' : 'i-lucide-x', class: 'size-3' }),
+              'Adonis',
+            ])
+        ),
+        h(
+          UBadge,
+          {
+            variant: 'subtle',
+            color: betterAuthSynced ? 'success' : 'error',
+            class: 'text-xs',
+          },
+          () =>
+            h('span', { class: 'flex items-center gap-1' }, [
+              h(UIcon, {
+                name: betterAuthSynced ? 'i-lucide-check' : 'i-lucide-x',
+                class: 'size-3',
+              }),
+              'Better Auth',
+            ])
+        ),
+        h(
+          UBadge,
+          {
+            variant: 'subtle',
+            color: payloadSynced ? 'success' : 'error',
+            class: 'text-xs',
+          },
+          () =>
+            h('span', { class: 'flex items-center gap-1' }, [
+              h(UIcon, { name: payloadSynced ? 'i-lucide-check' : 'i-lucide-x', class: 'size-3' }),
+              'CMS',
+            ])
+        ),
+      ]);
     },
   },
   {
@@ -489,11 +556,7 @@ watch(
 
           <USelect
             v-model="statusFilter"
-            :options="[
-              { label: 'All', value: 'all' },
-              { label: 'Active', value: 'subscribed' },
-              { label: 'Inactive', value: 'unsubscribed' },
-            ]"
+            :options="getUserStatusOptions()"
             :ui="{
               trailingIcon: 'group-data-[state=open]:rotate-180 transition-transform duration-200',
             }"
