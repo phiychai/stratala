@@ -3,12 +3,13 @@ import logger from '@adonisjs/core/services/logger';
 import type User from '#models/user';
 
 import payloadService from '#services/payload_service';
+import payloadRestService from '#services/payload_rest_service';
 
 /**
  * Payload User Sync Service
  *
  * Handles synchronization of users between AdonisJS and Payload CMS.
- * Only users with content roles (admin, content_admin, editor, writer) are synced to Payload.
+ * Only users with content roles (admin, content_admin, editor, publisher) are synced to Payload.
  *
  * See docs/2.authentication/payload-authentication.md for authentication strategy details.
  */
@@ -25,8 +26,8 @@ export class PayloadUserSyncService {
         return 'content_admin';
       case 'editor':
         return 'editor';
-      case 'writer':
-        return 'writer';
+      case 'publisher':
+        return 'publisher';
       case 'user':
         return null; // General users don't get Payload accounts
       default:
@@ -39,7 +40,7 @@ export class PayloadUserSyncService {
    * Check if a role requires Payload user
    */
   static requiresPayloadUser(role: string): boolean {
-    return ['admin', 'content_admin', 'editor', 'writer'].includes(role);
+    return ['admin', 'content_admin', 'editor', 'publisher'].includes(role);
   }
 
   /**
@@ -71,10 +72,41 @@ export class PayloadUserSyncService {
   }
 
   /**
+   * Verify if a Payload user exists by ID
+   */
+  static async verifyPayloadUserExists(payloadUserId: string): Promise<boolean> {
+    try {
+      const payload = await payloadService.getPayload();
+
+      await payload.findByID({
+        collection: 'users',
+        id: payloadUserId,
+      });
+
+      return true;
+    } catch (error) {
+      // User doesn't exist or error occurred
+      logger.debug(`Payload user ${payloadUserId} not found or error: ${error}`);
+      return false;
+    }
+  }
+
+  /**
    * Get Payload user ID from Adonis user
    */
   static async getPayloadUserId(user: User): Promise<string | null> {
     if (user.payloadUserId) {
+      // Verify the user still exists in Payload
+      const exists = await this.verifyPayloadUserExists(user.payloadUserId);
+      if (!exists) {
+        // User ID is stale, clear it
+        logger.warn(
+          `Payload user ${user.payloadUserId} not found for Adonis user ${user.id}, clearing stale ID`
+        );
+        user.payloadUserId = null;
+        await user.save();
+        return null;
+      }
       return user.payloadUserId;
     }
 
@@ -117,70 +149,129 @@ export class PayloadUserSyncService {
     }
 
     try {
-      const payload = await payloadService.getPayload();
+      // Try Local API first, fallback to REST API if it fails
+      let payloadUserId: string | null = null;
+      let useRestApi = false;
 
-      // Check if Payload user already exists
-      let payloadUserId = user.payloadUserId || (await this.findPayloadUserByEmail(user.email));
+      try {
+        const payload = await payloadService.getPayload();
 
-      if (payloadUserId) {
-        // Update existing Payload user
-        const updateData: Record<string, any> = {
-          email: user.email,
-          role: payloadRole,
-          firstName: user.firstName || undefined,
-          lastName: user.lastName || undefined,
-          adonisUserId: user.id.toString(),
-        };
+        // Check if Payload user already exists
+        payloadUserId = user.payloadUserId || (await this.findPayloadUserByEmail(user.email));
 
-        // Update password if provided (Option A: Password Sync)
-        if (password) {
-          updateData.password = password;
+        if (payloadUserId) {
+          // Update existing Payload user
+          const updateData: Record<string, any> = {
+            email: user.email,
+            role: payloadRole,
+            firstName: user.firstName || undefined,
+            lastName: user.lastName || undefined,
+            adonisUserId: user.id.toString(),
+          };
+
+          // Update password if provided (Option A: Password Sync)
+          if (password) {
+            updateData.password = password;
+          }
+
+          await payload.update({
+            collection: 'users',
+            id: payloadUserId,
+            data: updateData,
+          });
+
+          logger.info(`Updated Payload user ${payloadUserId} for Adonis user ${user.id}`);
+        } else {
+          // Create new Payload user
+          const userData: Record<string, any> = {
+            email: user.email,
+            role: payloadRole,
+            firstName: user.firstName || undefined,
+            lastName: user.lastName || undefined,
+            adonisUserId: user.id.toString(),
+          };
+
+          // Set password if provided (Option A: Password Sync)
+          // If no password, user will need to set it separately (Option B: Passwordless)
+          if (password) {
+            userData.password = password;
+          }
+
+          const createdUser = await payload.create({
+            collection: 'users',
+            data: userData,
+          });
+
+          payloadUserId = createdUser.id as string;
+          if (!payloadUserId) {
+            throw new Error('Payload user created but no ID returned');
+          }
+
+          logger.info(`Created Payload user ${payloadUserId} for Adonis user ${user.id}`);
+
+          // Create default space for Publisher role
+          if (role === 'publisher') {
+            await this.createDefaultSpaceForPublisher(payloadUserId, user);
+          }
         }
+      } catch (localApiError) {
+        // Local API failed, fallback to REST API
+        logger.warn('Payload Local API failed, falling back to REST API:', localApiError);
+        useRestApi = true;
 
-        await payload.update({
-          collection: 'users',
-          id: payloadUserId,
-          data: updateData,
-        });
+        // Find user via REST API
+        const restUser = await payloadRestService.findUserByEmail(user.email);
+        payloadUserId = restUser?.id || null;
 
-        logger.info(`Updated Payload user ${payloadUserId} for Adonis user ${user.id}`);
-      } else {
-        // Create new Payload user
-        const userData: Record<string, any> = {
-          email: user.email,
-          role: payloadRole,
-          firstName: user.firstName || undefined,
-          lastName: user.lastName || undefined,
-          adonisUserId: user.id.toString(),
-        };
+        if (payloadUserId) {
+          // Update existing user
+          await payloadRestService.updateUser(payloadUserId, {
+            email: user.email,
+            role: payloadRole,
+            firstName: user.firstName,
+            lastName: user.lastName,
+            adonisUserId: user.id.toString(),
+            ...(password && { password }),
+          });
+          logger.info(
+            `Updated Payload user ${payloadUserId} via REST API for Adonis user ${user.id}`
+          );
+        } else {
+          // Create new user
+          if (!password) {
+            logger.warn('Password required for REST API user creation, skipping Payload sync');
+            return { payloadUserId: null };
+          }
 
-        // Set password if provided (Option A: Password Sync)
-        // If no password, user will need to set it separately (Option B: Passwordless)
-        if (password) {
-          userData.password = password;
-        }
+          const createdUser = await payloadRestService.createUser({
+            email: user.email,
+            password,
+            role: payloadRole,
+            firstName: user.firstName,
+            lastName: user.lastName,
+            adonisUserId: user.id.toString(),
+          });
 
-        const createdUser = await payload.create({
-          collection: 'users',
-          data: userData,
-        });
+          payloadUserId = createdUser.id;
+          logger.info(
+            `Created Payload user ${payloadUserId} via REST API for Adonis user ${user.id}`
+          );
 
-        payloadUserId = createdUser.id as string;
-        if (!payloadUserId) {
-          throw new Error('Payload user created but no ID returned');
-        }
-
-        logger.info(`Created Payload user ${payloadUserId} for Adonis user ${user.id}`);
-
-        // Create default space for Writer role
-        if (role === 'writer') {
-          await this.createDefaultSpaceForWriter(payloadUserId, user);
+          // Create default space for Publisher role (via REST API if needed)
+          if (role === 'publisher') {
+            // Note: Space creation via REST API would need to be implemented separately
+            logger.info(
+              `Note: Default space creation for publisher requires Local API or separate REST call`
+            );
+          }
         }
       }
 
       // Update Adonis user with Payload user ID
-      user.payloadUserId = payloadUserId;
-      await user.save();
+      if (payloadUserId) {
+        user.payloadUserId = payloadUserId;
+        await user.save();
+      }
 
       return { payloadUserId };
     } catch (error) {
@@ -190,9 +281,9 @@ export class PayloadUserSyncService {
   }
 
   /**
-   * Create default space for Writer role
+   * Create default space for Publisher role
    */
-  static async createDefaultSpaceForWriter(
+  static async createDefaultSpaceForPublisher(
     payloadUserId: string,
     adonisUser: User
   ): Promise<void> {
@@ -219,9 +310,7 @@ export class PayloadUserSyncService {
       }
 
       // Create default "articles" space
-      const spaceName = adonisUser.firstName
-        ? `${adonisUser.firstName}'s Articles`
-        : 'Articles';
+      const spaceName = adonisUser.firstName ? `${adonisUser.firstName}'s Articles` : 'Articles';
 
       await payload.create({
         collection: 'spaces',
@@ -267,10 +356,7 @@ export class PayloadUserSyncService {
   /**
    * Update Payload user role
    */
-  static async updatePayloadUserRole(
-    payloadUserId: string,
-    adonisRole: string
-  ): Promise<boolean> {
+  static async updatePayloadUserRole(payloadUserId: string, adonisRole: string): Promise<boolean> {
     const payloadRole = this.getPayloadRole(adonisRole);
     if (!payloadRole) {
       logger.warn(`Cannot update Payload user role: invalid role ${adonisRole}`);
@@ -296,4 +382,3 @@ export class PayloadUserSyncService {
     }
   }
 }
-

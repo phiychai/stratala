@@ -1,6 +1,9 @@
 import { getPayload } from 'payload';
 import type { Payload } from 'payload';
 import type User from '#models/user';
+import { fileURLToPath } from 'url';
+import { dirname, join } from 'path';
+import { pathToFileURL } from 'url';
 
 import logger from '@adonisjs/core/services/logger';
 
@@ -38,8 +41,35 @@ class PayloadService {
     this.initializationPromise = (async () => {
       try {
         // Dynamic import of Payload config from monorepo path
-        // Using file:// protocol for absolute path resolution
-        const configModule = await import('../../../cms/payload/src/payload.config.js');
+        // Using absolute path with file:// protocol for proper resolution
+
+        // Get the current file's directory
+        const currentFile = fileURLToPath(import.meta.url);
+        const currentDir = dirname(currentFile);
+
+        // Resolve to workspace root, then to Payload config
+        // From: apps/backend/app/services/payload_service.ts
+        // To: apps/cms/payload/src/payload.config.ts
+        // Go up 4 levels: services -> app -> backend -> apps -> root
+        const workspaceRoot = join(currentDir, '../../../..');
+        const payloadConfigPath = join(workspaceRoot, 'apps/cms/payload/src/payload.config.ts');
+
+        // Try to use tsx to load TypeScript files if available
+        // Otherwise, try direct import (may fail if TypeScript loader not registered)
+        let configModule;
+        try {
+          // First, try to use tsx if available
+          const { register } = await import('tsx/esm/api');
+          register();
+          const configUrl = pathToFileURL(payloadConfigPath).href;
+          configModule = await import(configUrl);
+        } catch (tsxError) {
+          // If tsx is not available, try direct import
+          // This will work if ts-node-maintained is already registered (via ace.js)
+          const configUrl = pathToFileURL(payloadConfigPath).href;
+          configModule = await import(configUrl);
+        }
+
         const config = configModule.default;
 
         this.payload = await getPayload({ config });
@@ -48,6 +78,7 @@ class PayloadService {
       } catch (error) {
         logger.error('Failed to initialize Payload Local API:', error);
         logger.error('Make sure Payload CMS is set up and the config path is correct');
+        logger.error('Note: TypeScript files require a loader (tsx or ts-node)');
         this.initializationPromise = null;
         throw error;
       }
@@ -117,11 +148,13 @@ class PayloadService {
         sort,
         depth: options.depth || 0,
         // Pass user context for access control
-        user: options.user ? {
-          id: options.user.payloadUserId || '',
-          email: options.user.email,
-          role: options.user.role,
-        } : undefined,
+        user: options.user
+          ? {
+              id: options.user.payloadUserId || '',
+              email: options.user.email,
+              role: options.user.role,
+            }
+          : undefined,
       });
 
       return result;
@@ -149,11 +182,13 @@ class PayloadService {
         collection,
         id,
         depth: options.depth || 0,
-        user: options.user ? {
-          id: options.user.payloadUserId || '',
-          email: options.user.email,
-          role: options.user.role,
-        } : undefined,
+        user: options.user
+          ? {
+              id: options.user.payloadUserId || '',
+              email: options.user.email,
+              role: options.user.role,
+            }
+          : undefined,
       });
 
       return result as T;
@@ -187,11 +222,13 @@ class PayloadService {
       const result = await payload.create({
         collection,
         data,
-        user: options.user ? {
-          id: options.user.payloadUserId || '',
-          email: options.user.email,
-          role: options.user.role,
-        } : undefined,
+        user: options.user
+          ? {
+              id: options.user.payloadUserId || '',
+              email: options.user.email,
+              role: options.user.role,
+            }
+          : undefined,
       });
 
       return result as T;
@@ -221,11 +258,13 @@ class PayloadService {
         id,
         data,
         depth: options.depth || 0,
-        user: options.user ? {
-          id: options.user.payloadUserId || '',
-          email: options.user.email,
-          role: options.user.role,
-        } : undefined,
+        user: options.user
+          ? {
+              id: options.user.payloadUserId || '',
+              email: options.user.email,
+              role: options.user.role,
+            }
+          : undefined,
       });
 
       return result as T;
@@ -251,11 +290,13 @@ class PayloadService {
       await payload.delete({
         collection,
         id,
-        user: options.user ? {
-          id: options.user.payloadUserId || '',
-          email: options.user.email,
-          role: options.user.role,
-        } : undefined,
+        user: options.user
+          ? {
+              id: options.user.payloadUserId || '',
+              email: options.user.email,
+              role: options.user.role,
+            }
+          : undefined,
       });
     } catch (error) {
       logger.error(`Failed to delete item "${id}" from collection "${collection}":`, error);
@@ -266,4 +307,3 @@ class PayloadService {
 
 // Singleton instance
 export default new PayloadService();
-

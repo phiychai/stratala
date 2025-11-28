@@ -61,8 +61,28 @@ export default class AdminController {
     // Pagination
     const users = await query.orderBy('createdAt', 'desc').paginate(page, limit);
 
+    // Verify Payload user existence for users with payloadUserId
+    const serializedUsers = users.serialize();
+    if (Array.isArray(serializedUsers.data)) {
+      for (const user of serializedUsers.data) {
+        if (user.payloadUserId) {
+          // Verify the Payload user actually exists
+          const exists = await PayloadUserSyncService.verifyPayloadUserExists(user.payloadUserId);
+          if (!exists) {
+            // Clear stale payloadUserId
+            const adonisUser = await User.find(user.id);
+            if (adonisUser) {
+              adonisUser.payloadUserId = null;
+              await adonisUser.save();
+              user.payloadUserId = null;
+            }
+          }
+        }
+      }
+    }
+
     return response.ok({
-      users: users.serialize(),
+      users: serializedUsers,
       pagination: {
         page: users.currentPage,
         perPage: users.perPage,
