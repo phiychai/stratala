@@ -8,7 +8,7 @@ import type {
   FormField,
   PageBlock,
   BlockHero,
-  DirectusFile,
+  Media,
   BlockRichtext,
   BlockGallery,
   BlockPricing,
@@ -111,7 +111,7 @@ export interface PricingCardProps {
 // Gallery
 export interface GalleryItem {
   id: string;
-  directus_file: string;
+  image: string | number | Media | null;
   sort?: number;
 }
 
@@ -210,7 +210,7 @@ export interface TaglineProps {
   className?: string;
 }
 
-export interface DirectusImageProps {
+export interface PayloadImageProps {
   uuid: string | number | object | null | undefined; // Can be UUID string, ID number, or Media object
   alt: string;
   width?: number;

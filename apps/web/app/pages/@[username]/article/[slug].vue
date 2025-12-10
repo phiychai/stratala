@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { Post, DirectusUser } from '@turborepo-saas-starter/shared-types';
+import type { Post, PayloadUser } from '@turborepo-saas-starter/shared-types';
 import { useTableOfContents } from '~/composables/useTableOfContents';
 
 const route = useRoute();
@@ -14,9 +14,6 @@ const { isAuthenticated } = useAuth();
 
 const wrapperRef = ref<HTMLElement | null>(null);
 
-const {
-  public: { directusUrl },
-} = useRuntimeConfig();
 
 const { data, error, refresh } = await useFetch<{
   post: Post;
@@ -35,7 +32,7 @@ if (!data.value || error.value) {
 
 const post = computed(() => data.value?.post);
 const relatedPosts = computed(() => data.value?.relatedPosts);
-const author = computed(() => post.value?.author as Partial<DirectusUser>);
+const author = computed(() => post.value?.author as Partial<PayloadUser>);
 
 // Reading progress tracking with VueUse
 const articleContentRef = ref<HTMLElement | null>(null);
@@ -196,7 +193,7 @@ useSeoMeta({
                     v-if="relatedPost.image"
                     class="relative shrink-0 w-[150px] h-[100px] overflow-hidden rounded-lg"
                   >
-                    <DirectusImage
+                    <PayloadImage
                       :uuid="relatedPost.image as string"
                       :alt="relatedPost.title || 'related post image'"
                       class="object-cover transition-transform duration-300 group-hover:scale-110"

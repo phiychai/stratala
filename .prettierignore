@@ -61,7 +61,7 @@ apps/backend/ace.js
 *.sqlite3
 *.db
 
-# CMS/Directus
+# CMS
 apps/cms
 
 # Temporary files

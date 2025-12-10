@@ -1,11 +1,11 @@
-import type { DirectusUser } from '@turborepo-saas-starter/shared-types';
+import type { PayloadUser } from '@turborepo-saas-starter/shared-types';
 
 interface UserNameOptions {
   abbrev?: boolean;
 }
 
 export function userName(
-  user: Partial<DirectusUser>,
+  user: Partial<PayloadUser>,
   { abbrev = false }: UserNameOptions = {}
 ): string {
   if (!user) {
@@ -27,7 +27,7 @@ export function userName(
   return 'Unknown User' as string;
 }
 
-export function userInitials(user: Partial<DirectusUser>): string {
+export function userInitials(user: Partial<PayloadUser>): string {
   if (!user) {
     return 'NA' as string;
   }

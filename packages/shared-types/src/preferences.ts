@@ -13,7 +13,7 @@ export interface UserPreferences {
 
 /**
  * Command Palette Settings
- * Settings for the Directus Command Palette Module
+ * Settings for the Command Palette Module
  */
 export interface CommandPaletteCollection {
   collection: string;

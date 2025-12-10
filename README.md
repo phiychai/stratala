@@ -39,8 +39,8 @@ shared packages_
 - **Nuxt 4** - The Intuitive Vue Framework with server-side rendering
 - **Nuxt UI Pro** - Beautiful, accessible components built on Radix Vue
 - **TypeScript** - Full type safety across the entire stack
-- **Directus** - Headless CMS for content management
-- **Visual Editing** - Live preview and editing with Directus integration
+- **Payload CMS** - Headless CMS for content management
+- **Visual Editing** - Live preview and editing with Payload integration
 
 ### ⚡ **Powerful Backend**
 
@@ -95,8 +95,8 @@ turborepo-saas-starter/
 │   │   ├── database/         # Migrations and seeders
 │   │   └── start/            # Kernel and routes
 │   │
-│   └── cms/                   # Directus headless CMS
-│       └── directus/         # Directus instance
+│   └── cms/                   # Payload CMS
+│       └── payload/          # Payload CMS instance
 │
 ├── packages/
 │   ├── eslint-config/        # Shared ESLint configurations
@@ -111,7 +111,7 @@ turborepo-saas-starter/
 │   ├── shared-types/         # Shared TypeScript types
 │   │   └── src/
 │   │       ├── index.ts     # Common types
-│   │       └── schema.ts    # Generated Directus schema
+│   │       └── schema.ts    # Generated Payload schema
 │   │
 │   └── shared-utils/         # Shared utility functions
 │       └── src/
@@ -143,7 +143,7 @@ cd turborepo-saas-starter
 # Install dependencies
 pnpm install
 
-# Start Directus CMS (optional)
+# Start Payload CMS (optional)
 pnpm docker:up
 
 # Start development servers
@@ -154,7 +154,7 @@ This will start:
 
 - 🌐 **Frontend** at http://localhost:3000
 - 🔌 **Backend API** at http://localhost:3333
-- 📦 **Directus CMS** at http://localhost:8055
+- 📦 **Payload CMS** at http://localhost:3001
 
 ### Environment Setup
 
@@ -163,7 +163,7 @@ Create `.env` files in each app:
 ```bash
 # apps/web/.env
 NUXT_PUBLIC_SITE_URL=http://localhost:3000
-DIRECTUS_URL=http://localhost:8055
+PAYLOAD_PUBLIC_SERVER_URL=http://localhost:3001
 NUXT_PUBLIC_ENABLE_VISUAL_EDITING=true
 
 # apps/backend/.env
@@ -307,7 +307,7 @@ Nuxt 4 + Vue 3
 ├── Radix Vue            // Headless UI primitives
 ├── Tailwind CSS         // Utility-first CSS
 ├── VeeValidate + Zod    // Form validation
-├── @directus/sdk        // CMS integration
+├── Payload Local API    // CMS integration
 └── Nuxt Content         // File-based CMS
 ```
 
@@ -322,13 +322,14 @@ AdonisJS 6
 └── PostgreSQL/SQLite   // Database options
 ```
 
-#### CMS (Directus)
+#### CMS (Payload)
 
 ```typescript
-Directus
-├── PostgreSQL/SQLite   // Database
-├── Visual Editing SDK  // Live preview
-└── Type Generation     // TypeScript types
+Payload CMS
+├── PostgreSQL         // Database
+├── Local API          // Server-side integration
+├── REST API           // Client-side integration
+└── Type Generation    // TypeScript types
 ```
 
 #### Billing (Lago)
@@ -505,8 +506,6 @@ usage guide
   Lago billing setup guide
 - [**Lago Integration**](./docs/integrations/LAGO_INTEGRATION.md) - Billing and
   subscription management API
-- [**Directus CMS Upgrade**](./docs/integrations/DIRECTUS_UPGRADE.md) - How to
-  safely upgrade Directus
 
 ### Deployment
 
@@ -519,7 +518,7 @@ usage guide
 - [Nuxt Documentation](https://nuxt.com/docs)
 - [AdonisJS Documentation](https://docs.adonisjs.com)
 - [Better Auth Documentation](https://www.better-auth.com/docs)
-- [Directus Documentation](https://docs.directus.io)
+- [Payload CMS Documentation](https://payloadcms.com/docs)
 - [Lago Documentation](https://docs.getlago.com)
 
 ### Guides & Tutorials
@@ -591,7 +590,7 @@ Runs on every push and PR:
 2. **Add required secrets**:
    ```bash
    PRODUCTION_URL       # Your production domain
-   DIRECTUS_URL         # CMS URL
+   PAYLOAD_PUBLIC_SERVER_URL  # CMS URL
    VERCEL_TOKEN         # Deployment token (if using Vercel)
    ```
 3. **Configure branch protection** for `main` branch
@@ -628,7 +627,7 @@ docker-compose -f docker-compose.prod.yml up -d
 
 - **Frontend (Nuxt)**: Vercel, Netlify, Cloudflare Pages
 - **Backend (AdonisJS)**: Railway, Render, DigitalOcean App Platform
-- **CMS (Directus)**: Directus Cloud, self-hosted on any VPS
+- **CMS (Payload)**: Self-hosted on any VPS or platform
 - **Lago**: Docker Compose, Kubernetes, or managed hosting
 
 ---
@@ -664,7 +663,7 @@ Built with amazing open-source technologies:
 - [Turborepo](https://turbo.build/repo) - High-performance build system
 - [Nuxt](https://nuxt.com) - The Intuitive Vue Framework
 - [AdonisJS](https://adonisjs.com) - Elegant Node.js framework
-- [Directus](https://directus.io) - Open-source headless CMS
+- [Payload CMS](https://payloadcms.com) - TypeScript headless CMS
 - [Lago](https://www.getlago.com) - Open-source billing platform
 - [Radix Vue](https://www.radix-vue.com) - Unstyled, accessible components
 - [Tailwind CSS](https://tailwindcss.com) - Utility-first CSS framework

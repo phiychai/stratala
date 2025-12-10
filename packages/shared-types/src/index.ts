@@ -24,8 +24,10 @@ export type {
 // Re-export Payload User type with alias
 export type { User as PayloadUser } from './payload-types';
 
-// Type aliases for compatibility
+// Type aliases for compatibility (deprecated - use Media and PayloadUser instead)
+/** @deprecated Use Media instead */
 export type DirectusFile = Media;
+/** @deprecated Use PayloadUser instead */
 export type DirectusUser = PayloadUserType;
 
 // Re-export billing types

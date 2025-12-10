@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import { getPayloadAssetURL } from '@@/server/utils/payload-utils';
 import { watch, ref, computed } from 'vue';
-import type { DirectusImageProps } from '~/types/components';
+import type { PayloadImageProps } from '~/types/components';
 import type { Media } from '@turborepo-saas-starter/shared-types';
 
-const props = withDefaults(defineProps<DirectusImageProps>(), {
+const props = withDefaults(defineProps<PayloadImageProps>(), {
   width: undefined,
   height: undefined,
 });

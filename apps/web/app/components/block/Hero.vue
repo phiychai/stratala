@@ -68,7 +68,7 @@ defineProps<HeroProps>();
         'md:w-1/2 h-[562px]': data.layout !== 'image_center',
       }"
     >
-      <DirectusImage
+      <PayloadImage
         :uuid="data.image"
         :alt="data.tagline || data.headline || 'Hero Image'"
         :fill="true"

@@ -104,7 +104,7 @@ const { user, spaces, recentPosts, displayName } = useUserProfile(username);
               >
                 <div class="flex gap-4">
                   <div v-if="post.image" class="flex-shrink-0 w-32 h-24 rounded-lg overflow-hidden">
-                    <DirectusImage
+                    <PayloadImage
                       :uuid="post.image as string"
                       :alt="post.title || 'Post image'"
                       class="object-cover w-full h-full"

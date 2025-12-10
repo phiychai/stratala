@@ -86,8 +86,8 @@ defineShortcuts({
         class="relative overflow-hidden rounded-lg group hover:shadow-lg transition-shadow duration-300 cursor-pointer h-[300px]"
         @click="handleOpenLightbox(index)"
       >
-        <DirectusImage
-          :uuid="item.directus_file"
+        <PayloadImage
+          :uuid="item.image"
           :alt="`Gallery item ${item.id}`"
           fill
           sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
@@ -111,9 +111,9 @@ defineShortcuts({
       }"
     >
       <div class="relative w-full h-full flex items-center justify-center p-4">
-        <DirectusImage
+        <PayloadImage
           v-if="currentItem"
-          :uuid="currentItem.directus_file"
+          :uuid="currentItem.image"
           :alt="`Gallery item ${currentItem.id}`"
           class="max-w-full max-h-full object-contain"
         />

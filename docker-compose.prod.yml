@@ -13,16 +13,6 @@ services:
     restart: always
     command: redis-server --appendonly yes --requirepass ${REDIS_PASSWORD}
 
-  directus:
-    restart: always
-    environment:
-      NODE_ENV: production
-      LOG_LEVEL: info
-      CACHE_ENABLED: true
-      REFRESH_TOKEN_COOKIE_SECURE: true
-      SESSION_COOKIE_SECURE: true
-      PUBLIC_URL: ${DIRECTUS_PUBLIC_URL}
-
   killbill:
     restart: always
     environment:
