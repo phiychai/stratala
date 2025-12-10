@@ -48,11 +48,6 @@ components.d.ts
 *.sqlite3
 *.db
 
-# CMS/Directus
-apps/cms/directus/data/
-apps/cms/directus/uploads/
-apps/cms/directus/extensions/
-
 # Temporary files
 tmp
 temp
