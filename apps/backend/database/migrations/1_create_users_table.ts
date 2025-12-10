@@ -11,6 +11,10 @@ export default class extends BaseSchema {
       table.string('better_auth_user_id').nullable().unique();
       table.index('better_auth_user_id');
 
+      // Link to Payload CMS user (for content roles: admin, content_admin, editor, publisher)
+      table.string('payload_user_id').nullable();
+      table.index('payload_user_id');
+
       // Profile fields
       table.string('first_name').nullable();
       table.string('last_name').nullable();
@@ -23,7 +27,8 @@ export default class extends BaseSchema {
       table.string('password', 180).nullable();
 
       // Authorization
-      table.enum('role', ['user', 'admin']).defaultTo('user').notNullable();
+      // Use string type to allow all role values: user, admin, content_admin, editor, publisher
+      table.string('role', 50).defaultTo('user').notNullable();
       table.boolean('is_active').defaultTo(true).notNullable();
 
       // Preferences (JSON field)
