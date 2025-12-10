@@ -13,7 +13,6 @@ const { isAuthenticated } = useAuth();
 
 const wrapperRef = ref<HTMLElement | null>(null);
 
-
 const { data, error, refresh } = await useFetch<{
   post: Post;
   relatedPosts: Post[];

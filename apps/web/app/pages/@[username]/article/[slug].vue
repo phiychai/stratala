@@ -14,7 +14,6 @@ const { isAuthenticated } = useAuth();
 
 const wrapperRef = ref<HTMLElement | null>(null);
 
-
 const { data, error, refresh } = await useFetch<{
   post: Post;
   relatedPosts: Post[];
@@ -102,11 +101,11 @@ useSeoMeta({
             class="mr-3"
             variant="ghost"
             color="neutral"
-            @click="navigateTo(`/@${username}`)"
             size="sm"
+            @click="navigateTo(`/@${username}`)"
           />
         </template>
-        <template #default> <span class="text-muted"></span></template>
+        <template #default> <span class="text-muted" /></template>
         <template #right>
           <UButton icon="tabler:dots" variant="ghost" color="neutral" size="sm" />
           <UButton
@@ -133,8 +132,8 @@ useSeoMeta({
                   : (category as any).title || category.name || category
               }}
             </UBadge>
-            <span class="text-muted" v-if="post.published_at">&middot;</span>
-            <time class="text-muted" v-if="post.published_at">
+            <span v-if="post.published_at" class="text-muted">&middot;</span>
+            <time v-if="post.published_at" class="text-muted">
               {{
                 new Date(post.published_at).toLocaleDateString('en', {
                   year: 'numeric',
