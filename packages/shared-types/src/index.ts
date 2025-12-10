@@ -1,21 +1,11 @@
-// Import types for aliases
-import type { Media, User as PayloadUserType } from './payload-types';
-
 // Re-export Payload types
 export type {
-  BlockForm,
-  BlockGallery,
-  BlockHero,
-  BlockPost,
-  BlockPricing,
-  BlockRichtext,
   Category,
   Form,
   FormField,
   Media,
   Navigation,
   Page,
-  PageBlock,
   Post,
   Space,
   Tag,
@@ -24,11 +14,21 @@ export type {
 // Re-export Payload User type with alias
 export type { User as PayloadUser } from './payload-types';
 
-// Type aliases for compatibility (deprecated - use Media and PayloadUser instead)
-/** @deprecated Use Media instead */
-export type DirectusFile = Media;
-/** @deprecated Use PayloadUser instead */
-export type DirectusUser = PayloadUserType;
+// Extract block types from Page interface
+import type { Page } from './payload-types';
+
+type PageBlocks = NonNullable<Page['blocks']>;
+type PageBlockItem = PageBlocks[number];
+
+export type PageBlock = PageBlockItem;
+
+// Extract individual block types
+export type BlockHero = Extract<PageBlockItem, { blockType: 'hero' }>;
+export type BlockRichtext = Extract<PageBlockItem, { blockType: 'richtext' }>;
+export type BlockGallery = Extract<PageBlockItem, { blockType: 'gallery' }>;
+export type BlockPost = Extract<PageBlockItem, { blockType: 'posts' }>;
+export type BlockPricing = Extract<PageBlockItem, { blockType: 'pricing' }>;
+export type BlockForm = Extract<PageBlockItem, { blockType: 'form' }>;
 
 // Re-export billing types
 export type { Invoice, Plan, Subscription } from './billing';
