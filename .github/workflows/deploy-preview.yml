@@ -52,7 +52,7 @@ jobs:
         run: pnpm build --filter web
         env:
           NUXT_PUBLIC_SITE_URL: https://preview-${{ github.event.pull_request.number }}.example.com
-          DIRECTUS_URL: ${{ secrets.DIRECTUS_URL }}
+          PAYLOAD_PUBLIC_SERVER_URL: ${{ secrets.PAYLOAD_PUBLIC_SERVER_URL }}
 
       - name: Comment PR with preview URL
         uses: actions/github-script@v8

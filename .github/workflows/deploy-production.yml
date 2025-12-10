@@ -48,7 +48,7 @@ jobs:
         run: pnpm build --filter web
         env:
           NUXT_PUBLIC_SITE_URL: ${{ secrets.PRODUCTION_URL }}
-          DIRECTUS_URL: ${{ secrets.DIRECTUS_URL }}
+          PAYLOAD_PUBLIC_SERVER_URL: ${{ secrets.PAYLOAD_PUBLIC_SERVER_URL }}
 
       # Add your deployment step here
       # Example for Vercel:

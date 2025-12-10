@@ -40,7 +40,7 @@ Starter.
 
 ```bash
 # Add secrets to your repository:
-DIRECTUS_URL - Your Directus CMS URL
+PAYLOAD_PUBLIC_SERVER_URL - Your Payload CMS URL
 # Add deployment provider tokens (Vercel, Netlify, etc.)
 ```
 
@@ -73,7 +73,7 @@ DIRECTUS_URL - Your Directus CMS URL
 ```bash
 # Add secrets:
 PRODUCTION_URL - Your production domain
-DIRECTUS_URL - Production Directus URL
+PAYLOAD_PUBLIC_SERVER_URL - Production Payload CMS URL
 # Platform-specific tokens
 ```
 
@@ -157,7 +157,7 @@ Add these secrets to your GitHub repository:
 ```bash
 # Production
 PRODUCTION_URL=https://yourapp.com
-DIRECTUS_URL=https://cms.yourapp.com
+PAYLOAD_PUBLIC_SERVER_URL=https://cms.yourapp.com
 
 # Deployment (choose your platform)
 VERCEL_TOKEN=xxx

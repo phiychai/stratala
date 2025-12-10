@@ -31,10 +31,9 @@ env:
   REDIS_PORT: 6379
   SESSION_DRIVER: memory
 
-  # Directus
-  DIRECTUS_URL: http://localhost:8055
-  DIRECTUS_ADMIN_EMAIL: admin@example.com
-  DIRECTUS_ADMIN_PASSWORD: test123
+  # Payload CMS
+  PAYLOAD_PUBLIC_SERVER_URL: http://localhost:3001
+  PAYLOAD_SECRET: test-secret-key-for-ci
 
   # Lago
   LAGO_API_URL: http://localhost:3100
@@ -213,9 +212,8 @@ jobs:
       REDIS_HOST: localhost
       REDIS_PORT: 6379
       SESSION_DRIVER: memory
-      DIRECTUS_URL: http://localhost:8055
-      DIRECTUS_ADMIN_EMAIL: admin@example.com
-      DIRECTUS_ADMIN_PASSWORD: test123
+      PAYLOAD_PUBLIC_SERVER_URL: http://localhost:3001
+      PAYLOAD_SECRET: test-secret-key-for-ci
       LAGO_API_URL: http://localhost:3100
 
     steps:
@@ -266,9 +264,8 @@ jobs:
           REDIS_HOST=localhost
           REDIS_PORT=6379
           SESSION_DRIVER=memory
-          DIRECTUS_URL=http://localhost:8055
-          DIRECTUS_ADMIN_EMAIL=admin@example.com
-          DIRECTUS_ADMIN_PASSWORD=test123
+          PAYLOAD_PUBLIC_SERVER_URL=http://localhost:3001
+          PAYLOAD_SECRET=test-secret-key-for-ci
           LAGO_API_URL=http://localhost:3100
           EOF
 

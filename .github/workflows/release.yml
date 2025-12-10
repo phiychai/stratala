@@ -3,7 +3,7 @@ name: Release
 on:
   push:
     tags:
-      - 'v*'
+      - "v*"
 
 permissions:
   contents: write
@@ -69,7 +69,7 @@ jobs:
             ### What's Included
             - ✅ Nuxt 4 Web Application
             - ✅ AdonisJS 6 Backend API
-            - ✅ Directus CMS Setup
+            - ✅ Payload CMS Setup
             - ✅ Shared Packages (Types, Utils, Config)
             - ✅ Kill Bill Integration Ready
           files: |

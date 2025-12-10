@@ -76,7 +76,7 @@ updates:
 
   # Docker
   - package-ecosystem: 'docker'
-    directory: '/apps/cms/directus'
+    directory: '/apps/cms/payload'
     schedule:
       interval: 'weekly'
       day: 'monday'
