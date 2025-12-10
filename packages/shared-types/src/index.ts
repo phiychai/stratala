@@ -1,24 +1,32 @@
+// Import types for aliases
+import type { Media, User as PayloadUserType } from './payload-types';
+
 // Re-export Payload types
 export type {
-  Post,
-  Page,
-  PageBlock,
-  Space,
-  Media,
-  DirectusFile,
-  User,
-  DirectusUser,
+  BlockForm,
+  BlockGallery,
+  BlockHero,
+  BlockPost,
+  BlockPricing,
+  BlockRichtext,
   Category,
-  Tag,
   Form,
   FormField,
-  BlockHero,
-  BlockRichtext,
-  BlockGallery,
-  BlockPricing,
-  BlockPost,
-  BlockForm,
+  Media,
+  Navigation,
+  Page,
+  PageBlock,
+  Post,
+  Space,
+  Tag,
 } from './payload-types';
+
+// Re-export Payload User type with alias
+export type { User as PayloadUser } from './payload-types';
+
+// Type aliases for compatibility
+export type DirectusFile = Media;
+export type DirectusUser = PayloadUserType;
 
 // Re-export billing types
 export type { Invoice, Plan, Subscription } from './billing';
@@ -28,12 +36,12 @@ export type { UserProfile } from './user';
 
 // Re-export role types and constants
 export {
-  UserRole,
-  USER_ROLES,
   CONTENT_ROLES,
-  ROLE_LABELS,
-  ROLE_DESCRIPTIONS,
   isContentRole,
+  ROLE_DESCRIPTIONS,
+  ROLE_LABELS,
+  USER_ROLES,
+  UserRole,
   type UserRoleType,
 } from './roles';
 
@@ -45,8 +53,8 @@ export type {
   WidgetData,
 } from './preferences';
 
-// User-related types
-export interface User {
+// User-related types (for Better Auth/Adonis backend)
+export interface AppUser {
   id: string;
   email: string;
   username: string;

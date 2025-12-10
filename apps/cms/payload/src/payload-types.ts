@@ -1223,12 +1223,31 @@ export interface Navigation {
     | {
         label: string;
         type: 'page' | 'post' | 'url';
+        /**
+         * Select a page to link to
+         */
         page?: (number | null) | Page;
+        /**
+         * Select a post to link to
+         */
         post?: (number | null) | Post;
         /**
          * The URL to link to. Could be relative (ie /my-page) or a full external URL
          */
         url?: string | null;
+        /**
+         * Optional badge to display next to the navigation item
+         */
+        badge?: {
+          /**
+           * Badge text (e.g., "New", "Beta", "Pro")
+           */
+          label?: string | null;
+          /**
+           * Badge color
+           */
+          color?: ('primary' | 'success' | 'warning' | 'error' | 'info') | null;
+        };
         /**
          * Nested navigation items
          */
@@ -1236,8 +1255,17 @@ export interface Navigation {
           | {
               label: string;
               type: 'page' | 'post' | 'url';
+              /**
+               * Select a page to link to
+               */
               page?: (number | null) | Page;
+              /**
+               * Select a post to link to
+               */
               post?: (number | null) | Post;
+              /**
+               * The URL to link to
+               */
               url?: string | null;
               id?: string | null;
             }[]
@@ -1274,6 +1302,12 @@ export interface NavigationSelect<T extends boolean = true> {
         page?: T;
         post?: T;
         url?: T;
+        badge?:
+          | T
+          | {
+              label?: T;
+              color?: T;
+            };
         children?:
           | T
           | {
