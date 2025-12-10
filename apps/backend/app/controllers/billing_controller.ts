@@ -1,4 +1,3 @@
-import type { LagoAccountResponse } from '#types/billing';
 import type { HttpContext } from '@adonisjs/core/http';
 
 import billingService from '#services/billing_service';
@@ -7,7 +6,7 @@ export default class BillingController {
   /**
    * @getOrCreateAccount
    * @summary Get or create billing account
-   * @description Retrieves the current user's Lago billing account, or creates one if it doesn't exist. The account is linked to the user's email address.
+   * @description Retrieves the current user's Lago billing account, or creates one if it doesn't exist. The account is linked to the user's ID (external_id).
    * @tag Billing
    * @response 200 - Account retrieved or created successfully
    * @response 401 - Unauthorized - Authentication required
@@ -17,13 +16,14 @@ export default class BillingController {
     try {
       const user = auth.user!;
 
-      // Try to get existing account
+      // Try to get existing account using user ID as external_id
       let account;
       try {
-        account = await billingService.getAccountByEmail(user.email);
+        account = await billingService.getCustomer(user.id.toString());
       } catch {
         // Account doesn't exist, create it
-        account = await billingService.createAccount({
+        account = await billingService.createCustomer({
+          externalId: user.id.toString(),
           name: user.fullName || user.email,
           email: user.email,
           currency: 'USD',
@@ -54,26 +54,17 @@ export default class BillingController {
     try {
       const user = auth.user!;
 
-      // Get the Lago account
-      const account = await billingService.getAccountByEmail(user.email);
-
-      if (!account) {
+      // Get subscriptions using user ID as external_id
+      // If customer doesn't exist, return empty array
+      try {
+        const subscriptions = await billingService.getSubscriptions(user.id.toString());
+        return response.ok({
+          subscriptions,
+        });
+      } catch {
+        // Customer doesn't exist, return empty subscriptions
         return response.ok({ subscriptions: [] });
       }
-      const accountResponse = account as LagoAccountResponse;
-      if (!accountResponse.customer?.external_id) {
-        return response.ok({
-          subscriptions: [],
-        });
-      }
-
-      const subscriptions = await billingService.getSubscriptions(
-        accountResponse.customer.external_id
-      );
-
-      return response.ok({
-        subscriptions,
-      });
     } catch (error) {
       return response.internalServerError({
         message: 'Failed to fetch subscriptions',
@@ -106,26 +97,22 @@ export default class BillingController {
         });
       }
 
-      // Get or create account
+      // Get or create account using user ID as external_id
       let account;
       try {
-        account = await billingService.getAccountByEmail(user.email);
+        account = await billingService.getCustomer(user.id.toString());
       } catch {
-        account = await billingService.createAccount({
+        account = await billingService.createCustomer({
+          externalId: user.id.toString(),
           name: user.fullName || user.email,
           email: user.email,
           currency: 'USD',
         });
       }
 
-      const accountResponse = account as LagoAccountResponse;
-      const accountExternalId =
-        accountResponse?.customer?.external_id || accountResponse?.external_id;
-      if (!accountExternalId) {
-        return response.badRequest({ error: 'Customer external ID not found' });
-      }
+      // Use user ID as external_id for subscription
       const subscription = await billingService.createSubscription({
-        externalCustomerId: accountExternalId,
+        externalCustomerId: user.id.toString(),
         planCode: planName,
         externalId: externalKey,
       });
@@ -184,23 +171,17 @@ export default class BillingController {
     try {
       const user = auth.user!;
 
-      const account = await billingService.getAccountByEmail(user.email);
-
-      if (!account) {
+      // Get invoices using user ID as external_id
+      // If customer doesn't exist, return empty array
+      try {
+        const invoices = await billingService.getInvoices(user.id.toString());
+        return response.ok({
+          invoices,
+        });
+      } catch {
+        // Customer doesn't exist, return empty invoices
         return response.ok({ invoices: [] });
       }
-      const accountResponse = account as LagoAccountResponse;
-      if (!accountResponse.customer?.external_id) {
-        return response.ok({
-          invoices: [],
-        });
-      }
-
-      const invoices = await billingService.getInvoices(accountResponse.customer.external_id);
-
-      return response.ok({
-        invoices,
-      });
     } catch (error) {
       return response.internalServerError({
         message: 'Failed to fetch invoices',
@@ -255,9 +236,10 @@ export default class BillingController {
         });
       }
 
-      const account = await billingService.getAccountByEmail(user.email);
-
-      if (!account) {
+      // Check if customer exists using user ID as external_id
+      try {
+        await billingService.getCustomer(user.id.toString());
+      } catch {
         return response.badRequest({
           message: 'Account not found',
         });
@@ -288,16 +270,12 @@ export default class BillingController {
     try {
       const user = auth.user!;
 
-      const account = await billingService.getAccountByEmail(user.email);
-
-      if (!account) {
+      // Check if customer exists using user ID as external_id
+      try {
+        await billingService.getCustomer(user.id.toString());
+      } catch {
+        // Customer doesn't exist, return empty payment methods
         return response.ok({ paymentMethods: [] });
-      }
-      const accountResponse = account as LagoAccountResponse;
-      if (!accountResponse || !accountResponse.customer?.external_id) {
-        return response.ok({
-          paymentMethods: [],
-        });
       }
 
       // Note: getPaymentMethods doesn't exist in BillingService - implement or remove this endpoint
