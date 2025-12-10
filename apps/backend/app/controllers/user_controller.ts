@@ -41,7 +41,7 @@ export default class UserController {
   /**
    * @updateProfile
    * @summary Update current user profile
-   * @description Updates the current authenticated user's profile information. Supports partial updates - only provided fields will be updated. Email changes are synced to Better Auth and Directus. Username changes are validated by Better Auth.
+   * @description Updates the current authenticated user's profile information. Supports partial updates - only provided fields will be updated. Email changes are synced to Better Auth and Payload. Username changes are validated by Better Auth.
    * @tag User
    * @requestBody {object} body - Profile update data
    * @requestBody {string} body.firstName - User's first name (optional, 1-100 characters)

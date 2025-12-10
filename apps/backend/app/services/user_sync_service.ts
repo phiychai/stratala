@@ -1,6 +1,8 @@
 import logger from '@adonisjs/core/services/logger';
 import db from '@adonisjs/lucid/services/db';
 
+import type { UserRoleType } from '@turborepo-saas-starter/shared-types';
+
 import User from '#models/user';
 import { AuthErrorLogger } from '#services/auth_error_logger';
 import { PayloadUserSyncService } from '#services/payload_user_sync_service';
@@ -20,7 +22,7 @@ export interface SyncUserOptions {
   provider?: string;
   requestPath?: string;
   clientIp?: string;
-  role?: 'user' | 'admin' | 'content_admin' | 'editor' | 'writer'; // Optional role override (for admin-created users)
+  role?: UserRoleType; // Optional role override (for admin-created users)
 }
 
 export class UserSyncService {
