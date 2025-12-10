@@ -10,7 +10,7 @@ const Navigation: GlobalConfig = {
   access: {
     read: () => true, // Public read access
     update: ({ req: { user } }) => {
-      return user && ['admin', 'content_admin'].includes(user.role);
+      return !!(user && ['admin', 'content_admin'].includes(user.role));
     },
   },
   fields: [
@@ -47,7 +47,11 @@ const Navigation: GlobalConfig = {
           type: 'relationship',
           relationTo: 'pages',
           admin: {
-            condition: (data) => data.type === 'page',
+            condition: (data, siblingData) => {
+              // In array fields, use siblingData to access other fields in the same array item
+              return siblingData?.type === 'page';
+            },
+            description: 'Select a page to link to',
           },
         },
         {
@@ -55,15 +59,51 @@ const Navigation: GlobalConfig = {
           type: 'relationship',
           relationTo: 'posts',
           admin: {
-            condition: (data) => data.type === 'post',
+            condition: (data, siblingData) => {
+              return siblingData?.type === 'post';
+            },
+            description: 'Select a post to link to',
           },
         },
         {
           name: 'url',
           type: 'text',
           admin: {
-            condition: (data) => data.type === 'url',
+            condition: (data, siblingData) => {
+              return siblingData?.type === 'url';
+            },
             description: 'The URL to link to. Could be relative (ie /my-page) or a full external URL',
+          },
+        },
+        {
+          name: 'badge',
+          type: 'group',
+          fields: [
+            {
+              name: 'label',
+              type: 'text',
+              admin: {
+                description: 'Badge text (e.g., "New", "Beta", "Pro")',
+              },
+            },
+            {
+              name: 'color',
+              type: 'select',
+              options: [
+                { label: 'Primary', value: 'primary' },
+                { label: 'Success', value: 'success' },
+                { label: 'Warning', value: 'warning' },
+                { label: 'Error', value: 'error' },
+                { label: 'Info', value: 'info' },
+              ],
+              defaultValue: 'primary',
+              admin: {
+                description: 'Badge color',
+              },
+            },
+          ],
+          admin: {
+            description: 'Optional badge to display next to the navigation item',
           },
         },
         {
@@ -99,7 +139,10 @@ const Navigation: GlobalConfig = {
               type: 'relationship',
               relationTo: 'pages',
               admin: {
-                condition: (data) => data.type === 'page',
+                condition: (data, siblingData) => {
+                  return siblingData?.type === 'page';
+                },
+                description: 'Select a page to link to',
               },
             },
             {
@@ -107,14 +150,20 @@ const Navigation: GlobalConfig = {
               type: 'relationship',
               relationTo: 'posts',
               admin: {
-                condition: (data) => data.type === 'post',
+                condition: (data, siblingData) => {
+                  return siblingData?.type === 'post';
+                },
+                description: 'Select a post to link to',
               },
             },
             {
               name: 'url',
               type: 'text',
               admin: {
-                condition: (data) => data.type === 'url',
+                condition: (data, siblingData) => {
+                  return siblingData?.type === 'url';
+                },
+                description: 'The URL to link to',
               },
             },
           ],

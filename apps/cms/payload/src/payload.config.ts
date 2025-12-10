@@ -28,6 +28,8 @@ import Navigation from './globals/Navigation'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
+// Resolve to workspace root: apps/cms/payload/src -> root (4 levels up)
+const rootDir = path.resolve(dirname, '../../../../')
 
 export default buildConfig({
   admin: {
@@ -54,9 +56,9 @@ export default buildConfig({
   globals: [SiteSettings, Navigation],
   editor: lexicalEditor(),
   secret: process.env.PAYLOAD_SECRET || '',
-  serverURL: process.env.PAYLOAD_PUBLIC_SERVER_URL || 'http://localhost:3002',
+  serverURL: process.env.PAYLOAD_PUBLIC_SERVER_URL || 'https://0.0.0.0:3002',
   typescript: {
-    outputFile: path.resolve(dirname, 'payload-types.ts'),
+    outputFile: path.resolve(rootDir, 'packages', 'shared-types', 'src', 'payload-types.ts'),
   },
   graphQL: {
     schemaOutputFile: path.resolve(dirname, '../schema.graphql'),
