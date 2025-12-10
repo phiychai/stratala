@@ -93,7 +93,12 @@ export default defineEventHandler(async (event) => {
       // We'll proxy the content as-is without decompression
       for (const [key, value] of Object.entries(incomingHeaders)) {
         const lowerKey = key.toLowerCase();
-        if (lowerKey !== 'host' && lowerKey !== 'content-length' && lowerKey !== 'accept-encoding' && value !== undefined) {
+        if (
+          lowerKey !== 'host' &&
+          lowerKey !== 'content-length' &&
+          lowerKey !== 'accept-encoding' &&
+          value !== undefined
+        ) {
           headers[key] = value;
         }
       }
@@ -230,10 +235,7 @@ export default defineEventHandler(async (event) => {
       const rewriteBase = proxyBasePath;
 
       // Rewrite absolute URLs pointing to Payload admin
-      responseText = responseText.replace(
-        new RegExp(`${payloadUrl}/admin`, 'g'),
-        rewriteBase
-      );
+      responseText = responseText.replace(new RegExp(`${payloadUrl}/admin`, 'g'), rewriteBase);
 
       // Rewrite relative URLs that start with /admin (but not /_next or /api which need special handling)
       responseText = responseText.replace(/href="\/admin\//g, `href="${rewriteBase}/`);

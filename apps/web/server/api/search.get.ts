@@ -14,10 +14,7 @@ export default defineCachedEventHandler(
       const [pagesResult, postsResult] = await Promise.all([
         getItems('pages', {
           where: {
-            or: [
-              { title: { contains: search } },
-              { permalink: { contains: search } },
-            ],
+            or: [{ title: { contains: search } }, { permalink: { contains: search } }],
           },
           limit: 50,
         }),

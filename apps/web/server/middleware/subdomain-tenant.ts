@@ -11,7 +11,7 @@ export default defineEventHandler(async (event) => {
   const hostname = host.split(':')[0]; // Remove port if present
 
   // Reserved subdomains that should not be treated as tenant usernames
-  const reservedSubdomains = ['www', 'api', 'admin', 'app', 'cdn', 'static', 'assets', 'mail'];
+  const reservedSubdomains = ['www', 'api', 'app', 'cdn', 'static', 'assets', 'mail'];
 
   // Extract subdomain
   const parts = hostname.split('.');
@@ -20,6 +20,17 @@ export default defineEventHandler(async (event) => {
   // For production: username.example.com -> ['username', 'example', 'com']
   if (parts.length >= 2) {
     const subdomain = parts[0].toLowerCase();
+
+    // Special handling for admin subdomain
+    if (subdomain === 'admin') {
+      event.context.tenant = {
+        username: null,
+        hostname,
+        isSubdomain: true,
+        isAdminSubdomain: true, // Add this flag
+      };
+      return;
+    }
 
     // Skip reserved subdomains and empty strings
     if (subdomain && !reservedSubdomains.includes(subdomain)) {
@@ -46,4 +57,3 @@ export default defineEventHandler(async (event) => {
     };
   }
 });
-

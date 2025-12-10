@@ -7,4 +7,3 @@ export default defineEventHandler(async (event) => {
   const catchAll = await import('./[...].ts');
   return catchAll.default(event);
 });
-

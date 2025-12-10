@@ -5,6 +5,7 @@ export interface TenantContext {
   username: string | null;
   hostname: string;
   isSubdomain: boolean;
+  isAdminSubdomain?: boolean;
   payloadUserId?: string | null;
 }
 
@@ -12,11 +13,13 @@ export interface TenantContext {
  * Get tenant context from event
  */
 export function getTenantContext(event: H3Event): TenantContext {
-  return (event.context.tenant as TenantContext) || {
-    username: null,
-    hostname: getHeader(event, 'host') || '',
-    isSubdomain: false,
-  };
+  return (
+    (event.context.tenant as TenantContext) || {
+      username: null,
+      hostname: getHeader(event, 'host') || '',
+      isSubdomain: false,
+    }
+  );
 }
 
 /**
@@ -60,3 +63,10 @@ export function isTenantRequest(event: H3Event): boolean {
   return tenant.isSubdomain && tenant.username !== null;
 }
 
+/**
+ * Check if request is from admin subdomain
+ */
+export function isAdminSubdomainRequest(event: H3Event): boolean {
+  const tenant = getTenantContext(event);
+  return tenant.isAdminSubdomain === true;
+}
