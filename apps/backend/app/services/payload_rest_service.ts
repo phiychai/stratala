@@ -124,4 +124,3 @@ class PayloadRestService {
 }
 
 export default new PayloadRestService();
-

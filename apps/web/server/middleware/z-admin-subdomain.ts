@@ -21,10 +21,10 @@ export default defineEventHandler((event) => {
         statusCode: 403,
         statusMessage: 'Admin routes are only accessible via admin subdomain',
         data: {
-          message: 'Please access admin routes through the admin subdomain (e.g., admin.example.com)',
+          message:
+            'Please access admin routes through the admin subdomain (e.g., admin.example.com)',
         },
       });
     }
   }
 });
-

@@ -23,7 +23,9 @@ export default class FixRoleConstraint extends BaseCommand {
       // Get current database info
       if (dbConnection === 'postgres') {
         const dbInfo = await connection.raw(`SELECT current_database(), current_schema();`);
-        this.logger.info(`Connected to database: ${dbInfo.rows?.[0]?.current_database || 'unknown'}`);
+        this.logger.info(
+          `Connected to database: ${dbInfo.rows?.[0]?.current_database || 'unknown'}`
+        );
         this.logger.info(`Current schema: ${dbInfo.rows?.[0]?.current_schema || 'unknown'}`);
       }
 
@@ -60,7 +62,9 @@ export default class FixRoleConstraint extends BaseCommand {
       this.logger.info(`\nFound ${allConstraints.rows?.length || 0} constraint(s) on users table:`);
       if (allConstraints.rows) {
         for (const constraint of allConstraints.rows) {
-          this.logger.info(`  - ${constraint.conname} (${constraint.contype}): ${constraint.definition}`);
+          this.logger.info(
+            `  - ${constraint.conname} (${constraint.contype}): ${constraint.definition}`
+          );
         }
       }
 
@@ -124,10 +128,11 @@ export default class FixRoleConstraint extends BaseCommand {
       if (error instanceof Error) {
         this.logger.error(error.message);
         this.logger.error('\nYou may need to manually run in your database:');
-        this.logger.error('  ALTER TABLE users DROP CONSTRAINT IF EXISTS users_role_check CASCADE;');
+        this.logger.error(
+          '  ALTER TABLE users DROP CONSTRAINT IF EXISTS users_role_check CASCADE;'
+        );
       }
       this.exitCode = 1;
     }
   }
 }
-

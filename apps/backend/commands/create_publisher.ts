@@ -75,7 +75,11 @@ export default class CreatePublisher extends BaseCommand {
           'Unknown error';
 
         // Email OTP errors are non-fatal - user may still be created
-        if (errorMessage?.includes('verification code') || errorMessage?.includes('OTP') || errorMessage?.includes('Failed to send')) {
+        if (
+          errorMessage?.includes('verification code') ||
+          errorMessage?.includes('OTP') ||
+          errorMessage?.includes('Failed to send')
+        ) {
           this.logger.info(`Email verification failed (non-fatal): ${errorMessage}`);
           this.logger.info('Checking if user was created despite email error...');
 
@@ -89,16 +93,19 @@ export default class CreatePublisher extends BaseCommand {
             betterAuthUser = {
               id: possibleUser.betterAuthUserId,
               email: possibleUser.email,
-              name: possibleUser.firstName && possibleUser.lastName
-                ? `${possibleUser.firstName} ${possibleUser.lastName}`.trim()
-                : possibleUser.firstName || possibleUser.lastName || possibleUser.email,
+              name:
+                possibleUser.firstName && possibleUser.lastName
+                  ? `${possibleUser.firstName} ${possibleUser.lastName}`.trim()
+                  : possibleUser.firstName || possibleUser.lastName || possibleUser.email,
               image: possibleUser.avatarUrl || undefined,
               emailVerified: false,
               username: possibleUser.username || undefined,
             } as any;
           } else {
             this.logger.error(`Better Auth sign-up failed and user not found: ${errorMessage}`);
-            this.logger.info('Note: Email service may need to be configured. User creation may have partially succeeded.');
+            this.logger.info(
+              'Note: Email service may need to be configured. User creation may have partially succeeded.'
+            );
             return;
           }
         } else {

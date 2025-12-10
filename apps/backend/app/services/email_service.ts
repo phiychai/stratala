@@ -74,12 +74,18 @@ export class EmailService {
     }
 
     // In development or when EMAIL_MODE=console, always log OTP to console
-    const emailMode = env.get('EMAIL_MODE', env.get('NODE_ENV') === 'development' ? 'console' : 'auto');
+    const emailMode = env.get(
+      'EMAIL_MODE',
+      env.get('NODE_ENV') === 'development' ? 'console' : 'auto'
+    );
     if (emailMode === 'console' || (!this.provider && env.get('NODE_ENV') === 'development')) {
       const logger = await this.getLogger();
-      const typeLabel = options.type === 'email-verification' ? 'Email Verification'
-        : options.type === 'sign-in' ? 'Sign In'
-        : 'Password Reset';
+      const typeLabel =
+        options.type === 'email-verification'
+          ? 'Email Verification'
+          : options.type === 'sign-in'
+            ? 'Sign In'
+            : 'Password Reset';
       logger.info(`━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━`);
       logger.info(`📧 ${typeLabel} OTP Code`);
       logger.info(`━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━`);
@@ -117,9 +123,12 @@ export class EmailService {
       if (env.get('NODE_ENV') === 'development') {
         const logger = await this.getLogger();
         logger.warn(`Failed to send OTP via ${this.provider}, logging to console instead`);
-        const typeLabel = options.type === 'email-verification' ? 'Email Verification'
-          : options.type === 'sign-in' ? 'Sign In'
-          : 'Password Reset';
+        const typeLabel =
+          options.type === 'email-verification'
+            ? 'Email Verification'
+            : options.type === 'sign-in'
+              ? 'Sign In'
+              : 'Password Reset';
         logger.info(`━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━`);
         logger.info(`📧 ${typeLabel} OTP Code (Fallback)`);
         logger.info(`━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━`);

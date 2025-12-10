@@ -28,7 +28,7 @@ export const useAdminSubdomain = () => {
       // Client-side: check from window.location
       if (typeof window === 'undefined') return false;
 
-      const hostname = window.location.hostname;
+      const { hostname } = window.location;
       const parts = hostname.split('.');
 
       // Check if first part is 'admin'
@@ -71,7 +71,7 @@ export const useAdminSubdomain = () => {
       }
     }
 
-    const protocol = window.location.protocol;
+    const { protocol } = window.location;
     const port = window.location.port ? `:${window.location.port}` : '';
     const adminUrl = `${protocol}//${adminHost}${port}${path || '/admin'}`;
 
@@ -83,4 +83,3 @@ export const useAdminSubdomain = () => {
     redirectToAdminSubdomain,
   };
 };
-

@@ -53,7 +53,7 @@ export function useTableOfContents(
       // Check if this is a heading node
       // Lexical headings typically have type: 'heading' and tag: 'h1' | 'h2' | etc.
       const nodeType = node.type;
-      const tag = node.tag;
+      const { tag } = node;
 
       if (nodeType === 'heading' || (tag && /^h[1-6]$/.test(tag))) {
         const depth = tag ? parseInt(tag.replace('h', ''), 10) : node.depth || 1;
