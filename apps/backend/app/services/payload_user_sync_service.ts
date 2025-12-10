@@ -2,8 +2,8 @@ import logger from '@adonisjs/core/services/logger';
 
 import type User from '#models/user';
 
-import payloadService from '#services/payload_service';
 import payloadRestService from '#services/payload_rest_service';
+import payloadService from '#services/payload_service';
 
 /**
  * Payload User Sync Service
@@ -209,9 +209,10 @@ export class PayloadUserSyncService {
 
           logger.info(`Created Payload user ${payloadUserId} for Adonis user ${user.id}`);
 
-          // Create default space for Publisher role
+          // Create default space and tenant for Publisher role
           if (role === 'publisher') {
             await this.createDefaultSpaceForPublisher(payloadUserId, user);
+            await this.createTenantForPublisher(payloadUserId, user);
           }
         }
       } catch (localApiError) {
@@ -271,6 +272,11 @@ export class PayloadUserSyncService {
       if (payloadUserId) {
         user.payloadUserId = payloadUserId;
         await user.save();
+
+        // Create tenant for publisher if not already assigned (for both new and existing users)
+        if (role === 'publisher' && !useRestApi) {
+          await this.createTenantForPublisher(payloadUserId, user);
+        }
       }
 
       return { payloadUserId };
@@ -327,6 +333,89 @@ export class PayloadUserSyncService {
     } catch (error) {
       logger.error(`Failed to create default space for Payload user ${payloadUserId}: ${error}`);
       // Don't throw - space creation failure shouldn't block user sync
+    }
+  }
+
+  /**
+   * Create tenant for Publisher role
+   * Automatically creates a tenant when a publisher user is synced to Payload
+   */
+  static async createTenantForPublisher(payloadUserId: string, adonisUser: User): Promise<void> {
+    try {
+      const payload = await payloadService.getPayload();
+
+      // Get the Payload user to check existing tenants
+      const payloadUser = await payload.findByID({
+        collection: 'users',
+        id: payloadUserId,
+      });
+
+      // Check if user already has tenants assigned
+      const existingTenants = (payloadUser as any).tenants || [];
+      if (Array.isArray(existingTenants) && existingTenants.length > 0) {
+        logger.info(
+          `Publisher ${payloadUserId} already has ${existingTenants.length} tenant(s) assigned`
+        );
+        return;
+      }
+
+      // Generate tenant slug from username or email
+      const username = adonisUser.username || adonisUser.email.split('@')[0];
+      const tenantSlug = `${username.toLowerCase().replace(/[^a-z0-9-]/g, '-')}-tenant`;
+
+      // Check if tenant with this slug already exists
+      const existingTenantsBySlug = await payload.find({
+        collection: 'tenants',
+        where: {
+          slug: {
+            equals: tenantSlug,
+          },
+        },
+        limit: 1,
+      });
+
+      let tenantId: string;
+
+      if (existingTenantsBySlug.docs.length > 0) {
+        // Use existing tenant
+        tenantId = existingTenantsBySlug.docs[0].id as string;
+        logger.info(`Using existing tenant ${tenantId} for publisher ${payloadUserId}`);
+      } else {
+        // Create new tenant
+        const tenantName = adonisUser.firstName
+          ? `${adonisUser.firstName}'s Tenant`
+          : `${username}'s Publications`;
+
+        const newTenant = await payload.create({
+          collection: 'tenants',
+          data: {
+            name: tenantName,
+            slug: tenantSlug,
+            domain: '',
+          },
+        });
+
+        tenantId = newTenant.id as string;
+        logger.info(`Created tenant ${tenantId} (${tenantSlug}) for publisher ${payloadUserId}`);
+      }
+
+      // Assign tenant to user
+      await payload.update({
+        collection: 'users',
+        id: payloadUserId,
+        data: {
+          tenants: [
+            {
+              tenant: tenantId,
+            },
+          ],
+        },
+      });
+
+      logger.info(`Assigned tenant ${tenantId} to publisher ${payloadUserId}`);
+    } catch (error) {
+      logger.error(`Failed to create tenant for Payload user ${payloadUserId}: ${error}`);
+      // Don't throw - tenant creation failure shouldn't block user sync
     }
   }
 
