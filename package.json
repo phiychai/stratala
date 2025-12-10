@@ -29,7 +29,9 @@
     "docker:logs": "docker-compose logs -f",
     "docker:restart": "docker-compose restart",
     "docker:prod": "docker-compose -f docker-compose.yml -f docker-compose.prod.yml up -d",
-    "docker:prod:build": "docker-compose -f docker-compose.yml -f docker-compose.prod.yml up --build -d"
+    "docker:prod:build": "docker-compose -f docker-compose.yml -f docker-compose.prod.yml up --build -d",
+    "seed:reset": "tsx scripts/reset-all-databases.ts",
+    "seed:all": "cd apps/backend && node ace seed:all"
   },
   "keywords": [
     "monorepo",
@@ -40,7 +42,7 @@
   ],
   "author": "",
   "license": "ISC",
-  "packageManager": "pnpm@10.15.0+sha512.486ebc259d3e999a4e8691ce03b5cac4a71cbeca39372a9b762cb500cfdf0873e2cb16abe3d951b1ee2cf012503f027b98b6584e4df22524e0c7450d9ec7aa7b",
+  "packageManager": "pnpm@10.24.0",
   "devDependencies": {
     "@playwright/test": "^1.56.1",
     "@types/node": "^22.0.0",
@@ -54,11 +56,10 @@
   },
   "pnpm": {
     "onlyBuiltDependencies": [
-      "@oxc-parser/binding-darwin-x64",
       "@parcel/watcher",
       "@scarf/scarf",
+      "@swc/core",
       "@tailwindcss/oxide",
-      "bcrypt",
       "better-sqlite3",
       "esbuild",
       "maplibre-gl",
@@ -71,7 +72,12 @@
       "esbuild",
       "sharp",
       "vue-demi"
-    ]
+    ],
+    "optionalDependencies": {
+      "@oxc-minify/binding-darwin-x64": "0.96.0",
+      "@oxc-parser/binding-darwin-x64": "0.96.0",
+      "@oxc-transform/binding-darwin-x64": "0.96.0"
+    }
   },
   "engines": {
     "node": ">=18.0.0",
