@@ -1,6 +1,6 @@
 ---
 title: 'Roles and User Management'
-description: 'Complete guide to the role-based user management system with 6 roles, Directus integration, and email synchronization'
+description: 'Complete guide to the role-based user management system with 6 roles, Payload integration, and email synchronization'
 navigation:
   title: 'Roles & User Management'
   order: 3
@@ -8,7 +8,7 @@ navigation:
 
 ## Overview
 
-The system implements a comprehensive role-based user management system with 6 distinct roles, automatic Directus synchronization for content roles, and email change synchronization across all systems.
+The system implements a comprehensive role-based user management system with 6 distinct roles, automatic Payload synchronization for content roles, and email change synchronization across all systems.
 
 ## Role System
 
@@ -18,28 +18,28 @@ The system supports 6 roles:
 
 1. **`user`** (General User)
    - Default role for frontend registrations
-   - No Directus user created
+   - No Payload user created
    - Basic application access
 
 2. **`admin`** (Administrator)
    - Full system access
    - Can manage all users
-   - Directus role: Administrator
+   - Payload role: Administrator
    - Better Auth role: `admin`
 
 3. **`content_admin`** (Content Admin)
    - Full content management rights
-   - Directus role: Content Admin
+   - Payload role: Content Admin
    - Better Auth role: `user`
 
 4. **`editor`** (Editor)
    - Can edit and publish all content
-   - Directus role: Editor
+   - Payload role: Editor
    - Better Auth role: `user`
 
 5. **`writer`** (Writer)
    - Can create posts and edit own posts
-   - Directus role: Writer
+   - Payload role: Writer
    - Better Auth role: `user`
    - **Automatic space creation**: A default space is created using the user's first name (Substack-style)
 
@@ -54,15 +54,15 @@ Better Auth uses a simplified role system (admin vs non-admin):
 
 **Rationale**: Better Auth Admin plugin is designed for simple admin/non-admin distinction. AdonisJS Bouncer handles complex role-based authorization.
 
-#### AdonisJS → Directus
+#### AdonisJS → Payload
 
-Directus roles are mapped as follows:
+Payload roles are mapped as follows:
 
-- `admin` → Directus "Administrator" role (`ef049c8b-546b-4bbc-9cd7-b05d77e58b66`)
-- `content_admin` → Directus "Content Admin" role (`d70780bd-f3ed-418b-98c2-f5354fd3fa68`)
-- `editor` → Directus "Editor" role (`4516009c-8a04-49e4-b4ac-fd4883da6064`)
-- `writer` → Directus "Writer" role (`3a4464fb-2189-4710-a164-2503eed88ae7`)
-- `user` → No Directus user created
+- `admin` → Payload "Administrator" role
+- `content_admin` → Payload "Content Admin" role
+- `editor` → Payload "Editor" role
+- `writer` → Payload "Writer" role
+- `user` → No Payload user created
 
 ## User Registration Flows
 
@@ -79,12 +79,12 @@ When a user registers through the frontend:
    ↓
 4. UserSyncService.syncUser() creates Adonis user
    - Role: 'user' (default)
-   - No Directus user created
+   - No Payload user created
    ↓
 5. User can access application
 ```
 
-**Result**: User with `'user'` role, no Directus access.
+**Result**: User with `'user'` role, no Payload access.
 
 ### Admin User Creation
 
@@ -99,9 +99,9 @@ When an admin creates a user through the admin panel:
    ↓
 4. Better Auth role synced (admin → 'admin', others → 'user')
    ↓
-5. If role requires Directus:
-   - DirectusUserSyncService creates Directus user
-   - Directus role assigned based on Adonis role
+5. If role requires Payload:
+   - PayloadUserSyncService creates Payload user
+   - Payload role assigned based on Adonis role
    ↓
 6. If role is 'writer':
    - Default space created automatically
@@ -135,32 +135,31 @@ When an admin creates a user through the admin panel:
     "lastName": "Doe",
     "username": "johndoe",
     "role": "writer",
-    "directusUserId": "uuid-here",
+    "payloadUserId": "id-here",
     "isActive": true
   }
 }
 ```
 
-## Directus User Synchronization
+## Payload User Synchronization
 
 ### Automatic Creation
 
-Directus users are automatically created when:
+Payload users are automatically created when:
 
 1. Admin creates a user with a content role (`admin`, `content_admin`, `editor`, `writer`)
 2. User role is updated to a content role
 
-### Directus User Fields
+### Payload User Fields
 
-When a Directus user is created, the following fields are synced:
+When a Payload user is created, the following fields are synced:
 
 - `email`: From Adonis user
-- `first_name`: From Adonis user
-- `last_name`: From Adonis user
+- `firstName`: From Adonis user
+- `lastName`: From Adonis user
 - `role`: Mapped from Adonis role
-- `status`: Set to `'active'`
 
-**Note**: Directus users created this way don't have passwords. They can only be used for content management, not authentication.
+**Note**: Payload users created this way don't have passwords. They can only be used for content management, not authentication.
 
 ### Space Creation for Writers
 
@@ -172,7 +171,7 @@ When a user is created or updated with the `writer` role:
    - `name`: `"{firstName}'s Articles"` (or fallback to lastName/email prefix)
    - `description`: `'Default space for general articles'`
    - `is_default`: `true`
-   - `owner`: Directus user ID
+   - `owner`: Payload user ID
 
 **Example**:
 - User: John Doe (`firstName: "John"`)
@@ -180,9 +179,9 @@ When a user is created or updated with the `writer` role:
 
 ## Email Change Synchronization
 
-### Flow: Better Auth → Adonis → Directus
+### Flow: Better Auth → Adonis → Payload
 
-Email changes should flow **one-way** from Better Auth to Adonis to Directus:
+Email changes should flow **one-way** from Better Auth to Adonis to Payload:
 
 ```
 1. User initiates email change via Better Auth
@@ -194,7 +193,7 @@ Email changes should flow **one-way** from Better Auth to Adonis to Directus:
    ↓
 4. Email updated in Adonis (canonical)
    ↓
-5. Email updated in Directus (if Directus user exists)
+5. Email updated in Payload (if Payload user exists)
 ```
 
 ### Implementation
@@ -202,15 +201,15 @@ Email changes should flow **one-way** from Better Auth to Adonis to Directus:
 **Better Auth Email Change**:
 - Users should use Better Auth's email change flow which includes verification
 - After verification, hook into Better Auth's email change event
-- Call `EmailSyncService.syncEmailFromBetterAuth()` to sync to Adonis and Directus
+- Call `EmailSyncService.syncEmailFromBetterAuth()` to sync to Adonis and Payload
 
 **Admin Email Updates**:
 - Admin can update email via `PATCH /api/admin/users/:id`
-- Email is synced to Directus automatically
+- Email is synced to Payload automatically
 - Better Auth email should be updated separately via Better Auth's flow
 
 **User Profile Email Updates**:
-- Email updates via `PATCH /api/user/me` sync to Adonis and Directus
+- Email updates via `PATCH /api/user/me` sync to Adonis and Payload
 - Better Auth email should be updated separately via Better Auth's flow
 
 ## Role Updates
@@ -232,10 +231,10 @@ Email changes should flow **one-way** from Better Auth to Adonis to Directus:
 2. Better Auth role synced:
    - If `role === 'admin'` → Better Auth role set to `'admin'`
    - Otherwise → Better Auth role set to `'user'`
-3. Directus role handling:
-   - If role changed to content role → Create/update Directus user
-   - If role changed from content role to `'user'` → Directus user remains (not deleted)
-   - If role changed between content roles → Update Directus role
+3. Payload role handling:
+   - If role changed to content role → Create/update Payload user
+   - If role changed from content role to `'user'` → Payload user remains (not deleted)
+   - If role changed between content roles → Update Payload role
 
 ### Role Change Examples
 
@@ -243,7 +242,7 @@ Email changes should flow **one-way** from Better Auth to Adonis to Directus:
 ```
 1. Adonis role: 'user' → 'writer'
 2. Better Auth role: 'user' → 'user' (no change)
-3. Directus: No user → Create user with Writer role
+3. Payload: No user → Create user with Writer role
 4. Space: Create default space
 ```
 
@@ -251,7 +250,7 @@ Email changes should flow **one-way** from Better Auth to Adonis to Directus:
 ```
 1. Adonis role: 'writer' → 'editor'
 2. Better Auth role: 'user' → 'user' (no change)
-3. Directus: Update role from Writer to Editor
+3. Payload: Update role from Writer to Editor
 4. Space: Keep existing space (no change)
 ```
 
@@ -259,7 +258,7 @@ Email changes should flow **one-way** from Better Auth to Adonis to Directus:
 ```
 1. Adonis role: 'editor' → 'user'
 2. Better Auth role: 'user' → 'user' (no change)
-3. Directus: User remains (not deleted, but role may be updated)
+3. Payload: User remains (not deleted, but role may be updated)
 ```
 
 ## API Endpoints
@@ -319,18 +318,17 @@ PATCH /api/admin/users/:id/toggle-status
 
 ## Services
 
-### DirectusUserSyncService
+### PayloadUserSyncService
 
-**Location**: `apps/backend/app/services/directus_user_sync_service.ts`
+**Location**: `apps/backend/app/services/payload_user_sync_service.ts`
 
 **Key Methods**:
 
-- `syncUserToDirectus(user: User, role: string)`: Create/update Directus user
-- `createDefaultSpaceForWriter(directusUserId, firstName, lastName, email)`: Create default space for Writer
-- `updateDirectusUserEmail(directusUserId, email)`: Update Directus email
-- `updateDirectusUserRole(directusUserId, adonisRole)`: Update Directus role
-- `getDirectusRoleId(adonisRole)`: Map Adonis role to Directus role ID
-- `requiresDirectusUser(role)`: Check if role requires Directus user
+- `syncUserToPayload(user: User, role: string)`: Create/update Payload user
+- `createDefaultSpaceForWriter(payloadUserId, firstName, lastName, email)`: Create default space for Writer
+- `updatePayloadUserEmail(payloadUserId, email)`: Update Payload email
+- `updatePayloadUserRole(payloadUserId, adonisRole)`: Update Payload role
+- `requiresPayloadUser(role)`: Check if role requires Payload user
 
 ### EmailSyncService
 
@@ -338,9 +336,9 @@ PATCH /api/admin/users/:id/toggle-status
 
 **Key Methods**:
 
-- `syncEmailFromBetterAuth(betterAuthUserId, newEmail)`: Sync email from Better Auth to Adonis and Directus
-- `syncEmailToDirectus(directusUserId, email)`: Update Directus email
-- `syncEmailToAdonisAndDirectus(user, newEmail)`: Sync email to Adonis and Directus (fallback)
+- `syncEmailFromBetterAuth(betterAuthUserId, newEmail)`: Sync email from Better Auth to Adonis and Payload
+- `syncEmailToPayload(payloadUserId, email)`: Update Payload email
+- `syncEmailToAdonisAndPayload(user, newEmail)`: Sync email to Adonis and Payload (fallback)
 
 ### BetterAuthSyncService
 
@@ -358,7 +356,7 @@ PATCH /api/admin/users/:id/toggle-status
 CREATE TABLE users (
   id SERIAL PRIMARY KEY,
   better_auth_user_id VARCHAR(255) UNIQUE,
-  directus_user_id VARCHAR(255), -- UUID from Directus
+  payload_user_id VARCHAR(255), -- ID from Payload
   email VARCHAR(255) NOT NULL UNIQUE,
   first_name VARCHAR(255),
   last_name VARCHAR(255),
@@ -375,7 +373,7 @@ CREATE TABLE users (
 
 1. **Frontend Registrations**: Always default to `'user'` role
 2. **Admin Creation**: Use appropriate role based on user's responsibilities
-3. **Role Updates**: Consider impact on Directus access and spaces
+3. **Role Updates**: Consider impact on Payload access and spaces
 
 ### Email Changes
 
@@ -383,11 +381,11 @@ CREATE TABLE users (
 2. **Admin-Initiated**: Can update directly, but Better Auth email should be updated separately
 3. **Verification**: Always verify email changes in Better Auth before syncing
 
-### Directus Users
+### Payload Users
 
 1. **Creation**: Only create for content roles
-2. **Deletion**: Don't delete Directus users when role changes to `'user'` (preserve data)
-3. **Updates**: Keep Directus users in sync with Adonis users
+2. **Deletion**: Don't delete Payload users when role changes to `'user'` (preserve data)
+3. **Updates**: Keep Payload users in sync with Adonis users
 
 ### Spaces
 
@@ -397,14 +395,14 @@ CREATE TABLE users (
 
 ## Troubleshooting
 
-### Directus User Not Created
+### Payload User Not Created
 
-**Symptoms**: User has content role but no Directus user
+**Symptoms**: User has content role but no Payload user
 
 **Solutions**:
-1. Check `directus_user_id` field in users table
-2. Verify Directus service is accessible
-3. Check logs for Directus creation errors
+1. Check `payload_user_id` field in users table
+2. Verify Payload service is accessible
+3. Check logs for Payload creation errors
 4. Manually sync: Update user role to trigger sync
 
 ### Email Not Syncing
@@ -415,14 +413,14 @@ CREATE TABLE users (
 1. Verify Better Auth email change completed
 2. Check EmailSyncService logs
 3. Manually sync email via admin panel
-4. Verify Directus user exists (if applicable)
+4. Verify Payload user exists (if applicable)
 
 ### Space Not Created for Writer
 
 **Symptoms**: Writer role assigned but no space created
 
 **Solutions**:
-1. Check Directus user was created
+1. Check Payload user was created
 2. Verify space creation logs
 3. Check for existing default space
 4. Manually create space if needed
@@ -435,5 +433,5 @@ When upgrading from the old 2-role system:
 2. Existing `'user'` roles remain as `'user'`
 3. Existing `'admin'` roles remain as `'admin'`
 4. New roles can be assigned via admin panel
-5. Directus users will be created on next role update to content role
+5. Payload users will be created on next role update to content role
 

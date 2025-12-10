@@ -138,7 +138,7 @@ Additional considerations for production readiness including email deliverabilit
 - **Service health**:
   - Redis health
   - Lago API health
-  - Directus API health
+  - Payload API health
   - Email service health
 
 ### Alerting

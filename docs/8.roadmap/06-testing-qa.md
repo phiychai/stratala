@@ -49,8 +49,8 @@ Ensure code quality and reliability through comprehensive test coverage, integra
   - Mock Lago API responses
   - Test webhook handling
   - Test error scenarios
-- **Test Directus integration**:
-  - Mock Directus API responses
+- **Test Payload integration**:
+  - Mock Payload API responses
   - Test content fetching
   - Test content updates
 - **Test database operations**:
@@ -146,7 +146,7 @@ Ensure code quality and reliability through comprehensive test coverage, integra
   - Realistic data scenarios
   - Edge case data
 - **Mock services**:
-  - Mock external APIs (Lago, Directus)
+  - Mock external APIs (Lago, Payload)
   - Control responses for testing
   - Test error scenarios
 
@@ -198,7 +198,7 @@ Ensure code quality and reliability through comprehensive test coverage, integra
 - [ ] Set up integration test suite
 - [ ] Test API endpoints with real database
 - [ ] Test Lago integration
-- [ ] Test Directus integration
+- [ ] Test Payload integration
 - [ ] Create E2E test suite for user flows
 - [ ] Create E2E test suite for admin flows
 - [ ] Test error scenarios in E2E tests

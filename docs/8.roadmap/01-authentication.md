@@ -46,7 +46,7 @@ This document **tracks progress** on all authentication features, from core auth
 - ✅ Password strength validation
 - ✅ Account creation in Better Auth
 - ✅ User sync to AdonisJS
-- ✅ User sync to Directus (for content roles)
+- ✅ User sync to Payload (for content roles)
 
 #### Login
 - ✅ Email/password login
@@ -81,7 +81,7 @@ This document **tracks progress** on all authentication features, from core auth
 
 - ✅ 6 roles implemented (user, admin, content_admin, editor, writer)
 - ✅ Role-based authorization (Adonis Bouncer)
-- ✅ Directus role synchronization
+- ✅ Payload role synchronization
 - ✅ Automatic space creation for writers
 
 ### Username System
@@ -106,13 +106,13 @@ This document **tracks progress** on all authentication features, from core auth
 ### Goals
 - Enable email verification in Better Auth
 - Integrate email service (SendGrid/Mailgun/AWS SES/Resend)
-- Create email templates in Directus
+- Create email templates in Payload
 - Build verification UI pages
 
 ### Key Tasks
 - [x] Enable `requireEmailVerification: true` in Better Auth config ✅
 - [x] Create email service (`apps/backend/app/services/email_service.ts`) ✅
-- [ ] Create `email_templates` collection in Directus
+- [ ] Create `email_templates` collection in Payload
 - [x] Implement Better Auth email callbacks (`sendVerificationEmail`, `sendResetPassword`) ✅ (via emailOTP plugin)
 - [ ] Create verification page (`apps/web/app/pages/verify-email.vue`)
 - [ ] Update signup page with verification status

@@ -1,6 +1,6 @@
 ---
 title: 'Admin Dashboard'
-description: 'User management, subscription management, Directus integration, analytics, and permissions'
+description: 'User management, subscription management, Payload integration, analytics, and permissions'
 navigation:
   title: 'Admin Dashboard'
   order: 4
@@ -8,13 +8,13 @@ navigation:
 
 ## Overview
 
-Build a comprehensive admin dashboard with user management, subscription management, Directus integration, analytics, and proper permissions.
+Build a comprehensive admin dashboard with user management, subscription management, Payload integration, analytics, and proper permissions.
 
 ## Implementation Status
 
 - [~] User Management ⚠️ (Backend API exists, UI needs completion)
 - [ ] Subscription Management (Admin)
-- [~] Directus Integration ⚠️ (Service exists, UI integration needed)
+- [~] Payload Integration ⚠️ (Service exists, UI integration needed)
 - [ ] Admin Analytics & Reports
 - [~] Admin Permissions ⚠️ (Middleware exists, needs verification)
 
@@ -144,15 +144,15 @@ Build a comprehensive admin dashboard with user management, subscription managem
   - LTV by acquisition channel
   - LTV trends
 
-## 3.3 Directus Integration in Admin
+## 3.3 Payload Integration in Admin
 
-### Directus Content Management UI
-- **Embed Directus admin or create proxy UI**:
-  - Option 1: Iframe embed Directus admin (requires auth)
-  - Option 2: Create custom UI using Directus API
+### Payload Content Management UI
+- **Embed Payload admin or create proxy UI**:
+  - Option 1: Iframe embed Payload admin (requires auth)
+  - Option 2: Create custom UI using Payload API
   - Option 3: Hybrid approach for specific features
 - **Manage email templates**:
-  - List email templates from Directus collections
+  - List email templates from Payload collections
   - Edit templates directly
   - Preview templates with sample data
   - Test email sending
@@ -167,15 +167,15 @@ Build a comprehensive admin dashboard with user management, subscription managem
   - Organize media into folders
   - Delete unused assets
 
-### Directus API Integration
-- **Service location**: `apps/backend/app/services/directus_service.ts` (partially exists)
-- **Admin endpoints** to sync/manage Directus content:
+### Payload API Integration
+- **Service location**: `apps/backend/app/services/payload_service.ts` (exists)
+- **Admin endpoints** to sync/manage Payload content:
   - `GET /api/admin/cms/collections` - List collections
   - `GET /api/admin/cms/items/:collection` - List items
   - `POST /api/admin/cms/items/:collection` - Create item
   - `PATCH /api/admin/cms/items/:collection/:id` - Update item
   - `DELETE /api/admin/cms/items/:collection/:id` - Delete item
-- **Cache Directus content appropriately**:
+- **Cache Payload content appropriately**:
   - Cache frequently accessed content
   - Invalidate cache on updates
   - Cache strategy for static vs dynamic content
@@ -232,7 +232,7 @@ Build a comprehensive admin dashboard with user management, subscription managem
   - Connection pool usage
 - **Service connectivity**:
   - Lago API connectivity
-  - Directus API connectivity
+  - Payload API connectivity
   - Email service status
   - Redis connection status
 - **Error rates**:
@@ -276,8 +276,8 @@ Build a comprehensive admin dashboard with user management, subscription managem
 - [ ] Add bulk operations functionality
 - [ ] Build subscription management page
 - [ ] Implement revenue analytics and charts
-- [~] Integrate Directus content management ⚠️ (CmsProxyController exists)
-- [x] Create Directus API service endpoints ✅ (DirectusService exists)
+- [~] Integrate Payload content management ⚠️ (CmsProxyController exists)
+- [x] Create Payload API service endpoints ✅ (PayloadService exists)
 - [ ] Build activity logs and audit trail
 - [ ] Implement system health monitoring
 - [~] Set up granular admin permissions ⚠️ (Admin middleware exists, needs verification)

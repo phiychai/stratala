@@ -45,7 +45,7 @@ This application uses a clean separation between **authentication** (who you are
 - `role`: Authorization role - "user" | "admin" | "content_admin" | "editor" | "writer" (canonical)
 - `isActive`: Account status
 - `better_auth_user_id`: Reference to Better Auth user
-- `directus_user_id`: Reference to Directus user (for content roles)
+- `payload_user_id`: Reference to Payload user (for content roles)
 - Preferences, app-specific fields (canonical)
 - `deleted_at`: Soft delete timestamp
 
@@ -139,8 +139,8 @@ Profile data flows **one-way only**: Better Auth → AdonisJS
 **What syncs:**
 - ✅ `firstName`, `lastName` (from OAuth providers)
 - ✅ `username` (if provided)
-- ✅ `role` - Synced to Better Auth (mapped to admin/user) and Directus (for content roles)
-- ✅ `email` - Synced from Better Auth to Adonis and Directus (one-way flow)
+- ✅ `role` - Synced to Better Auth (mapped to admin/user) and Payload (for content roles)
+- ✅ `email` - Synced from Better Auth to Adonis and Payload (one-way flow)
 
 ## Benefits
 

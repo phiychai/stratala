@@ -111,7 +111,7 @@ Harden the application for production with security best practices, error handli
   - Database connectivity
   - Redis connectivity
   - Lago API connectivity
-  - Directus API connectivity
+  - Payload API connectivity
   - Email service connectivity
 - **Return detailed status**:
   - Each service status (up/down)
@@ -162,7 +162,7 @@ Harden the application for production with security best practices, error handli
 ### Database Backups
 - **Automated daily PostgreSQL backups**:
   - Use `pg_dump` or PostgreSQL backup tools
-  - Backup all databases (adonis_db, directus_db, lago_db)
+  - Backup all databases (adonis_db, payload_db, lago_db)
   - Schedule daily backups (e.g., 2 AM)
 - **Backup retention policy**:
   - Keep daily backups for 30 days
@@ -178,8 +178,8 @@ Harden the application for production with security best practices, error handli
   - Use multiple storage locations (redundancy)
 
 ### File Storage Backups
-- **Directus uploads folder backup**:
-  - Backup `/directus/uploads` directory
+- **Payload uploads folder backup**:
+  - Backup `/payload/media` directory
   - Include file metadata
   - Schedule regular backups
 - **Lago data backup** (if self-hosted):

@@ -904,6 +904,5 @@ Enhance security with 2FA:
 
 - [Authentication Architecture](./architecture.md) - Better Auth + AdonisJS auth
 - [Roles and User Management](./roles-and-user-management.md) - Role system
-- [Directus to Payload Migration](../migrations/directus-to-payload.md) - Migration plan
 - [Payload CMS Authentication Docs](https://payloadcms.com/docs/authentication/overview) - Official Payload docs
 

@@ -211,6 +211,5 @@ Key considerations:
 ## Related Documentation
 
 - [Payload Authentication](/docs/authentication/payload-authentication)
-- [Migration Guide](/docs/migrations/directus-to-payload)
 - [Architecture Overview](/docs/architecture/architecture)
 
