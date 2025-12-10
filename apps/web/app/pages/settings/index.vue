@@ -168,7 +168,7 @@ async function onFileChange(e: Event) {
     const formData = new FormData();
     formData.append('avatar', file);
 
-    // Upload to backend
+    // Upload to backend - use useRequestFetch for SSR cookie forwarding
     const requestFetch = useRequestFetch();
     const response = await requestFetch<{ avatarUrl: string }>('/api/user/avatar', {
       method: 'POST',

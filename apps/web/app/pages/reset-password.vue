@@ -76,7 +76,11 @@ const schema = z
 
 type Schema = z.output<typeof schema>;
 
-const { submitting: resetting, error, submit: submitForm } = useFormSubmission<Schema>({
+const {
+  submitting: resetting,
+  error,
+  submit: submitForm,
+} = useFormSubmission<Schema>({
   onSubmit: async (data) => {
     // Validate password strength before submitting
     validatePassword(data.password);

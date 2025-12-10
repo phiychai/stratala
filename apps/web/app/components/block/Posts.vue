@@ -13,7 +13,7 @@ const props = defineProps<PostsProps>();
 
 // Use posts composable for fetching and pagination
 const { posts, error } = usePosts({
-  limit: props.data.limit || 12,
+  limit: props.data?.limit || 12, // Add optional chaining
   key: `block-posts-${useRoute().path}-${props.data?.id || 'default'}`,
 });
 

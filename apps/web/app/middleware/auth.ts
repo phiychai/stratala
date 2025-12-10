@@ -1,4 +1,10 @@
-export default defineNuxtRouteMiddleware(async (to, from) => {
+/**
+ * Auth Middleware
+ *
+ * Protects routes - only accessible to authenticated users
+ * Redirects to home page if not authenticated
+ */
+export default defineNuxtRouteMiddleware(async (_to, _from) => {
   const { fetchUser, isAuthenticated } = useAuth();
 
   // Try to fetch user if not already authenticated
@@ -6,8 +12,8 @@ export default defineNuxtRouteMiddleware(async (to, from) => {
     await fetchUser();
   }
 
-  // Redirect to login if still not authenticated
+  // If still not authenticated after fetch, redirect to home
   if (!isAuthenticated.value) {
-    return navigateTo('/login');
+    return navigateTo('/');
   }
 });

@@ -15,6 +15,41 @@ const stats = ref({
   supportTickets: 0,
 });
 
+// System health status
+interface HealthStatus {
+  status: 'healthy' | 'degraded' | 'unhealthy';
+  message?: string;
+  responseTime?: number;
+}
+
+interface SystemHealth {
+  database: HealthStatus;
+  adonisApi: HealthStatus;
+  payloadCms: HealthStatus;
+  lago: HealthStatus;
+  timestamp: string;
+}
+
+const systemHealth = ref<SystemHealth | null>(null);
+const healthLoading = ref(false);
+const healthError = ref<string | null>(null);
+
+// Fetch system health status
+const fetchSystemHealth = async () => {
+  healthLoading.value = true;
+  healthError.value = null;
+
+  try {
+    const data = await $fetch<SystemHealth>('/api/admin/health');
+    systemHealth.value = data;
+  } catch (error) {
+    healthError.value = error instanceof Error ? error.message : 'Failed to fetch health status';
+    console.error('Health check error:', error);
+  } finally {
+    healthLoading.value = false;
+  }
+};
+
 // Fetch admin data
 onMounted(async () => {
   // TODO: Replace with actual API calls
@@ -24,7 +59,57 @@ onMounted(async () => {
     monthlyRevenue: 45230,
     supportTickets: 23,
   };
+
+  // Fetch system health
+  await fetchSystemHealth();
+
+  // Refresh health status every 30 seconds
+  setInterval(fetchSystemHealth, 30000);
 });
+
+// Helper function to get status badge color
+const getStatusColor = (
+  status: 'healthy' | 'degraded' | 'unhealthy'
+): 'success' | 'warning' | 'error' => {
+  switch (status) {
+    case 'healthy':
+      return 'success';
+    case 'degraded':
+      return 'warning';
+    case 'unhealthy':
+      return 'error';
+    default:
+      return 'error';
+  }
+};
+
+// Helper function to get status label
+const getStatusLabel = (status: 'healthy' | 'degraded' | 'unhealthy'): string => {
+  switch (status) {
+    case 'healthy':
+      return 'Healthy';
+    case 'degraded':
+      return 'Degraded';
+    case 'unhealthy':
+      return 'Unhealthy';
+    default:
+      return 'Unknown';
+  }
+};
+
+// Helper function to get status indicator color
+const getStatusIndicatorColor = (status: 'healthy' | 'degraded' | 'unhealthy'): string => {
+  switch (status) {
+    case 'healthy':
+      return 'bg-green-500';
+    case 'degraded':
+      return 'bg-yellow-500';
+    case 'unhealthy':
+      return 'bg-red-500';
+    default:
+      return 'bg-gray-500';
+  }
+};
 </script>
 
 <template>
@@ -209,38 +294,125 @@ onMounted(async () => {
 
           <UCard>
             <template #header>
-              <h2 class="text-xl font-semibold">System Status</h2>
+              <div class="flex items-center justify-between">
+                <h2 class="text-xl font-semibold">System Status</h2>
+                <UButton
+                  v-if="!healthLoading"
+                  icon="i-heroicons-arrow-path"
+                  size="xs"
+                  variant="ghost"
+                  @click="fetchSystemHealth"
+                >
+                  Refresh
+                </UButton>
+                <UButton
+                  v-else
+                  icon="i-heroicons-arrow-path"
+                  size="xs"
+                  variant="ghost"
+                  loading
+                  disabled
+                >
+                  Loading
+                </UButton>
+              </div>
             </template>
 
-            <div class="space-y-4">
+            <div v-if="healthLoading && !systemHealth" class="space-y-4">
+              <div class="flex items-center justify-center py-8">
+                <UIcon name="i-heroicons-arrow-path" class="w-6 h-6 animate-spin text-gray-400" />
+                <span class="ml-2 text-gray-500">Checking system health...</span>
+              </div>
+            </div>
+
+            <div v-else-if="healthError" class="space-y-4">
+              <UAlert color="error" variant="soft" :title="healthError" />
+            </div>
+
+            <div v-else-if="systemHealth" class="space-y-4">
               <div class="flex items-center justify-between">
                 <div class="flex items-center gap-2">
-                  <div class="w-2 h-2 rounded-full bg-green-500" />
-                  <span>Database</span>
+                  <div
+                    :class="[
+                      'w-2 h-2 rounded-full',
+                      getStatusIndicatorColor(systemHealth.database.status),
+                    ]"
+                  />
+                  <div class="flex flex-col">
+                    <span>Database</span>
+                    <span v-if="systemHealth.database.responseTime" class="text-xs text-gray-500">
+                      {{ systemHealth.database.responseTime }}ms
+                    </span>
+                  </div>
                 </div>
-                <UBadge color="success" variant="subtle">Healthy</UBadge>
+                <UBadge :color="getStatusColor(systemHealth.database.status)" variant="subtle">
+                  {{ getStatusLabel(systemHealth.database.status) }}
+                </UBadge>
               </div>
               <div class="flex items-center justify-between">
                 <div class="flex items-center gap-2">
-                  <div class="w-2 h-2 rounded-full bg-green-500" />
-                  <span>API</span>
+                  <div
+                    :class="[
+                      'w-2 h-2 rounded-full',
+                      getStatusIndicatorColor(systemHealth.adonisApi.status),
+                    ]"
+                  />
+                  <div class="flex flex-col">
+                    <span>Adonis API</span>
+                    <span v-if="systemHealth.adonisApi.responseTime" class="text-xs text-gray-500">
+                      {{ systemHealth.adonisApi.responseTime }}ms
+                    </span>
+                  </div>
                 </div>
-                <UBadge color="success" variant="subtle">Operational</UBadge>
+                <UBadge :color="getStatusColor(systemHealth.adonisApi.status)" variant="subtle">
+                  {{ getStatusLabel(systemHealth.adonisApi.status) }}
+                </UBadge>
               </div>
               <div class="flex items-center justify-between">
                 <div class="flex items-center gap-2">
-                  <div class="w-2 h-2 rounded-full bg-green-500" />
-                  <span>Billing Service</span>
+                  <div
+                    :class="[
+                      'w-2 h-2 rounded-full',
+                      getStatusIndicatorColor(systemHealth.payloadCms.status),
+                    ]"
+                  />
+                  <div class="flex flex-col">
+                    <span>Payload CMS</span>
+                    <span v-if="systemHealth.payloadCms.responseTime" class="text-xs text-gray-500">
+                      {{ systemHealth.payloadCms.responseTime }}ms
+                    </span>
+                  </div>
                 </div>
-                <UBadge color="success" variant="subtle">Connected</UBadge>
+                <UBadge :color="getStatusColor(systemHealth.payloadCms.status)" variant="subtle">
+                  {{ getStatusLabel(systemHealth.payloadCms.status) }}
+                </UBadge>
               </div>
               <div class="flex items-center justify-between">
                 <div class="flex items-center gap-2">
-                  <div class="w-2 h-2 rounded-full bg-yellow-500" />
-                  <span>Email Service</span>
+                  <div
+                    :class="[
+                      'w-2 h-2 rounded-full',
+                      getStatusIndicatorColor(systemHealth.lago.status),
+                    ]"
+                  />
+                  <div class="flex flex-col">
+                    <span>Lago Billing</span>
+                    <span v-if="systemHealth.lago.responseTime" class="text-xs text-gray-500">
+                      {{ systemHealth.lago.responseTime }}ms
+                    </span>
+                  </div>
                 </div>
-                <UBadge color="warning" variant="subtle">Degraded</UBadge>
+                <UBadge :color="getStatusColor(systemHealth.lago.status)" variant="subtle">
+                  {{ getStatusLabel(systemHealth.lago.status) }}
+                </UBadge>
               </div>
+              <div v-if="systemHealth.timestamp" class="pt-2 border-t text-xs text-gray-500">
+                Last checked: {{ new Date(systemHealth.timestamp).toLocaleTimeString() }}
+              </div>
+            </div>
+
+            <div v-else class="space-y-4">
+              <UAlert color="warning" variant="soft" title="No health data available" />
             </div>
           </UCard>
         </div>

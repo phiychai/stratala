@@ -1,3 +1,10 @@
+import type { UserProfile } from '@turborepo-saas-starter/shared-types';
+
+type UserDisplayNameInput =
+  | Pick<UserProfile, 'firstName' | 'lastName' | 'username' | 'email' | 'fullName'>
+  | null
+  | undefined;
+
 /**
  * useUserDisplayName Composable
  *
@@ -14,36 +21,35 @@
  * @param user - User object with name fields
  * @returns Computed display name
  */
-export function useUserDisplayName(user: Ref<{
-  firstName?: string | null;
-  lastName?: string | null;
-  username?: string | null;
-  email?: string | null;
-  fullName?: string | null;
-}>) {
+export function useUserDisplayName(user: Ref<UserDisplayNameInput>) {
   const displayName = computed(() => {
     const u = user.value;
     if (!u) return 'User';
 
     // Priority 1: fullName
-    if (u.fullName) return u.fullName;
+    if (u.fullName?.trim()) return u.fullName.trim();
 
     // Priority 2: firstName + lastName
-    if (u.firstName && u.lastName) {
-      return `${u.firstName} ${u.lastName}`;
+    const firstName = u.firstName?.trim();
+    const lastName = u.lastName?.trim();
+    if (firstName && lastName) {
+      return `${firstName} ${lastName}`;
     }
 
     // Priority 3: firstName only
-    if (u.firstName) return u.firstName;
+    if (firstName) return firstName;
 
     // Priority 4: lastName only
-    if (u.lastName) return u.lastName;
+    if (lastName) return lastName;
 
     // Priority 5: username
-    if (u.username) return u.username;
+    if (u.username?.trim()) return u.username.trim();
 
-    // Priority 6: email (username part)
-    if (u.email) return u.email.split('@')[0];
+    // Priority 6: email (username part) - safer parsing
+    if (u.email?.trim()) {
+      const emailPart = u.email.split('@')[0]?.trim();
+      if (emailPart) return emailPart;
+    }
 
     // Fallback
     return 'User';
@@ -51,4 +57,3 @@ export function useUserDisplayName(user: Ref<{
 
   return { displayName };
 }
-

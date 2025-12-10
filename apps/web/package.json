@@ -4,7 +4,7 @@
   "type": "module",
   "scripts": {
     "build": "nuxt build",
-    "dev": "nuxt dev",
+    "dev": "nuxt dev --host 0.0.0.0",
     "generate": "nuxt generate",
     "preview": "nuxt preview",
     "postinstall": "nuxt prepare",
@@ -18,6 +18,7 @@
     "type-check": "nuxt typecheck"
   },
   "dependencies": {
+    "@iconify-json/heroicons": "^1.2.3",
     "@iconify-json/lucide": "^1.2.57",
     "@iconify-json/simple-icons": "^1.2.43",
     "@iconify-json/tabler": "^1.2.23",
@@ -56,7 +57,9 @@
   "devDependencies": {
     "@nuxt/eslint": "^1.10.0",
     "@nuxt/test-utils": "^3.20.1",
+    "@oxc-minify/binding-darwin-x64": "0.96.0",
     "@oxc-parser/binding-darwin-x64": "0.96.0",
+    "@oxc-transform/binding-darwin-x64": "0.96.0",
     "@turborepo-saas-starter/eslint-config": "workspace:*",
     "@vitest/ui": "^4.0.10",
     "@vue/test-utils": "^2.4.6",

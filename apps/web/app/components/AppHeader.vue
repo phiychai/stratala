@@ -1,38 +1,88 @@
 <script setup lang="ts">
+import type { NavigationMenuItem } from '@nuxt/ui';
+import type { Navigation } from '@turborepo-saas-starter/shared-types/payload-types';
+
 const route = useRoute();
 const { isAuthenticated } = useAuth();
-const items = computed(() => [
-  {
-    label: 'Docs',
-    to: '/docs',
-    active: route.path.startsWith('/docs'),
-  },
-  {
-    label: 'Pricing',
-    to: '/pricing',
-  },
-  {
-    label: 'Blog',
-    to: '/blog',
-  },
-  {
-    label: 'Changelog',
-    to: '/changelog',
-    badge: {
-      label: 'New',
-      color: 'primary' as const,
-    },
-  },
-]);
 
-const headerUI = computed(() => {
-  if (isAuthenticated.value) {
-    return {
-      container: 'max-w-none flex items-center justify-between gap-3 h-full',
-    };
-  }
-  return undefined;
+// Fetch navigation from Payload CMS
+// Note: Using same key as layouts, so we access the shared cache
+const { data: siteData } = await useFetch<{
+  headerNavigation: Navigation | null;
+}>('/api/site-data', {
+  key: 'site-data',
 });
+
+type NavigationItem = NonNullable<Navigation['items']>[0];
+
+/**
+ * Transform Payload navigation item to UNavigationMenu format
+ */
+function transformNavigationItem(item: NavigationItem): NavigationMenuItem {
+  let to: string | undefined;
+  let active: boolean | undefined;
+
+  // Determine URL based on type
+  if (item.type === 'url' && item.url) {
+    to = item.url;
+  } else if (item.type === 'page' && item.page) {
+    // Handle both object and ID reference
+    const page = typeof item.page === 'object' ? item.page : null;
+    if (page?.permalink) {
+      to = page.permalink;
+      active = route.path === page.permalink || route.path.startsWith(`${page.permalink}/`);
+    }
+  } else if (item.type === 'post' && item.post) {
+    // Handle both object and ID reference
+    const post = typeof item.post === 'object' ? item.post : null;
+    if (post?.slug) {
+      to = `/blog/${post.slug}`;
+      active = route.path === `/blog/${post.slug}`;
+    }
+  }
+
+  const menuItem: NavigationMenuItem = {
+    label: item.label,
+    ...(to && { to }),
+    ...(active !== undefined && { active }),
+    ...(item.badge?.label && {
+      badge: {
+        label: item.badge.label,
+        color: (item.badge.color || 'primary') as
+          | 'primary'
+          | 'success'
+          | 'warning'
+          | 'error'
+          | 'info',
+      },
+    }),
+  };
+
+  // Handle nested children
+  if (item.children && item.children.length > 0) {
+    menuItem.children = item.children.map((child: NavigationItem) =>
+      transformNavigationItem(child)
+    );
+  }
+
+  return menuItem;
+}
+
+// Transform Payload navigation to UNavigationMenu format
+const items = computed<NavigationMenuItem[]>(() => {
+  const navigation = siteData.value?.headerNavigation;
+
+  if (!navigation?.items || !Array.isArray(navigation.items)) {
+    // Fallback to empty array if navigation is not available
+    return [];
+  }
+
+  return navigation.items.map((item: NavigationItem) => transformNavigationItem(item));
+});
+
+const headerUI = computed(() => ({
+  container: 'max-w-none flex items-center justify-between gap-3 h-full',
+}));
 // Inject the sidebar open state from the layout
 const collapsed = inject<Ref<boolean>>('sidebarCollapse', ref(false));
 const slideoverOpen = inject<Ref<boolean>>('slideoverOpen', ref(false));
@@ -42,7 +92,7 @@ const toggleSidebar = () => {
   collapsed.value = !collapsed.value;
 };
 
-const toggleSlideover = () => {
+const _toggleSlideover = () => {
   slideoverOpen.value = !slideoverOpen.value;
 };
 </script>

@@ -123,10 +123,7 @@ useSeoMeta({
     </template>
     <template #body>
       <UContainer v-if="post" ref="articleContentRef" class="max-w-[680px]">
-        <UPageHeader
-          :title="post.title"
-          :description="post.description || undefined"
-        >
+        <UPageHeader :title="post.title" :description="post.description || undefined">
           <template #headline>
             <UBadge
               v-for="(category, index) in post.categories || []"

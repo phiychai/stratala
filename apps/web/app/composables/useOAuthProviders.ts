@@ -19,8 +19,8 @@ export function useOAuthProviders() {
       },
     },
     {
-      label: 'GitHub',
-      icon: 'i-simple-icons-github',
+      label: 'X',
+      icon: 'i-simple-icons-x',
       onClick: () => {
         toast.add({ title: 'GitHub', description: 'Login with GitHub - Coming soon' });
       },

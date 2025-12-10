@@ -31,8 +31,9 @@ export const useBillingStore = defineStore('billing', {
       try {
         // Use useRequestFetch for SSR cookie forwarding
         const requestFetch = useRequestFetch();
-
-        const response = await requestFetch('/api/billing/plans');
+        const response = await requestFetch('/api/billing/plans', {
+          credentials: 'include',
+        });
         this.plans = response as Plan[];
 
         return {
@@ -59,8 +60,9 @@ export const useBillingStore = defineStore('billing', {
       try {
         // Use useRequestFetch for SSR cookie forwarding
         const requestFetch = useRequestFetch();
-
-        const response = await requestFetch('/api/billing/subscriptions');
+        const response = await requestFetch('/api/billing/subscriptions', {
+          credentials: 'include',
+        });
         this.subscriptions = response as Subscription[];
 
         // Set current active subscription
@@ -91,13 +93,13 @@ export const useBillingStore = defineStore('billing', {
       try {
         // Use useRequestFetch for SSR cookie forwarding
         const requestFetch = useRequestFetch();
-
         const subscription = await requestFetch('/api/billing/subscriptions', {
           method: 'POST',
           body: {
             planCode,
             externalId: `sub_${Date.now()}`,
           },
+          credentials: 'include',
         });
 
         this.subscriptions.push(subscription as Subscription);
@@ -127,9 +129,9 @@ export const useBillingStore = defineStore('billing', {
       try {
         // Use useRequestFetch for SSR cookie forwarding
         const requestFetch = useRequestFetch();
-
         await requestFetch(`/api/billing/subscriptions/${externalId}`, {
           method: 'DELETE',
+          credentials: 'include',
         });
 
         // Remove from local state
@@ -164,8 +166,9 @@ export const useBillingStore = defineStore('billing', {
       try {
         // Use useRequestFetch for SSR cookie forwarding
         const requestFetch = useRequestFetch();
-
-        const response = await requestFetch('/api/billing/invoices');
+        const response = await requestFetch('/api/billing/invoices', {
+          credentials: 'include',
+        });
         this.invoices = response as Invoice[];
 
         return {
@@ -190,9 +193,9 @@ export const useBillingStore = defineStore('billing', {
       try {
         // Use useRequestFetch for SSR cookie forwarding
         const requestFetch = useRequestFetch();
-
         const response = await requestFetch(`/api/billing/invoices/${invoiceId}/download`, {
           method: 'GET',
+          credentials: 'include',
         });
 
         return {

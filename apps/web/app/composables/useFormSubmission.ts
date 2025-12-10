@@ -80,4 +80,3 @@ export function useFormSubmission<T>(options: {
     submit,
   };
 }
-

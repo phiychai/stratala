@@ -4,32 +4,9 @@ import type { DropdownMenuItem } from '@nuxt/ui';
 defineProps<{
   collapsed?: boolean;
 }>();
-
-const colorMode = useColorMode();
-const appConfig = useAppConfig();
 const router = useRouter();
+const colorMode = useColorMode();
 const { user: authUser, logout } = useAuth();
-
-const colors = [
-  'red',
-  'orange',
-  'amber',
-  'yellow',
-  'lime',
-  'green',
-  'emerald',
-  'teal',
-  'cyan',
-  'sky',
-  'blue',
-  'indigo',
-  'violet',
-  'purple',
-  'fuchsia',
-  'pink',
-  'rose',
-];
-const neutrals = ['slate', 'gray', 'zinc', 'neutral', 'stone'];
 
 const user = computed(() => ({
   name: authUser.value?.fullName || authUser.value?.email || 'User',
@@ -49,7 +26,6 @@ const profileUrl = computed(() => {
 
 const handleLogout = async () => {
   await logout();
-  router.push('/');
 };
 
 const items = computed<DropdownMenuItem[][]>(() => [
@@ -61,6 +37,11 @@ const items = computed<DropdownMenuItem[][]>(() => [
     },
   ],
   [
+    {
+      label: 'Dashboard',
+      icon: 'i-lucide-home',
+      to: '/dashboard',
+    },
     {
       label: 'Profile',
       icon: 'tabler:user',

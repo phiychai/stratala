@@ -34,7 +34,11 @@ export function useTableOfContents(
   /**
    * Extract headings from Lexical format
    */
-  function extractHeadingsFromLexical(content: any, headings: TocLink[] = [], stack: TocLink[] = []): TocLink[] {
+  function extractHeadingsFromLexical(
+    content: any,
+    headings: TocLink[] = [],
+    stack: TocLink[] = []
+  ): TocLink[] {
     if (!content) return headings;
 
     // Handle Lexical root structure
@@ -52,7 +56,7 @@ export function useTableOfContents(
       const tag = node.tag;
 
       if (nodeType === 'heading' || (tag && /^h[1-6]$/.test(tag))) {
-        const depth = tag ? parseInt(tag.replace('h', ''), 10) : (node.depth || 1);
+        const depth = tag ? parseInt(tag.replace('h', ''), 10) : node.depth || 1;
         const text = extractTextFromLexicalNode(node).trim();
 
         if (text) {

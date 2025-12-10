@@ -16,7 +16,7 @@ const router = useRouter();
 const { requestPasswordReset } = useAuth();
 
 // Redirect if already authenticated
-useAuthRedirect('/');
+useAuthRedirect('/home');
 
 const fields = [
   {

@@ -9,7 +9,6 @@ const {
 
 const { isVisualEditingEnabled, apply } = useVisualEditing();
 const { isAuthenticated } = useAuth();
-const route = useRoute();
 const navigation = useTemplateRef('navigationRef');
 const footer = useTemplateRef('footerRef');
 
@@ -47,84 +46,16 @@ provide('slideoverOpen', slideoverOpen);
 defineShortcuts({
   o: () => (open.value = !open.value),
 });
-const links = computed(() => [
-  [
-    {
-      label: 'Home',
-      icon: route.path.startsWith('/') ? 'tabler:home-filled' : 'tabler:home',
-      to: '/',
-      class: 'p-3',
-      color: 'neutral',
 
-      onSelect: () => {
-        open.value = false;
-      },
-    },
-    {
-      label: 'Explore',
-      icon: 'tabler:search',
-      to: '/explore',
-      class: 'p-3',
-      onSelect: () => {
-        open.value = false;
-      },
-    },
-    {
-      label: 'Library',
-      icon: 'tabler:bookmarks',
-      to: '/library',
-      class: 'p-3 ',
+const { links } = useNavigation({
+  closeSidebar: () => {
+    open.value = false;
+  },
+});
 
-      onSelect: () => {
-        open.value = false;
-      },
-    },
-
-    {
-      label: 'Profile',
-      icon: route.path.startsWith('/profile') ? 'tabler:user-filled' : 'tabler:user',
-      to: '/dashboard/favorites',
-      class: 'p-3',
-      onSelect: () => {
-        open.value = false;
-      },
-    },
-  ],
-  [
-    {
-      label: 'Settings',
-      to: '/settings',
-      class: 'p-3',
-      icon: 'tabler:settings-cog',
-      defaultOpen: false,
-      type: 'trigger' as const,
-    },
-    {
-      label: 'Store',
-      to: '/store',
-      class: 'p-3',
-      icon: 'tabler:garden-cart',
-      defaultOpen: false,
-      type: 'trigger' as const,
-    },
-    {
-      label: 'Help',
-      icon: 'tabler:help',
-      to: '/dashboard/favorites',
-      class: 'p-3',
-      onSelect: () => {
-        open.value = false;
-      },
-    },
-  ],
-]);
-
-const isCollapsed = computed(() => route.path.startsWith('/blog'));
 onMounted(() => {
   if (!isVisualEditingEnabled.value) return;
-
   const elements = [navigation.value, footer.value].filter((el) => el !== null) as HTMLElement[];
-
   apply({
     elements,
     onSaved: () => {
@@ -136,9 +67,8 @@ onMounted(() => {
 
 <template>
   <div>
-    <div ref="navigationRef">
-      <AppHeader />
-    </div>
+    <AppHeader />
+    <div ref="navigationRef" />
     <!-- Dashboard Layout (Authenticated) -->
     <template v-if="isAuthenticated">
       <UDashboardGroup unit="rem" style="margin-top: 56px">

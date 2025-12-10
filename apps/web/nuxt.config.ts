@@ -25,22 +25,45 @@ export default defineNuxtConfig({
   ],
 
   devtools: {
-    enabled: true,
+    enabled: false,
   },
+  // Enable SSR for SEO benefits on public pages
+  // Authenticated pages can be client-side only via routeRules
   ssr: true,
   css: ['~/assets/css/main.css'],
   runtimeConfig: {
     public: {
-      siteUrl: process.env.NUXT_PUBLIC_SITE_URL || 'http://localhost:3000',
-      apiUrl: process.env.NUXT_PUBLIC_API_URL || 'http://localhost:3333',
-      payloadUrl: process.env.NUXT_PUBLIC_PAYLOAD_URL || 'http://localhost:3002',
+      siteUrl: process.env.NUXT_PUBLIC_SITE_URL || 'http://0.0.0.0:3000',
+      apiUrl: process.env.NUXT_PUBLIC_API_URL || 'http://0.0.0.0:3333',
+      payloadUrl: process.env.NUXT_PUBLIC_PAYLOAD_URL || 'http://0.0.0.0:3002',
       enableVisualEditing: process.env.NUXT_PUBLIC_ENABLE_VISUAL_EDITING !== 'false',
     },
   },
 
   routeRules: {
-    '/docs': { redirect: '/docs/getting-started', prerender: false },
-    '/explore': { prerender: false }, // Exclude from prerender - depends on API data
+    // Public pages - SSR enabled for SEO
+    '/': { ssr: true, prerender: true },
+    '/docs/**': { ssr: true, prerender: true },
+    '/blog/**': { ssr: true, prerender: true },
+    '/explore': { ssr: true, prerender: false }, // Dynamic content
+    '/@*/**': { ssr: true, prerender: false }, // User profiles - dynamic
+
+    // Auth pages - SSR enabled (no SEO needed but faster initial load)
+    '/login': { ssr: true },
+    '/signup': { ssr: true },
+    '/forgot-password': { ssr: true },
+    '/reset-password': { ssr: true },
+    '/verify-email': { ssr: true },
+    '/set-username': { ssr: true },
+
+    // Authenticated pages - Client-side only (no SEO needed, faster for logged-in users)
+    '/home': { ssr: false },
+    '/admin/**': { ssr: false },
+    '/settings/**': { ssr: false },
+    '/library': { ssr: false },
+    '/my-feed': { ssr: false },
+
+    // API routes
     '/api/pages/**': { cors: true, headers: { 'Cache-Control': 's-maxage=300' } },
     '/api/posts/**': { cors: true, headers: { 'Cache-Control': 's-maxage=60' } },
     '/api/posts/categories': { cors: true, headers: { 'Cache-Control': 's-maxage=600' } },
@@ -129,9 +152,14 @@ export default defineNuxtConfig({
                 'http://localhost:8055',
                 process.env.NUXT_PUBLIC_PAYLOAD_URL || 'http://localhost:3002',
               ],
-              'frame-ancestors': ["'self'", 'http://localhost:8055'],
             }
           : false, // Disable CSP in development
+    },
+  },
+
+  vite: {
+    server: {
+      allowedHosts: ['webdev.lan', 'admin.webdev.lan', 'cms.webdev.lan'],
     },
   },
 });

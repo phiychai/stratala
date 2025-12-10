@@ -46,11 +46,11 @@ const fields = [
     type: 'password' as const,
     placeholder: 'Enter your password',
   },
-  {
-    name: 'remember',
-    label: 'Remember me',
-    type: 'checkbox' as const,
-  },
+  // {
+  //   name: 'remember',
+  //   label: 'Remember me',
+  //   type: 'checkbox' as const,
+  // },
 ];
 
 const { providers } = useOAuthProviders();
@@ -63,9 +63,7 @@ const schema = z.object({
 type Schema = z.output<typeof schema>;
 
 const { submit: submitForm } = useFormSubmission({
-  onSubmit: async (data) => {
-    return await login(data.email, data.password);
-  },
+  onSubmit: async (data) => await login(data.email, data.password),
   onSuccess: () => {
     // Redirect to / - it will show dashboard for authenticated users
     // or /admin for admin users
@@ -94,9 +92,14 @@ async function onSubmit(payload: FormSubmitEvent<Schema>) {
     </template>
 
     <template #password-hint>
-      <ULink to="/forgot-password" class="text-primary font-medium" tabindex="-1">
-        Forgot password?
-      </ULink>
+      <div class="flex flex-col gap-2">
+        <ULink to="/forgot-password" class="text-primary font-medium" tabindex="-1">
+          Forgot password?
+        </ULink>
+        <ULink to="/verify-email" class="text-primary font-medium text-sm" tabindex="-1">
+          Need to verify your email?
+        </ULink>
+      </div>
     </template>
 
     <template #footer>

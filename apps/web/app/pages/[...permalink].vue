@@ -17,9 +17,9 @@ if (isAuthenticated.value && permalink === '/') {
 }
 
 // Exclude @username routes - these are handled by specific pages
-if (route.path.startsWith('/@')) {
-  throw createError({ statusCode: 404, statusMessage: 'Page not found', fatal: true });
-}
+// if (route.path.startsWith('/@')) {
+//   throw createError({ statusCode: 404, statusMessage: 'Page not found', fatal: true });
+// }
 
 const {
   data: page,
@@ -32,18 +32,56 @@ const {
     preview: enabled.value ? true : undefined,
     token: enabled.value ? state.token : undefined,
   },
+  // Don't throw errors - handle them gracefully with fallback
+  onResponseError: ({ response }) => {
+    // Log error but don't throw - we'll show fallback UI
+    console.warn('Failed to fetch page from CMS:', response.status, response.statusText);
+  },
 });
 
-if (!page.value || error.value) {
-  // During prerender, don't throw fatal errors for missing pages
-  // They'll be handled at runtime
-  if (import.meta.prerender) {
-    throw createError({ statusCode: 404, statusMessage: 'Page not found', fatal: false });
-  }
-  throw createError({ statusCode: 404, statusMessage: 'Page not found', fatal: true });
-}
+// Check if CMS is unavailable or page doesn't exist
+const cmsUnavailable = computed(
+  () => error.value?.statusCode === 500 // 500 errors indicate CMS is down/unavailable
+);
+
+const pageNotFound = computed(() => !page.value && error.value?.statusCode === 404);
+
+const hasPageContent = computed(
+  () => page.value && Array.isArray(page.value.blocks) && page.value.blocks.length > 0
+);
 
 const pageBlocks = computed(() => (page.value?.blocks as PageBlock[]) || []);
+
+// Throw proper errors to be handled by error.vue
+if (cmsUnavailable.value) {
+  throw createError({
+    statusCode: 500,
+    statusMessage: 'Content Management System Unavailable',
+    message:
+      "We're having trouble connecting to our content management system. Please try again later.",
+    fatal: true,
+  });
+}
+
+if (pageNotFound.value) {
+  throw createError({
+    statusCode: 404,
+    statusMessage: 'Page Not Found',
+    message: "The page you're looking for doesn't exist or has been moved.",
+    fatal: true,
+  });
+}
+
+// Page exists but has no content - also treat as 404
+if (page.value && !hasPageContent.value) {
+  throw createError({
+    statusCode: 404,
+    statusMessage: 'Page Not Found',
+    message: "This page exists but doesn't have any content blocks yet.",
+    fatal: true,
+  });
+}
+
 useSeoMeta({
   title: page.value?.seo?.title || page.value?.title || '',
   description: page.value?.seo?.meta_description || '',
@@ -82,27 +120,6 @@ onMounted(() => {
 </script>
 
 <template>
-  <PageBuilder :sections="pageBlocks" />
-
-  <div v-if="isVisualEditingEnabled && page">
-    <!-- If you're not using the visual editor it's safe to remove this element. Just a helper to let editors add edit / add new blocks to a page. -->
-    <div class="relative">
-      <UButton id="visual-editing-button" variant="ghost">
-        <Icon name="lucide:pencil" />
-        Edit All Blocks
-      </UButton>
-    </div>
-  </div>
+  <!-- Normal Page Content -->
+  <PageBuilder v-if="hasPageContent" :sections="pageBlocks" />
 </template>
-
-<style>
-.directus-visual-editing-overlay.visual-editing-button-class .directus-visual-editing-edit-button {
-  /* Not using style scoped because the visual editor adds it's own elements to the page. Safe to remove this if you're not using the visual editor. */
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  transform: none;
-  background: transparent;
-}
-</style>

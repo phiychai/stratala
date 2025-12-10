@@ -74,4 +74,3 @@ export function lexicalToHtml(content: LexicalContent | any | string | null | un
     return '';
   }
 }
-

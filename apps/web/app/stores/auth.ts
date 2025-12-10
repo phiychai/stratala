@@ -2,6 +2,7 @@ import { defineStore } from 'pinia';
 import { signIn, signUp, signOut } from '~/lib/auth-client';
 import type { UserProfile } from '@turborepo-saas-starter/shared-types';
 import type { AuthState } from '~/types/stores';
+import { UserRole } from '~/types/enums';
 
 export const useAuthStore = defineStore('auth', {
   state: (): AuthState => ({
@@ -168,10 +169,9 @@ export const useAuthStore = defineStore('auth', {
       this.loading = true;
 
       try {
-        // Use useRequestFetch for SSR cookie forwarding, $fetch for client
-        // See: https://nuxt.com/docs/4.x/api/utils/dollarfetch#passing-headers-and-cookies
+        // Use useRequestFetch for SSR cookie forwarding, $fetch for client-only
+        // This ensures cookies work correctly in both SSR and client-only modes
         const requestFetch = useRequestFetch();
-
         const profile = await requestFetch<UserProfile>('/api/user/me', {
           credentials: 'include', // Include cookies for session
         });
@@ -319,10 +319,10 @@ export const useAuthStore = defineStore('auth', {
       try {
         // Use useRequestFetch for SSR cookie forwarding
         const requestFetch = useRequestFetch();
-
         await requestFetch('/api/auth/change-password', {
           method: 'POST',
           body: { oldPassword, newPassword },
+          credentials: 'include',
         });
 
         return { success: true };
@@ -407,7 +407,7 @@ export const useAuthStore = defineStore('auth', {
      */
     clearAuth() {
       this.user = null;
-      this.initialized = false;
+      this.initialized = true; // Set to true so plugin doesn't re-fetch after logout
 
       // Explicitly clear persisted state from localStorage
       // pinia-plugin-persistedstate uses store ID as key (usually 'auth')

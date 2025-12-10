@@ -22,8 +22,9 @@ export const useUserStore = defineStore('user', {
       try {
         // Use useRequestFetch for SSR cookie forwarding
         const requestFetch = useRequestFetch();
-
-        const preferences = await requestFetch<UserPreferences>('/api/user/preferences');
+        const preferences = await requestFetch<UserPreferences>('/api/user/preferences', {
+          credentials: 'include',
+        });
         this.preferences = preferences;
 
         return {
@@ -50,10 +51,10 @@ export const useUserStore = defineStore('user', {
       try {
         // Use useRequestFetch for SSR cookie forwarding
         const requestFetch = useRequestFetch();
-
         const preferences = await requestFetch<UserPreferences>('/api/user/preferences', {
           method: 'PATCH',
           body: updates,
+          credentials: 'include',
         });
 
         this.preferences = preferences;

@@ -1,10 +1,7 @@
 <script setup lang="ts">
-const { isAuthenticated } = useAuth();
-
-// Redirect to login if not authenticated
-if (!isAuthenticated.value) {
-  throw createError({ statusCode: 401, statusMessage: 'Unauthorized', fatal: true });
-}
+definePageMeta({
+  middleware: 'auth',
+});
 
 // Create data object for Posts component
 const postsData = computed(() => ({
