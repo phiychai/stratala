@@ -10,6 +10,7 @@ const postsData = computed(() => ({
   tagline: undefined,
   headline: 'Posts',
   posts: [], // Empty array - Posts component will fetch its own
+  orientation: 'vertical' as const,
 }));
 
 useSeoMeta({
@@ -20,6 +21,6 @@ useSeoMeta({
 
 <template>
   <UDashboardPanel class="pb-[64px]" variant="ghost">
-    <Posts :data="postsData" orientation="vertical" />
+    <Posts :data="postsData" />
   </UDashboardPanel>
 </template>

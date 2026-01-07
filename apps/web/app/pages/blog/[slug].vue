@@ -34,16 +34,15 @@ const { data, error, refresh } = await useFetch<{
 if (import.meta.client) {
   onMounted(() => {
     // Refresh data when window regains focus (user might have edited in another tab)
-    window.addEventListener('focus', () => {
-      refresh();
-    });
-
+    // window.addEventListener('focus', () => {
+    //   refresh();
+    // });
     // Also refresh on visibility change (tab becomes visible)
-    document.addEventListener('visibilitychange', () => {
-      if (!document.hidden) {
-        refresh();
-      }
-    });
+    // document.addEventListener('visibilitychange', () => {
+    //   if (!document.hidden) {
+    //     refresh();
+    //   }
+    // });
   });
 }
 
@@ -52,6 +51,46 @@ if (!data.value || error.value) {
 }
 
 const post = computed(() => data.value?.post);
+
+// Normalize categories for simpler template usage
+const normalizedCategories = computed(() => {
+  if (!post.value?.categories) return [];
+  return post.value.categories.map((cat) => {
+    if (typeof cat === 'number') {
+      return { id: cat, label: String(cat) };
+    }
+    if (typeof cat === 'object' && cat !== null) {
+      return {
+        id: 'id' in cat ? cat.id : String(cat),
+        label: 'title' in cat ? cat.title : 'name' in cat ? cat.name : String(cat),
+      };
+    }
+    return { id: String(cat), label: String(cat) };
+  });
+});
+
+// Extract space/tenant name
+const spaceName = computed(() => {
+  if (!post.value) return null;
+
+  // TypeScript may not recognize tenant field if types are outdated
+  const tenant = (post.value as Post & { tenant?: (number | null) | { name: string } })?.tenant;
+
+  if (!tenant) return null;
+
+  // If tenant is a number (ID), we can't get the name without fetching
+  // This happens when depth is not sufficient or tenant relationship isn't populated
+  if (typeof tenant === 'number') {
+    return null;
+  }
+
+  // If tenant is an object, extract the name
+  if (typeof tenant === 'object' && tenant !== null && 'name' in tenant) {
+    return tenant.name;
+  }
+
+  return null;
+});
 const relatedPosts = computed(() => data.value?.relatedPosts);
 const author = computed(() => post.value?.author as Partial<PayloadUser>);
 
@@ -245,28 +284,22 @@ useSeoMeta({
       <UContainer v-if="post" ref="articleContentRef" class="max-w-[680px]">
         <UPageHeader :title="post.title" :description="post.description || undefined">
           <template #headline>
-            <UBadge
-              v-for="(category, index) in post.categories || []"
-              :key="typeof category === 'string' ? category : category.id || index"
-              variant="subtle"
-            >
-              {{
-                typeof category === 'string'
-                  ? category
-                  : typeof category === 'object' &&
-                      category !== null &&
-                      'title' in category &&
-                      typeof category.title === 'string'
-                    ? category.title
-                    : 'name' in category && typeof category.name === 'string'
-                      ? category.name
-                      : String(category)
-              }}
+            <span v-if="spaceName" class="text-muted">{{ spaceName }}</span>
+            <span v-if="spaceName && normalizedCategories.length > 0" class="text-muted">
+              &middot;
+            </span>
+            <UBadge v-for="category in normalizedCategories" :key="category.id" variant="subtle">
+              {{ category.label }}
             </UBadge>
-            <span v-if="post.published_at" class="text-muted">&middot;</span>
-            <time v-if="post.published_at" class="text-muted">
+            <span
+              v-if="post.publishedAt && (spaceName || normalizedCategories.length > 0)"
+              class="text-muted"
+            >
+              &middot;
+            </span>
+            <time v-if="post.publishedAt" class="text-muted">
               {{
-                new Date(post.published_at).toLocaleDateString('en', {
+                new Date(post.publishedAt).toLocaleDateString('en', {
                   year: 'numeric',
                   month: 'short',
                   day: 'numeric',

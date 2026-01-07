@@ -24,7 +24,7 @@ const { menuItems: items } = usePostCategories(posts);
 const { transformPosts } = usePostTransform();
 const postsWithImageUrls = computed(() => transformPosts(posts.value));
 
-const feedOrientation = ref<'vertical' | 'horizontal'>('horizontal');
+const feedOrientation = computed(() => props.data?.orientation || 'horizontal');
 </script>
 <template>
   <UDashboardNavbar :ui="{ right: 'gap-3' }" class="border-b-0">
@@ -40,6 +40,7 @@ const feedOrientation = ref<'vertical' | 'horizontal'>('horizontal');
         :description="error.message || 'Failed to fetch posts'"
       />
     </div>
+
     <!-- Show empty state if no posts -->
     <div v-else-if="postsWithImageUrls.length === 0" class="flex items-center justify-center py-12">
       <UAlert

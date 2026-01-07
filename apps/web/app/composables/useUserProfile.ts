@@ -1,11 +1,11 @@
-import type { Space, Post } from '@turborepo-saas-starter/shared-types';
+import type { Tenant, Post } from '@turborepo-saas-starter/shared-types';
 
 /**
  * useUserProfile Composable
  *
  * Fetches and manages user profile data including:
  * - User information
- * - User's spaces
+ * - User's spaces (publications/stacks)
  * - Recent posts
  * - Display name computation
  * - SEO meta tags
@@ -25,7 +25,7 @@ export function useUserProfile(username: string) {
       bio: string | null;
       email: string;
     };
-    spaces: Space[];
+    spaces: Tenant[]; // Note: Will be Space[] once Payload types are regenerated
     recentPosts: Post[];
   }>(() => `/api/users/${username}`, {
     key: `user-profile-${username}`,
@@ -53,9 +53,9 @@ export function useUserProfile(username: string) {
   // Set SEO meta
   useSeoMeta({
     title: `${displayName.value} - Profile`,
-    description: data.value?.user?.bio || `View ${displayName.value}'s spaces and articles`,
+    description: data.value?.user?.bio || `View ${displayName.value}'s publications and articles`,
     ogTitle: `${displayName.value} - Profile`,
-    ogDescription: data.value?.user?.bio || `View ${displayName.value}'s spaces and articles`,
+    ogDescription: data.value?.user?.bio || `View ${displayName.value}'s publications and articles`,
   });
 
   return {

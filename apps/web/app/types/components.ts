@@ -5,6 +5,7 @@
 
 import type {
   Post,
+  Video,
   FormField,
   PageBlock,
   BlockHero,
@@ -131,6 +132,18 @@ export interface PostsProps {
     headline?: string;
     posts: Post[];
     limit: number;
+    orientation?: 'vertical' | 'horizontal';
+  };
+}
+
+export interface VideosProps {
+  data: {
+    id?: string;
+    tagline?: string;
+    headline?: string;
+    videos: Video[];
+    limit: number;
+    orientation?: 'vertical' | 'horizontal';
   };
 }
 

@@ -22,33 +22,14 @@ export default defineEventHandler(async (event) => {
       throw createError({ statusCode: 404, message: 'User not found' });
     }
 
-    // Find user's default "articles" space
-    const spacesResult = await getItems('spaces', {
-      where: {
-        owner: {
-          equals: ownerId,
-        },
-        isDefault: {
-          equals: true,
-        },
-      },
-      limit: 1,
-    });
-
-    if (!spacesResult.docs.length) {
-      throw createError({ statusCode: 404, message: 'Default articles space not found' });
-    }
-
-    const articlesSpaceId = spacesResult.docs[0].id;
-
-    // Find post in the articles space
+    // Find post by slug and author
     const postsResult = await getItems('posts', {
       where: {
         slug: {
           equals: slug,
         },
-        space: {
-          equals: articlesSpaceId,
+        author: {
+          equals: ownerId,
         },
       },
       limit: 1,
@@ -61,14 +42,14 @@ export default defineEventHandler(async (event) => {
 
     const post = postsResult.docs[0];
 
-    // Related posts in the same space
+    // Related posts by the same author
     const relatedPostsResult = await getItems('posts', {
       where: {
         slug: {
           not_equals: slug,
         },
-        space: {
-          equals: articlesSpaceId,
+        author: {
+          equals: ownerId,
         },
         status: {
           equals: 'published',
@@ -76,7 +57,7 @@ export default defineEventHandler(async (event) => {
       },
       limit: 2,
       sort: '-publishedAt',
-      depth: 2, // Include relationships (author, categories)
+      depth: 2, // Include relationships (author, space, categories)
     });
 
     return {

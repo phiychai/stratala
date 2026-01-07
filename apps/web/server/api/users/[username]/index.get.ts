@@ -70,28 +70,48 @@ export default defineEventHandler(async (event) => {
       };
     }
 
-    // Step 3: Get user's spaces
-    // Note: Spaces collection requires authentication, so this may fail for public requests
-    // We'll handle the error gracefully and return empty spaces array
-    let spacesResult;
+    // Step 3: Get user's spaces (publications/stacks)
+    // Get the Payload user to access their spaces relationship (plugin uses "tenants" field name)
+    let spacesResult = { docs: [], totalDocs: 0, limit: 10, totalPages: 0 };
     try {
-      spacesResult = await getItems('spaces', {
+      const payloadUser = await getItems('users', {
         where: {
-          owner: {
+          id: {
             equals: payloadUserId,
           },
         },
-        sort: 'isDefault,-name',
-        depth: 1,
+        depth: 2, // Include space relationships
+        limit: 1,
       });
+
+      if (payloadUser.docs.length > 0) {
+        const user = payloadUser.docs[0];
+        // Extract spaces from user's tenants relationship (plugin uses "tenants" field name internally)
+        if (user.tenants && Array.isArray(user.tenants)) {
+          const spaceIds = user.tenants
+            .map((t: any) => (typeof t.tenant === 'object' ? t.tenant.id : t.tenant))
+            .filter(Boolean);
+
+          if (spaceIds.length > 0) {
+            // Collection slug is 'tenants' for plugin compatibility, but we call them "spaces"
+            spacesResult = await getItems('tenants', {
+              where: {
+                id: {
+                  in: spaceIds,
+                },
+              },
+              sort: '-createdAt',
+              depth: 1,
+            });
+          }
+        }
+      }
     } catch (error: unknown) {
-      // If spaces query fails (e.g., 403 Forbidden due to access control),
-      // return empty spaces array - this is a public endpoint
+      // If spaces query fails, return empty spaces array - this is a public endpoint
       console.warn(
         `Failed to fetch spaces for user ${payloadUserId}:`,
         error instanceof Error ? error.message : String(error)
       );
-      spacesResult = { docs: [], totalDocs: 0, limit: 10, totalPages: 0 };
     }
 
     // Step 4: Get recent posts across all spaces (limit to 10 most recent)

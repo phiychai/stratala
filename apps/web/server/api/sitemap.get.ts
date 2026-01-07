@@ -38,7 +38,7 @@ export default defineEventHandler(async () => {
 
     // Legacy blog URLs (for backward compatibility)
     const legacyPostUrls = posts
-      .filter((post: any) => !post.space) // Posts without spaces
+      .filter((post: any) => !post.tenant) // Posts without spaces (plugin uses "tenant" field name)
       .map((post: any) => ({
         loc: `/blog/${post.slug}`,
         lastmod: post.updatedAt || post.createdAt,
@@ -49,9 +49,9 @@ export default defineEventHandler(async () => {
     const spacePostUrls: Array<{ loc: string; lastmod: string | null }> = [];
 
     for (const post of posts) {
-      if (!post.space || !post.author) continue;
+      if (!post.tenant || !post.author) continue; // Plugin uses "tenant" field name
 
-      const space = typeof post.space === 'object' ? post.space : null;
+      const space = typeof post.tenant === 'object' ? post.tenant : null;
       const author = typeof post.author === 'object' ? post.author : null;
 
       if (!space || !author) continue;
@@ -61,19 +61,11 @@ export default defineEventHandler(async () => {
       const authorEmail = author.email;
       const username = authorEmail?.split('@')[0] || 'user';
 
-      if (space.isDefault) {
-        // General article: /@username/article/slug
-        spacePostUrls.push({
-          loc: `/@${username}/article/${post.slug}`,
-          lastmod: post.updatedAt || post.createdAt || null,
-        });
-      } else {
-        // Space post: /@username/space-slug/slug
-        spacePostUrls.push({
-          loc: `/@${username}/${space.slug}/${post.slug}`,
-          lastmod: post.updatedAt || post.createdAt || null,
-        });
-      }
+      // Space post: /@username/space-slug/slug
+      spacePostUrls.push({
+        loc: `/@${username}/${space.slug}/${post.slug}`,
+        lastmod: post.updatedAt || post.createdAt || null,
+      });
     }
 
     // Profile URLs (generated from posts to avoid duplicate spaces query)

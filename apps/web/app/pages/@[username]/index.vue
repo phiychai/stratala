@@ -47,7 +47,7 @@ const { user, spaces, recentPosts, displayName } = useUserProfile(username);
                 <span>@{{ username }}</span>
                 <span v-if="spaces.length" class="flex items-center gap-1">
                   <Icon name="tabler:folder" class="w-4 h-4" />
-                  {{ spaces.length }} {{ spaces.length === 1 ? 'space' : 'spaces' }}
+                  {{ spaces.length }} {{ spaces.length === 1 ? 'publication' : 'publications' }}
                 </span>
               </div>
             </div>
@@ -56,7 +56,7 @@ const { user, spaces, recentPosts, displayName } = useUserProfile(username);
 
         <!-- Spaces Section -->
         <div v-if="spaces.length" class="mb-12">
-          <h2 class="text-2xl font-bold mb-4">Spaces</h2>
+          <h2 class="text-2xl font-bold mb-4">Publications</h2>
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <NuxtLink
               v-for="space in spaces"
@@ -68,13 +68,7 @@ const { user, spaces, recentPosts, displayName } = useUserProfile(username);
                 <div class="p-4">
                   <div class="flex items-start justify-between mb-2">
                     <h3 class="text-lg font-semibold">{{ space.name }}</h3>
-                    <UBadge v-if="space.is_default" variant="subtle" size="xs" color="primary">
-                      Default
-                    </UBadge>
                   </div>
-                  <p v-if="space.description" class="text-sm text-muted mb-2">
-                    {{ space.description }}
-                  </p>
                   <div class="flex items-center gap-2 text-xs text-muted">
                     <Icon name="tabler:folder" class="w-3 h-3" />
                     <span>/{{ space.slug }}</span>
@@ -96,9 +90,9 @@ const { user, spaces, recentPosts, displayName } = useUserProfile(username);
             >
               <NuxtLink
                 :to="
-                  post.space && typeof post.space !== 'string' && post.space.is_default
-                    ? `/@${username}/article/${post.slug}`
-                    : `/@${username}/${typeof post.space !== 'string' ? post.space?.slug : 'article'}/${post.slug}`
+                  post.tenant && typeof post.tenant !== 'string'
+                    ? `/@${username}/${post.tenant.slug}/${post.slug}`
+                    : `/@${username}/article/${post.slug}`
                 "
                 class="block hover:text-accent group"
               >
@@ -115,10 +109,10 @@ const { user, spaces, recentPosts, displayName } = useUserProfile(username);
                   <div class="flex-1 min-w-0">
                     <div class="flex items-center gap-2 mb-1">
                       <span
-                        v-if="post.space && typeof post.space !== 'string'"
+                        v-if="post.tenant && typeof post.tenant !== 'string'"
                         class="text-xs text-muted"
                       >
-                        {{ post.space.name }}
+                        {{ post.tenant.name }}
                       </span>
                     </div>
                     <h3 class="text-xl font-bold mb-2 group-hover:underline line-clamp-2">
@@ -148,7 +142,7 @@ const { user, spaces, recentPosts, displayName } = useUserProfile(username);
         <!-- Empty State -->
         <div v-if="!spaces.length && !recentPosts.length" class="text-center py-12">
           <Icon name="tabler:user" class="w-16 h-16 text-muted mx-auto mb-4" />
-          <p class="text-muted text-lg">No spaces or posts yet.</p>
+          <p class="text-muted text-lg">No publications or posts yet.</p>
         </div>
       </UContainer>
     </template>

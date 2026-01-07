@@ -41,9 +41,11 @@ watch(
       const nameParts = user.name.split(' ');
       state.firstName = nameParts[0] || '';
       state.lastName = nameParts.slice(1).join(' ') || '';
+      // Use enum values to check and set role
+      const validRoles: readonly string[] = [UserRole.USER, UserRole.ADMIN];
       state.role =
-        'role' in user && (user.role === UserRole.USER || user.role === UserRole.ADMIN)
-          ? user.role
+        'role' in user && user.role && validRoles.includes(user.role)
+          ? (user.role as typeof state.role)
           : UserRole.USER;
       state.isActive =
         'isActive' in user && typeof user.isActive === 'boolean' ? user.isActive : true;

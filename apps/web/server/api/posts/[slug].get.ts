@@ -1,4 +1,4 @@
-import { getItems } from '~~/server/utils/payload-server';
+import { getItems, getItem } from '~~/server/utils/payload-server';
 
 export default defineCachedEventHandler(
   async (event) => {
@@ -23,7 +23,7 @@ export default defineCachedEventHandler(
           },
         },
         limit: 100, // Fetch more to ensure we find the post
-        depth: 2, // Include relationships (author, categories)
+        depth: 2, // Include relationships (author, categories, tenant)
         draft: isPreview ? true : false, // Allow drafts in preview mode
         trash: false, // Exclude trashed items (like Payload admin)
       });
@@ -39,6 +39,19 @@ export default defineCachedEventHandler(
       if (post.slug !== slug) {
         console.error(`Slug mismatch: requested "${slug}", got "${post.slug}"`);
         throw createError({ statusCode: 404, message: `Post not found: ${slug}` });
+      }
+
+      // If tenant is just an ID, fetch the full tenant object
+      if (post.tenant && typeof post.tenant === 'number') {
+        try {
+          const tenant = await getItem('tenants', String(post.tenant), { depth: 0 });
+          if (tenant) {
+            post.tenant = tenant;
+          }
+        } catch (error) {
+          // If tenant fetch fails, keep the ID (don't break the request)
+          console.warn(`Failed to fetch tenant ${post.tenant}:`, error);
+        }
       }
 
       // Get related posts (exclude current post)

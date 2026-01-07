@@ -3,7 +3,7 @@ const authStore = useAuthStore();
 
 // Protect admin route - only admin users can access
 definePageMeta({
-  layout: 'default',
+  layout: 'admin',
   middleware: 'admin',
 });
 

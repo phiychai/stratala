@@ -9,7 +9,6 @@ const {
 
 const { isVisualEditingEnabled, apply } = useVisualEditing();
 const { isAuthenticated } = useAuth();
-const route = useRoute();
 const navigation = useTemplateRef('navigationRef');
 const footer = useTemplateRef('footerRef');
 
@@ -48,7 +47,7 @@ defineShortcuts({
   o: () => (open.value = !open.value),
 });
 
-const { links } = useAdminNavigation({
+const { links } = useNavigation({
   closeSidebar: () => {
     open.value = false;
   },
@@ -56,9 +55,7 @@ const { links } = useAdminNavigation({
 
 onMounted(() => {
   if (!isVisualEditingEnabled.value) return;
-
   const elements = [navigation.value, footer.value].filter((el) => el !== null) as HTMLElement[];
-
   apply({
     elements,
     onSaved: () => {
@@ -70,9 +67,8 @@ onMounted(() => {
 
 <template>
   <div>
-    <div ref="navigationRef">
-      <AppHeader />
-    </div>
+    <AppHeader />
+    <div ref="navigationRef" />
     <!-- Dashboard Layout (Authenticated) -->
     <template v-if="isAuthenticated">
       <UDashboardGroup unit="rem" style="margin-top: 56px">
