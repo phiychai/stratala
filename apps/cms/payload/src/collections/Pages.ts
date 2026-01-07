@@ -19,6 +19,7 @@ const Pages: CollectionConfig = {
   },
   versions: {
     drafts: true,
+    maxPerDoc: 50,
   },
   access: {
     // Admins and content admins can read all pages

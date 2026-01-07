@@ -6,19 +6,21 @@ export const Users: CollectionConfig = {
   admin: {
     useAsTitle: 'email',
     defaultColumns: ['email', 'role', 'createdAt'],
+    // Hide Users collection from non-admin users in admin UI
+    hidden: ({ user }) => user?.role !== 'admin',
   },
   access: {
-    // Allow anyone to create a user (e.g., via API for sync)
-    create: () => true,
-    // Admins can read all users
+    // Only admins can create users (via API for sync, this is handled by backend)
+    create: ({ req: { user } }) => user?.role === 'admin',
+    // Only admins can read all users
     // Public can read users (needed for author relationships in posts)
     // Users can read their own profile
     read: ({ req: { user } }) => {
-      if (user && user.role === 'admin') {
+      // Admins have full access
+      if (user?.role === 'admin') {
         return true
       }
-      // Allow public read access for author relationships in published content
-      // Users can also read their own profile
+      // Users can read their own profile
       if (user) {
         return {
           id: {
@@ -77,42 +79,7 @@ export const Users: CollectionConfig = {
     // Email and password are added by default by auth: true
     // The multi-tenant plugin will automatically add a 'tenants' field
   ],
-  hooks: {
-    beforeChange: [
-      async ({ data, req, operation, payload }) => {
-        // During registration (create operation without existing user),
-        // automatically assign default tenant if none provided
-        // Based on official Payload multi-tenant example:
-        // https://github.com/payloadcms/payload/tree/main/examples/multi-tenant
-        if (operation === 'create' && !req.user) {
-          // If no tenants provided, assign default tenant
-          if (!data.tenants || (Array.isArray(data.tenants) && data.tenants.length === 0)) {
-            try {
-              // Find default tenant
-              const defaultTenant = await payload.find({
-                collection: 'tenants',
-                where: {
-                  slug: {
-                    equals: 'default',
-                  },
-                },
-                limit: 1,
-              });
-
-              if (defaultTenant.docs && defaultTenant.docs.length > 0) {
-                // Assign tenant ID directly (plugin handles the relationship)
-                data.tenants = [defaultTenant.docs[0].id];
-              }
-            } catch (error) {
-              // If tenant lookup fails, allow empty tenants (will be assigned later)
-              console.warn('Could not assign default tenant:', error);
-              data.tenants = [];
-            }
-          }
-        }
-        return data;
-      },
-    ],
-  },
+  // Note: Space assignment is handled by PayloadUserSyncService in the backend
+  // No hooks needed here as the sync service manages space creation and assignment
   timestamps: true,
 }

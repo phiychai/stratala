@@ -9,6 +9,8 @@ export type {
   Post,
   Space,
   Tag,
+  Tenant,
+  Video,
 } from './payload-types';
 
 // Re-export Payload User type with alias

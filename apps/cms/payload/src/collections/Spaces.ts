@@ -3,155 +3,94 @@ import type { CollectionConfig } from 'payload';
 /**
  * Spaces Collection
  *
- * Spaces are user-owned collections for organizing posts.
- * Each user can create multiple spaces, with one marked as "default" for general articles.
+ * Spaces represent individual publications/stacks (like Substack publications).
+ * Each space can have multiple users and owns its own content.
  *
- * Multi-tenant access control:
- * - Users can only read/edit their own spaces
- * - Admins and content admins can read/edit all spaces
- * - Writers can only access their own spaces
+ * Based on the official Payload multi-tenant example:
+ * https://github.com/payloadcms/payload/blob/main/examples/multi-tenant/src/collections/Tenants/index.ts
  */
 const Spaces: CollectionConfig = {
-  slug: 'spaces',
-  admin: {
-    useAsTitle: 'name',
-    defaultColumns: ['name', 'slug', 'owner', 'isDefault', 'createdAt'],
+  slug: 'tenants', // Must be 'tenants' for multi-tenant plugin compatibility
+  labels: {
+    singular: 'Space',
+    plural: 'Spaces',
   },
   access: {
-    // Admins and content admins can read all spaces
-    read: ({ req: { user } }) => {
-      if (user && ['admin', 'content_admin'].includes(user.role)) {
-        return true;
-      }
-      // Writers and editors can only read their own spaces
-      if (user) {
-        return {
-          owner: {
-            equals: user.id,
-          },
-        };
-      }
-      // Allow public read access for spaces (needed for public user profiles)
-      // This allows unauthenticated requests to read spaces, which is needed
-      // for displaying user profiles publicly
+    // All authenticated users can read all spaces (for discovery/browsing)
+    // The tenants collection is NOT in the tenant-scoped collections list,
+    // so the multi-tenant plugin should NOT filter it
+    read: ({ req }) => Boolean(req.user),
+    // All authenticated users can create spaces
+    create: ({ req: { user } }) => !!user,
+    // Publishers can update spaces they created or are assigned to
+    // Admins and content admins can update all spaces
+    update: ({ req: { user } }) => {
+      if (!user) return false;
+      // Admins and content admins can update all
+      if (user.role === 'admin' || user.role === 'content_admin') return true;
+      // Publishers and other users can update (access will be checked per document)
       return true;
     },
-    // Only authenticated users can create spaces (for their own account)
-    create: ({ req: { user } }) => !!user,
-    // Users can update their own spaces, admins can update any
-    update: ({ req: { user } }) => {
-      if (user && ['admin', 'content_admin'].includes(user.role)) {
-        return true;
-      }
-      if (user) {
-        return {
-          owner: {
-            equals: user.id,
-          },
-        };
-      }
-      return false;
-    },
-    // Users can delete their own spaces, admins can delete any
-    delete: ({ req: { user } }) => {
-      if (user && ['admin', 'content_admin'].includes(user.role)) {
-        return true;
-      }
-      if (user) {
-        return {
-          owner: {
-            equals: user.id,
-          },
-        };
-      }
-      return false;
-    },
+    // Only admins can delete spaces
+    delete: ({ req: { user } }) => user?.role === 'admin',
+  },
+  admin: {
+    useAsTitle: 'name',
+    defaultColumns: ['name', 'slug', 'domain', 'createdAt'],
+    description: 'Spaces represent individual publications/stacks (like Substack publications)',
   },
   fields: [
-    {
-      name: 'slug',
-      type: 'text',
-      required: true,
-      unique: true,
-      admin: {
-        description: 'URL-friendly identifier (unique per owner)',
-      },
-      hooks: {
-        beforeValidate: [
-          ({ value }) => {
-            // Ensure slug is lowercase and URL-friendly
-            if (typeof value === 'string') {
-              return value.toLowerCase().replace(/[^a-z0-9-]/g, '-');
-            }
-            return value;
-          },
-        ],
-      },
-    },
     {
       name: 'name',
       type: 'text',
       required: true,
       admin: {
-        description: 'Display name for the space',
+        description: 'Display name for the space/publication',
       },
     },
     {
-      name: 'description',
-      type: 'textarea',
+      name: 'slug',
+      type: 'text',
+      required: true,
+      unique: true,
+      index: true,
       admin: {
-        description: 'Optional description of the space',
+        description: 'URL-friendly identifier for the space',
       },
     },
     {
-      name: 'owner',
-      type: 'relationship',
-      relationTo: 'users',
+      name: 'domain',
+      type: 'text',
       required: true,
       admin: {
-        description: 'User who owns this space (synced with tenant from multi-tenant plugin)',
-      },
-      // Automatically set to current user on create
-      // The multi-tenant plugin will add a 'tenant' field automatically
-      // This owner field is kept for backward compatibility
-      hooks: {
-        beforeChange: [
-          ({ req, value, data }) => {
-            // If no value provided, use current user
-            if (!value && req.user) {
-              return req.user.id;
-            }
-            // Sync owner with tenant field (added by multi-tenant plugin)
-            // The plugin sets tenant to current user, so sync owner to match
-            if (data?.tenant && !value) {
-              return data.tenant;
-            }
-            // If owner is set but tenant isn't, sync tenant to owner
-            if (value && data && !data.tenant) {
-              data.tenant = value;
-            }
-            return value;
-          },
-        ],
-        afterChange: [
-          ({ doc, req }) => {
-            // Ensure owner and tenant stay in sync
-            if (doc?.tenant && doc.owner !== doc.tenant) {
-              // This will be handled by the plugin, but we keep owner for compatibility
-            }
-          },
-        ],
+        description: 'Custom domain for this space',
       },
     },
     {
-      name: 'isDefault',
-      type: 'checkbox',
-      defaultValue: false,
+      name: 'createdBy',
+      type: 'relationship',
+      relationTo: 'users',
       admin: {
-        description: 'If true, this is the default space for articles',
+        description: 'User who created this space',
+        hidden: true,
       },
     },
   ],
+  hooks: {
+    beforeChange: [
+      ({ data, req, operation }) => {
+        // Auto-set createdBy to current user on create
+        if (operation === 'create' && req.user && !data.createdBy) {
+          data.createdBy = req.user.id;
+        }
+        // Remove tenant field if plugin tries to add it (tenants collection IS the tenant)
+        if ('tenant' in data) {
+          delete data.tenant;
+        }
+        return data;
+      },
+    ],
+  },
   timestamps: true,
 };
 

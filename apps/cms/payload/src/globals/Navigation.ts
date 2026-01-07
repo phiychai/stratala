@@ -7,11 +7,14 @@ import type { GlobalConfig } from 'payload';
  */
 const Navigation: GlobalConfig = {
   slug: 'navigation',
+  admin: {
+    // Hide Navigation global from non-admin users in admin UI
+    hidden: ({ user }) => user?.role !== 'admin',
+  },
   access: {
     read: () => true, // Public read access
-    update: ({ req: { user } }) => {
-      return !!(user && ['admin', 'content_admin'].includes(user.role));
-    },
+    // Only admins can update navigation
+    update: ({ req: { user } }) => user?.role === 'admin',
   },
   fields: [
     {

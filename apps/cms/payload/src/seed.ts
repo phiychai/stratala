@@ -3722,6 +3722,23 @@ async function seed() {
       : Number(usersResult.docs[0].id);
     console.log(`✅ Using author: ${usersResult.docs[0].email} (${authorId})\n`);
 
+    // Get first tenant/space for posts (required by multi-tenant plugin)
+    const tenantsResult = await payload.find({
+      collection: 'tenants',
+      limit: 1,
+    });
+
+    let tenantId: number | null = null;
+    if (tenantsResult.docs && tenantsResult.docs.length > 0) {
+      tenantId = typeof tenantsResult.docs[0].id === 'number'
+        ? tenantsResult.docs[0].id
+        : Number(tenantsResult.docs[0].id);
+      console.log(`✅ Using tenant: ${tenantsResult.docs[0].name} (${tenantId})\n`);
+    } else {
+      console.warn(`⚠️  Warning: No tenants/spaces found. Posts will be created without tenant assignment.\n`);
+      console.warn(`   This may cause errors if the multi-tenant plugin requires tenant assignment.\n`);
+    }
+
     console.log(`📝 Processing ${posts.length} posts...\n`);
 
     let successCount = 0;
@@ -3775,6 +3792,8 @@ async function seed() {
           publishedAt: post.publishedAt,
           author: authorId,
           ...(imageId && { image: imageId }),
+          // Assign tenant if available (required by multi-tenant plugin)
+          ...(tenantId && { tenant: tenantId }),
         };
 
         const createdPost = await payload.create({

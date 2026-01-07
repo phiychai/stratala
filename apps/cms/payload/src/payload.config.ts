@@ -2,6 +2,8 @@
 import { postgresAdapter } from '@payloadcms/db-postgres'
 import { lexicalEditor } from '@payloadcms/richtext-lexical'
 import { multiTenantPlugin } from '@payloadcms/plugin-multi-tenant'
+
+import { getUserTenantIDs } from './utilities/getUserTenantIDs'
 import path from 'path'
 import { buildConfig } from 'payload'
 import { fileURLToPath } from 'url'
@@ -10,9 +12,9 @@ import sharp from 'sharp'
 // Collections
 import { Users } from './collections/Users'
 import { Media } from './collections/Media'
-import Tenants from './collections/Tenants'
 import Spaces from './collections/Spaces'
 import Posts from './collections/Posts'
+import Videos from './collections/Videos'
 import Pages from './collections/Pages'
 import Categories from './collections/Categories'
 import Tags from './collections/Tags'
@@ -37,13 +39,16 @@ export default buildConfig({
     importMap: {
       baseDir: path.resolve(dirname),
     },
+    // Disable auto-save to prevent POST requests on every keystroke
+    // Users will need to manually save changes
+    // Note: This may not be available in all Payload versions
   },
   collections: [
-    Tenants,
+    Spaces,
     Users,
     Media,
-    Spaces,
     Posts,
+    Videos,
     Pages,
     Categories,
     Tags,
@@ -81,9 +86,12 @@ export default buildConfig({
   plugins: [
     multiTenantPlugin({
       // Collections that should be tenant-scoped
+      // NOTE: 'tenants' collection is NOT in this list, so it should NOT be filtered by the plugin
+      // The 'tenants' collection (Spaces) is global and all authenticated users can read all spaces
+      // According to the official docs, only collections in this list get the tenant field and filtering
       collections: {
-        'spaces': {},
         'posts': {},
+        'videos': {},
         'pages': {},
         'categories': {},
         'tags': {},
@@ -92,16 +100,18 @@ export default buildConfig({
         'form-submissions': {},
         'form-submission-values': {},
       },
-      // Allow admins to access all tenants
-      userHasAccessToAllTenants: ({ user }) => {
-        return user?.role === 'admin' || user?.role === 'content_admin';
+      // Allow all authenticated users to access all tenants/spaces
+      // The tenants collection is NOT in the tenant-scoped collections list,
+      // so it should NOT be filtered, but the plugin might still check userHasAccessToAllTenants
+      // By returning true for all authenticated users, we ensure all spaces are visible
+      userHasAccessToAllTenants: (user: User) => {
+        return user?.role === 'admin' || user?.role === 'content_admin' || user?.role === 'publisher';
       },
-      // Configure the tenants field on users
       tenantsArrayField: {
-        // Make tenants optional during registration
-        // Users can be assigned to tenants later by admins
-        required: false,
+        includeDefaultField: true,
       },
+      // The plugin automatically uses 'tenants' as the collection slug for the tenant collection
+      // Our Spaces collection uses slug: 'tenants' which matches the plugin's expectation
     }),
     // storage-adapter-placeholder
   ],

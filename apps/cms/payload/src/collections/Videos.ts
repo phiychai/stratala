@@ -1,18 +1,19 @@
 import type { CollectionConfig } from 'payload';
 
 /**
- * Posts Collection
+ * Videos Collection
  *
- * Blog posts/articles that belong to a tenant (publication/stack) and are authored by a user.
+ * Video content that belongs to a tenant (publication/stack) and is authored by a user.
+ * Supports video upload, embed code, or external URL.
  *
  * Multi-tenant access control:
- * - Users can only read/edit their own posts
- * - Admins and content admins can read/edit all posts
- * - Editors can read/edit all posts (or can be restricted to own)
- * - Publishers can only access their own posts
+ * - Users can only read/edit their own videos
+ * - Admins and content admins can read/edit all videos
+ * - Editors can read/edit all videos (or can be restricted to own)
+ * - Publishers can only access their own videos
  */
-const Posts: CollectionConfig = {
-  slug: 'posts',
+const Videos: CollectionConfig = {
+  slug: 'videos',
   admin: {
     useAsTitle: 'title',
     defaultColumns: ['title', 'slug', 'author', 'tenant', 'status', 'publishedAt', 'createdAt'],
@@ -22,16 +23,16 @@ const Posts: CollectionConfig = {
     maxPerDoc: 50,
   },
   access: {
-    // Admins and content admins can read all posts
+    // Admins and content admins can read all videos
     read: ({ req: { user } }) => {
       if (user && ['admin', 'content_admin'].includes(user.role)) {
         return true;
       }
-      // Editors can read all posts (or restrict to own if preferred)
+      // Editors can read all videos (or restrict to own if preferred)
       if (user?.role === 'editor') {
         return true; // Or restrict to own: { author: { equals: user.id } }
       }
-      // Publishers can only read their own posts
+      // Publishers can only read their own videos
       if (user?.role === 'publisher') {
         return {
           author: {
@@ -39,25 +40,25 @@ const Posts: CollectionConfig = {
           },
         };
       }
-      // Public read access for published posts (for frontend)
+      // Public read access for published videos (for frontend)
       return {
         status: {
           equals: 'published',
         },
       };
     },
-    // Only authenticated users can create posts
+    // Only authenticated users can create videos
     create: ({ req: { user } }) => !!user,
-    // Users can update their own posts, admins/content admins can update any
+    // Users can update their own videos, admins/content admins can update any
     update: ({ req: { user } }) => {
       if (user && ['admin', 'content_admin'].includes(user.role)) {
         return true;
       }
-      // Editors can update all posts (or restrict to own if preferred)
+      // Editors can update all videos (or restrict to own if preferred)
       if (user?.role === 'editor') {
         return true; // Or restrict to own: { author: { equals: user.id } }
       }
-      // Publishers can only update their own posts
+      // Publishers can only update their own videos
       if (user?.role === 'publisher') {
         return {
           author: {
@@ -67,7 +68,7 @@ const Posts: CollectionConfig = {
       }
       return false;
     },
-    // Users can delete their own posts, admins can delete any
+    // Users can delete their own videos, admins can delete any
     delete: ({ req: { user } }) => {
       if (user && ['admin', 'content_admin'].includes(user.role)) {
         return true;
@@ -88,7 +89,7 @@ const Posts: CollectionConfig = {
       type: 'text',
       required: true,
       admin: {
-        description: 'Title of the blog post',
+        description: 'Title of the video',
       },
     },
     {
@@ -97,7 +98,7 @@ const Posts: CollectionConfig = {
       required: true,
       unique: true,
       admin: {
-        description: 'Unique URL for this post (e.g., yoursite.com/posts/{{slug}})',
+        description: 'Unique URL for this video (e.g., yoursite.com/videos/{{slug}})',
       },
       hooks: {
         beforeValidate: [
@@ -121,22 +122,70 @@ const Posts: CollectionConfig = {
       name: 'description',
       type: 'textarea',
       admin: {
-        description: 'Short summary of the blog post',
+        description: 'Short summary of the video',
+      },
+    },
+    {
+      name: 'videoSource',
+      type: 'select',
+      required: true,
+      defaultValue: 'upload',
+      options: [
+        {
+          label: 'Upload Video',
+          value: 'upload',
+        },
+        {
+          label: 'Embed Code',
+          value: 'embed',
+        },
+        {
+          label: 'Video URL',
+          value: 'url',
+        },
+      ],
+      admin: {
+        description: 'Choose how to provide the video content',
+      },
+    },
+    {
+      name: 'videoUpload',
+      type: 'upload',
+      relationTo: 'media',
+      admin: {
+        description: 'Upload a video file',
+        condition: (data) => data?.videoSource === 'upload',
+      },
+    },
+    {
+      name: 'embedCode',
+      type: 'textarea',
+      admin: {
+        description: 'Paste embed code (e.g., YouTube iframe, Vimeo embed)',
+        condition: (data) => data?.videoSource === 'embed',
+      },
+    },
+    {
+      name: 'videoUrl',
+      type: 'text',
+      admin: {
+        description: 'External video URL (e.g., YouTube, Vimeo link)',
+        condition: (data) => data?.videoSource === 'url',
+      },
+    },
+    {
+      name: 'thumbnail',
+      type: 'upload',
+      relationTo: 'media',
+      admin: {
+        description: 'Thumbnail image for this video',
       },
     },
     {
       name: 'content',
       type: 'richText',
       admin: {
-        description: 'Rich text content of your blog post',
-      },
-    },
-    {
-      name: 'image',
-      type: 'upload',
-      relationTo: 'media',
-      admin: {
-        description: 'Featured image for this post',
+        description: 'Additional content or transcript for the video',
       },
     },
     {
@@ -145,7 +194,7 @@ const Posts: CollectionConfig = {
       relationTo: 'users',
       required: true,
       admin: {
-        description: 'Select the team member who wrote this post',
+        description: 'Select the team member who created this video',
       },
       // Automatically set to current user on create
       hooks: {
@@ -182,7 +231,7 @@ const Posts: CollectionConfig = {
         },
       ],
       admin: {
-        description: 'Is this post published?',
+        description: 'Is this video published?',
       },
     },
     {
@@ -196,24 +245,11 @@ const Posts: CollectionConfig = {
       },
     },
     {
-      name: 'type',
-      type: 'select',
-      required: true,
-      defaultValue: 'article',
-      options: [
-        {
-          label: 'Article',
-          value: 'article',
-        },
-        {
-          label: 'Audio',
-          value: 'audio',
-        },
-        {
-          label: 'Video',
-          value: 'video',
-        },
-      ],
+      name: 'duration',
+      type: 'number',
+      admin: {
+        description: 'Video duration in seconds',
+      },
     },
     {
       name: 'categories',
@@ -221,7 +257,7 @@ const Posts: CollectionConfig = {
       relationTo: 'categories',
       hasMany: true,
       admin: {
-        description: 'Categories for this post',
+        description: 'Categories for this video',
       },
     },
     {
@@ -230,7 +266,7 @@ const Posts: CollectionConfig = {
       relationTo: 'tags',
       hasMany: true,
       admin: {
-        description: 'Tags for this post',
+        description: 'Tags for this video',
       },
     },
     {
@@ -241,7 +277,7 @@ const Posts: CollectionConfig = {
           name: 'title',
           type: 'text',
           admin: {
-            description: 'SEO title (overrides post title)',
+            description: 'SEO title (overrides video title)',
           },
         },
         {
@@ -265,5 +301,5 @@ const Posts: CollectionConfig = {
   timestamps: true,
 };
 
-export default Posts;
+export default Videos;
 

@@ -70,8 +70,8 @@ export interface Config {
     tenants: Tenant;
     users: User;
     media: Media;
-    spaces: Space;
     posts: Post;
+    videos: Video;
     pages: Page;
     categories: Category;
     tags: Tag;
@@ -90,8 +90,8 @@ export interface Config {
     tenants: TenantsSelect<false> | TenantsSelect<true>;
     users: UsersSelect<false> | UsersSelect<true>;
     media: MediaSelect<false> | MediaSelect<true>;
-    spaces: SpacesSelect<false> | SpacesSelect<true>;
     posts: PostsSelect<false> | PostsSelect<true>;
+    videos: VideosSelect<false> | VideosSelect<true>;
     pages: PagesSelect<false> | PagesSelect<true>;
     categories: CategoriesSelect<false> | CategoriesSelect<true>;
     tags: TagsSelect<false> | TagsSelect<true>;
@@ -101,9 +101,7 @@ export interface Config {
     'form-submissions': FormSubmissionsSelect<false> | FormSubmissionsSelect<true>;
     'form-submission-values': FormSubmissionValuesSelect<false> | FormSubmissionValuesSelect<true>;
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
-    'payload-locked-documents':
-      | PayloadLockedDocumentsSelect<false>
-      | PayloadLockedDocumentsSelect<true>;
+    'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
     'payload-preferences': PayloadPreferencesSelect<false> | PayloadPreferencesSelect<true>;
     'payload-migrations': PayloadMigrationsSelect<false> | PayloadMigrationsSelect<true>;
   };
@@ -147,23 +145,29 @@ export interface UserAuthOperations {
   };
 }
 /**
+ * Spaces represent individual publications/stacks (like Substack publications)
+ *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "tenants".
  */
 export interface Tenant {
   id: number;
   /**
-   * Display name for the tenant/site
+   * Display name for the space/publication
    */
   name: string;
   /**
-   * URL-friendly identifier for the tenant
+   * URL-friendly identifier for the space
    */
   slug: string;
   /**
-   * Custom domain for this tenant
+   * Custom domain for this space
    */
   domain: string;
+  /**
+   * User who created this space
+   */
+  createdBy?: (number | null) | User;
   updatedAt: string;
   createdAt: string;
 }
@@ -221,36 +225,6 @@ export interface Media {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "spaces".
- */
-export interface Space {
-  id: number;
-  tenant?: (number | null) | Tenant;
-  /**
-   * URL-friendly identifier (unique per owner)
-   */
-  slug: string;
-  /**
-   * Display name for the space
-   */
-  name: string;
-  /**
-   * Optional description of the space
-   */
-  description?: string | null;
-  /**
-   * User who owns this space (synced with tenant from multi-tenant plugin)
-   */
-  owner: number | User;
-  /**
-   * If true, this is the default space for articles
-   */
-  isDefault?: boolean | null;
-  updatedAt: string;
-  createdAt: string;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "posts".
  */
 export interface Post {
@@ -294,10 +268,6 @@ export interface Post {
    * Select the team member who wrote this post
    */
   author: number | User;
-  /**
-   * The space this post belongs to (if empty, defaults to author's default space)
-   */
-  space?: (number | null) | Space;
   /**
    * Is this post published?
    */
@@ -376,6 +346,105 @@ export interface Tag {
   color?: string | null;
   updatedAt: string;
   createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "videos".
+ */
+export interface Video {
+  id: number;
+  tenant?: (number | null) | Tenant;
+  /**
+   * Title of the video
+   */
+  title: string;
+  /**
+   * Unique URL for this video (e.g., yoursite.com/videos/{{slug}})
+   */
+  slug: string;
+  /**
+   * Short summary of the video
+   */
+  description?: string | null;
+  /**
+   * Choose how to provide the video content
+   */
+  videoSource: 'upload' | 'embed' | 'url';
+  /**
+   * Upload a video file
+   */
+  videoUpload?: (number | null) | Media;
+  /**
+   * Paste embed code (e.g., YouTube iframe, Vimeo embed)
+   */
+  embedCode?: string | null;
+  /**
+   * External video URL (e.g., YouTube, Vimeo link)
+   */
+  videoUrl?: string | null;
+  /**
+   * Thumbnail image for this video
+   */
+  thumbnail?: (number | null) | Media;
+  /**
+   * Additional content or transcript for the video
+   */
+  content?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  /**
+   * Select the team member who created this video
+   */
+  author: number | User;
+  /**
+   * Is this video published?
+   */
+  status: 'draft' | 'in_review' | 'published';
+  /**
+   * Publish now or schedule for later
+   */
+  publishedAt?: string | null;
+  /**
+   * Video duration in seconds
+   */
+  duration?: number | null;
+  /**
+   * Categories for this video
+   */
+  categories?: (number | Category)[] | null;
+  /**
+   * Tags for this video
+   */
+  tags?: (number | Tag)[] | null;
+  seo?: {
+    /**
+     * SEO title (overrides video title)
+     */
+    title?: string | null;
+    /**
+     * SEO meta description
+     */
+    metaDescription?: string | null;
+    /**
+     * Open Graph image
+     */
+    ogImage?: (number | null) | Media;
+  };
+  updatedAt: string;
+  createdAt: string;
+  _status?: ('draft' | 'published') | null;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -597,15 +666,7 @@ export interface FormField {
   /**
    * Input type for the field
    */
-  type:
-    | 'text'
-    | 'textarea'
-    | 'checkbox'
-    | 'checkbox_group'
-    | 'radio'
-    | 'file'
-    | 'select'
-    | 'hidden';
+  type: 'text' | 'textarea' | 'checkbox' | 'checkbox_group' | 'radio' | 'file' | 'select' | 'hidden';
   /**
    * Default text shown in empty input.
    */
@@ -733,12 +794,12 @@ export interface PayloadLockedDocument {
         value: number | Media;
       } | null)
     | ({
-        relationTo: 'spaces';
-        value: number | Space;
-      } | null)
-    | ({
         relationTo: 'posts';
         value: number | Post;
+      } | null)
+    | ({
+        relationTo: 'videos';
+        value: number | Video;
       } | null)
     | ({
         relationTo: 'pages';
@@ -822,6 +883,7 @@ export interface TenantsSelect<T extends boolean = true> {
   name?: T;
   slug?: T;
   domain?: T;
+  createdBy?: T;
   updatedAt?: T;
   createdAt?: T;
 }
@@ -876,20 +938,6 @@ export interface MediaSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "spaces_select".
- */
-export interface SpacesSelect<T extends boolean = true> {
-  tenant?: T;
-  slug?: T;
-  name?: T;
-  description?: T;
-  owner?: T;
-  isDefault?: T;
-  updatedAt?: T;
-  createdAt?: T;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "posts_select".
  */
 export interface PostsSelect<T extends boolean = true> {
@@ -900,10 +948,41 @@ export interface PostsSelect<T extends boolean = true> {
   content?: T;
   image?: T;
   author?: T;
-  space?: T;
   status?: T;
   publishedAt?: T;
   type?: T;
+  categories?: T;
+  tags?: T;
+  seo?:
+    | T
+    | {
+        title?: T;
+        metaDescription?: T;
+        ogImage?: T;
+      };
+  updatedAt?: T;
+  createdAt?: T;
+  _status?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "videos_select".
+ */
+export interface VideosSelect<T extends boolean = true> {
+  tenant?: T;
+  title?: T;
+  slug?: T;
+  description?: T;
+  videoSource?: T;
+  videoUpload?: T;
+  embedCode?: T;
+  videoUrl?: T;
+  thumbnail?: T;
+  content?: T;
+  author?: T;
+  status?: T;
+  publishedAt?: T;
+  duration?: T;
   categories?: T;
   tags?: T;
   seo?:
@@ -1341,6 +1420,7 @@ export interface NavigationSelect<T extends boolean = true> {
 export interface Auth {
   [k: string]: unknown;
 }
+
 
 declare module 'payload' {
   export interface GeneratedTypes extends Config {}

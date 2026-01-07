@@ -7,11 +7,14 @@ import type { GlobalConfig } from 'payload';
  */
 const SiteSettings: GlobalConfig = {
   slug: 'site-settings',
+  admin: {
+    // Hide Site Settings global from non-admin users in admin UI
+    hidden: ({ user }) => user?.role !== 'admin',
+  },
   access: {
     read: () => true, // Public read access
-    update: ({ req: { user } }) => {
-      return user && ['admin', 'content_admin'].includes(user.role);
-    },
+    // Only admins can update site settings
+    update: ({ req: { user } }) => user?.role === 'admin',
   },
   fields: [
     {
