@@ -209,9 +209,8 @@ export class PayloadUserSyncService {
 
           logger.info(`Created Payload user ${payloadUserId} for Adonis user ${user.id}`);
 
-          // Create default space and tenant for Publisher role
+          // Create space for Publisher role
           if (role === 'publisher') {
-            await this.createDefaultSpaceForPublisher(payloadUserId, user);
             await this.createTenantForPublisher(payloadUserId, user);
           }
         }
@@ -229,8 +228,8 @@ export class PayloadUserSyncService {
           await payloadRestService.updateUser(payloadUserId, {
             email: user.email,
             role: payloadRole,
-            firstName: user.firstName,
-            lastName: user.lastName,
+            firstName: user.firstName ?? undefined,
+            lastName: user.lastName ?? undefined,
             adonisUserId: user.id.toString(),
             ...(password && { password }),
           });
@@ -248,8 +247,8 @@ export class PayloadUserSyncService {
             email: user.email,
             password,
             role: payloadRole,
-            firstName: user.firstName,
-            lastName: user.lastName,
+            firstName: user.firstName ?? undefined,
+            lastName: user.lastName ?? undefined,
             adonisUserId: user.id.toString(),
           });
 
@@ -258,11 +257,11 @@ export class PayloadUserSyncService {
             `Created Payload user ${payloadUserId} via REST API for Adonis user ${user.id}`
           );
 
-          // Create default space for Publisher role (via REST API if needed)
+          // Create space for Publisher role (via REST API if needed)
           if (role === 'publisher') {
             // Note: Space creation via REST API would need to be implemented separately
             logger.info(
-              `Note: Default space creation for publisher requires Local API or separate REST call`
+              `Note: Space creation for publisher requires Local API or separate REST call`
             );
           }
         }
@@ -273,7 +272,7 @@ export class PayloadUserSyncService {
         user.payloadUserId = payloadUserId;
         await user.save();
 
-        // Create tenant for publisher if not already assigned (for both new and existing users)
+        // Create space for publisher if not already assigned (for both new and existing users)
         if (role === 'publisher' && !useRestApi) {
           await this.createTenantForPublisher(payloadUserId, user);
         }
@@ -287,58 +286,8 @@ export class PayloadUserSyncService {
   }
 
   /**
-   * Create default space for Publisher role
-   */
-  static async createDefaultSpaceForPublisher(
-    payloadUserId: string,
-    adonisUser: User
-  ): Promise<void> {
-    try {
-      const payload = await payloadService.getPayload();
-
-      // Check if default space already exists
-      const existingSpaces = await payload.find({
-        collection: 'spaces',
-        where: {
-          owner: {
-            equals: payloadUserId,
-          },
-          isDefault: {
-            equals: true,
-          },
-        },
-        limit: 1,
-      });
-
-      if (existingSpaces.docs.length > 0) {
-        logger.info(`Default space already exists for Payload user ${payloadUserId}`);
-        return;
-      }
-
-      // Create default "articles" space
-      const spaceName = adonisUser.firstName ? `${adonisUser.firstName}'s Articles` : 'Articles';
-
-      await payload.create({
-        collection: 'spaces',
-        data: {
-          slug: 'articles',
-          name: spaceName,
-          description: 'Default space for general articles',
-          owner: payloadUserId,
-          isDefault: true,
-        },
-      });
-
-      logger.info(`Created default space for Payload user ${payloadUserId}`);
-    } catch (error) {
-      logger.error(`Failed to create default space for Payload user ${payloadUserId}: ${error}`);
-      // Don't throw - space creation failure shouldn't block user sync
-    }
-  }
-
-  /**
-   * Create tenant for Publisher role
-   * Automatically creates a tenant when a publisher user is synced to Payload
+   * Create space for Publisher role
+   * Automatically creates a space (publication/stack) when a publisher user is synced to Payload
    */
   static async createTenantForPublisher(payloadUserId: string, adonisUser: User): Promise<void> {
     try {
@@ -350,72 +299,157 @@ export class PayloadUserSyncService {
         id: payloadUserId,
       });
 
-      // Check if user already has tenants assigned
-      const existingTenants = (payloadUser as any).tenants || [];
-      if (Array.isArray(existingTenants) && existingTenants.length > 0) {
+      // Check if user already has spaces (tenants) assigned
+      // Note: Plugin uses "tenants" field name internally, but collection is "spaces"
+      const existingSpaces = (payloadUser as any).tenants || [];
+      if (Array.isArray(existingSpaces) && existingSpaces.length > 0) {
         logger.info(
-          `Publisher ${payloadUserId} already has ${existingTenants.length} tenant(s) assigned`
+          `Publisher ${payloadUserId} already has ${existingSpaces.length} space(s) assigned`
         );
         return;
       }
 
-      // Generate tenant slug from username or email
+      // Generate space slug from username or email
       const username = adonisUser.username || adonisUser.email.split('@')[0];
-      const tenantSlug = `${username.toLowerCase().replace(/[^a-z0-9-]/g, '-')}-tenant`;
+      if (!username) {
+        logger.warn(`Cannot create space for publisher ${payloadUserId}: no username or email`);
+        return;
+      }
 
-      // Check if tenant with this slug already exists
-      const existingTenantsBySlug = await payload.find({
+      const spaceSlug = username.toLowerCase().replace(/[^a-z0-9-]/g, '-');
+
+      // Check if space with this slug already exists (collection slug is 'tenants' for plugin compatibility)
+      const existingSpacesBySlug = await payload.find({
         collection: 'tenants',
         where: {
           slug: {
-            equals: tenantSlug,
+            equals: spaceSlug,
           },
         },
         limit: 1,
       });
 
-      let tenantId: string;
+      let spaceId: string;
 
-      if (existingTenantsBySlug.docs.length > 0) {
-        // Use existing tenant
-        tenantId = existingTenantsBySlug.docs[0].id as string;
-        logger.info(`Using existing tenant ${tenantId} for publisher ${payloadUserId}`);
+      if (existingSpacesBySlug.docs.length > 0) {
+        // Use existing space
+        spaceId = existingSpacesBySlug.docs[0].id as string;
+        logger.info(`Using existing space ${spaceId} for publisher ${payloadUserId}`);
       } else {
-        // Create new tenant
-        const tenantName = adonisUser.firstName
-          ? `${adonisUser.firstName}'s Tenant`
-          : `${username}'s Publications`;
+        // Create new space with username as name (collection slug is 'tenants' for plugin compatibility)
+        const spaceName = username.charAt(0).toUpperCase() + username.slice(1);
 
-        const newTenant = await payload.create({
+        const newSpace = await payload.create({
           collection: 'tenants',
           data: {
-            name: tenantName,
-            slug: tenantSlug,
+            name: spaceName,
+            slug: spaceSlug,
             domain: '',
           },
         });
 
-        tenantId = newTenant.id as string;
-        logger.info(`Created tenant ${tenantId} (${tenantSlug}) for publisher ${payloadUserId}`);
+        spaceId = newSpace.id as string;
+        logger.info(`Created space ${spaceId} (${spaceSlug}) for publisher ${payloadUserId}`);
       }
 
-      // Assign tenant to user
+      // Assign space to user (plugin uses "tenants" field name internally)
       await payload.update({
         collection: 'users',
         id: payloadUserId,
         data: {
           tenants: [
             {
-              tenant: tenantId,
+              tenant: spaceId,
             },
           ],
         },
       });
 
-      logger.info(`Assigned tenant ${tenantId} to publisher ${payloadUserId}`);
+      logger.info(`Assigned space ${spaceId} to publisher ${payloadUserId}`);
     } catch (error) {
-      logger.error(`Failed to create tenant for Payload user ${payloadUserId}: ${error}`);
-      // Don't throw - tenant creation failure shouldn't block user sync
+      logger.error(`Failed to create space for Payload user ${payloadUserId}: ${error}`);
+      // Don't throw - space creation failure shouldn't block user sync
+    }
+  }
+
+  /**
+   * Delete space for a user when role changes from publisher
+   */
+  static async deleteTenantForPublisher(payloadUserId: string, adonisUser: User): Promise<void> {
+    try {
+      const payload = await payloadService.getPayload();
+
+      // Get Payload user to find their spaces (plugin uses "tenants" field name)
+      const payloadUser = await payload.findByID({
+        collection: 'users',
+        id: payloadUserId,
+        depth: 2, // Include space relationships
+      });
+
+      if (!payloadUser) {
+        logger.warn(`Payload user ${payloadUserId} not found for space deletion`);
+        return;
+      }
+
+      // Get user's spaces (plugin field is called "tenants" but collection is "spaces")
+      const userSpaces = (payloadUser as any).tenants || [];
+      if (!Array.isArray(userSpaces) || userSpaces.length === 0) {
+        logger.info(`No spaces found for Payload user ${payloadUserId}`);
+        return;
+      }
+
+      // Generate space slug from username to find the matching space
+      const username = adonisUser.username || adonisUser.email.split('@')[0];
+      if (!username) {
+        logger.warn(`Cannot find space to delete: no username for user ${adonisUser.id}`);
+        return;
+      }
+
+      const spaceSlug = username.toLowerCase().replace(/[^a-z0-9-]/g, '-');
+
+      // Find space by slug (collection slug is 'tenants' for plugin compatibility)
+      const spaceResult = await payload.find({
+        collection: 'tenants',
+        where: {
+          slug: {
+            equals: spaceSlug,
+          },
+        },
+        limit: 1,
+      });
+
+      if (spaceResult.docs.length === 0) {
+        logger.info(`Space with slug ${spaceSlug} not found for deletion`);
+        return;
+      }
+
+      const spaceId = spaceResult.docs[0].id as string;
+
+      // Remove space from user's spaces array (plugin uses "tenants" field name)
+      const updatedSpaces = userSpaces.filter(
+        (t: any) => (typeof t.tenant === 'object' ? t.tenant.id : t.tenant) !== spaceId
+      );
+
+      await payload.update({
+        collection: 'users',
+        id: payloadUserId,
+        data: {
+          tenants: updatedSpaces.map((t: any) => ({
+            tenant: typeof t.tenant === 'object' ? t.tenant.id : t.tenant,
+          })),
+        },
+      });
+
+      // Delete the space (collection slug is 'tenants' for plugin compatibility)
+      await payload.delete({
+        collection: 'tenants',
+        id: spaceId,
+      });
+
+      logger.info(`Deleted space ${spaceId} (${spaceSlug}) for user ${payloadUserId}`);
+    } catch (error) {
+      logger.error(`Failed to delete space for Payload user ${payloadUserId}: ${error}`);
+      // Don't throw - space deletion failure shouldn't block role update
     }
   }
 

@@ -309,6 +309,16 @@ export default class AdminController {
       const requiresPayload = PayloadUserSyncService.requiresPayloadUser(role);
       const oldRequiresPayload = PayloadUserSyncService.requiresPayloadUser(oldRole);
 
+      // Handle space deletion when role changes from publisher
+      if (oldRole === 'publisher' && role !== 'publisher' && targetUser.payloadUserId) {
+        await PayloadUserSyncService.deleteTenantForPublisher(targetUser.payloadUserId, targetUser);
+      }
+
+      // Handle space creation when role changes to publisher
+      if (role === 'publisher' && oldRole !== 'publisher' && targetUser.payloadUserId) {
+        await PayloadUserSyncService.createTenantForPublisher(targetUser.payloadUserId, targetUser);
+      }
+
       if (requiresPayload && !oldRequiresPayload) {
         // Role changed to content role - create Payload user
         await PayloadUserSyncService.syncUserToPayload(targetUser, role);

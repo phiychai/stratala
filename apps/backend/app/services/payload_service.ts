@@ -121,7 +121,7 @@ class PayloadService {
     // Apply tenant isolation for non-admin users
     if (options.user && options.user.role !== 'admin') {
       // For collections that use createdBy field
-      const collectionsWithCreatedBy = ['posts', 'pages', 'spaces'];
+      const collectionsWithCreatedBy = ['posts', 'pages'];
       if (collectionsWithCreatedBy.includes(collection)) {
         // Get Payload user ID from Adonis user
         const payloadUserId = options.user.payloadUserId;
@@ -212,7 +212,7 @@ class PayloadService {
 
     // Automatically set createdBy for tenant isolation
     if (options.user && options.user.payloadUserId) {
-      const collectionsWithCreatedBy = ['posts', 'pages', 'spaces'];
+      const collectionsWithCreatedBy = ['posts', 'pages'];
       if (collectionsWithCreatedBy.includes(collection) && !data.createdBy) {
         data.createdBy = options.user.payloadUserId;
       }

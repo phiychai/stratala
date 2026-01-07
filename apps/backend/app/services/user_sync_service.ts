@@ -15,6 +15,7 @@ export interface BetterAuthUser {
   emailVerified?: boolean;
   mfaEnabled?: boolean;
   username?: string | null; // If using Better Auth Username Plugin
+  [key: string]: unknown; // Allow additional fields
 }
 
 export interface SyncUserOptions {

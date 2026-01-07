@@ -1,10 +1,5 @@
-import { mkdirSync } from 'node:fs';
-import { dirname } from 'node:path';
-
-import app from '@adonisjs/core/services/app';
 import { betterAuth } from 'better-auth';
 import { username, emailOTP, haveIBeenPwned, admin } from 'better-auth/plugins';
-import Database from 'better-sqlite3';
 import { DateTime } from 'luxon';
 import { Pool } from 'pg';
 
@@ -31,33 +26,21 @@ import env from '#start/env';
  * https://www.better-auth.com/docs/installation
  */
 
-// Determine database connection
-const dbConnection = env.get('DB_CONNECTION', 'sqlite');
-
-let database;
-if (dbConnection === 'postgres') {
-  // PostgreSQL: Pass Pool instance directly
-  database = new Pool({
-    host: env.get('DB_HOST', 'localhost'),
-    port: env.get('DB_PORT', 5432),
-    user: env.get('DB_USER', 'postgres'),
-    password: env.get('DB_PASSWORD', ''),
-    database: env.get('DB_DATABASE', 'adonis_db'),
-    max: 10,
-  });
-} else {
-  // SQLite: Pass Database instance directly
-  // Ensure tmp directory exists before creating database
-  const dbPath = app.tmpPath('db.sqlite3');
-  mkdirSync(dirname(dbPath), { recursive: true });
-  database = new Database(dbPath);
-}
+// PostgreSQL database connection
+const database: Pool = new Pool({
+  host: env.get('DB_HOST', 'localhost'),
+  port: env.get('DB_PORT', 5432),
+  user: env.get('DB_USER', 'postgres'),
+  password: env.get('DB_PASSWORD', ''),
+  database: env.get('DB_DATABASE', 'adonis_db'),
+  max: 10,
+});
 
 /**
  * Generate a unique username from email address
  * Extracts the email prefix, sanitizes it, and ensures uniqueness
  */
-async function generateUsernameFromEmail(email: string, db: Database | Pool): Promise<string> {
+async function generateUsernameFromEmail(email: string, db: Pool): Promise<string> {
   // Reserved usernames (same as in username plugin config)
   const reserved = [
     'admin',
@@ -144,20 +127,10 @@ async function generateUsernameFromEmail(email: string, db: Database | Pool): Pr
 /**
  * Check if username exists in Better Auth user table
  */
-async function checkUsernameExists(username: string, db: Database | Pool): Promise<boolean> {
+async function checkUsernameExists(username: string, db: Pool): Promise<boolean> {
   try {
-    if (db instanceof Database) {
-      // SQLite
-      const stmt = db.prepare('SELECT id FROM user WHERE username = ? LIMIT 1');
-      const result = stmt.get(username);
-      return !!result;
-    } else {
-      // PostgreSQL
-      const result = await db.query('SELECT id FROM "user" WHERE username = $1 LIMIT 1', [
-        username,
-      ]);
-      return result.rows.length > 0;
-    }
+    const result = await db.query('SELECT id FROM "user" WHERE username = $1 LIMIT 1', [username]);
+    return result.rows.length > 0;
   } catch (error) {
     // If table doesn't exist yet or column doesn't exist, assume username is available
     // This can happen during initial setup
@@ -353,6 +326,7 @@ export const auth = betterAuth({
   // Security
   trustedOrigins: [
     'http://localhost:3000', // Nuxt dev
+    'http://0.0.0.0:3000',
     'https://webdev.lan',
     'https://admin.webdev.lan',
     env.get('NUXT_PUBLIC_SITE_URL', 'http://localhost:3000'),
@@ -375,7 +349,6 @@ export const auth = betterAuth({
       // Generate username from email if not provided
       if (!providedUsername && email) {
         const generatedUsername = await generateUsernameFromEmail(email, database);
-        // @ts-expect-error - Better Auth input may allow username modification
         input.username = generatedUsername;
       }
 
@@ -443,10 +416,38 @@ export const auth = betterAuth({
             ? request.url
             : null;
 
+        // Fetch username from Better Auth database if not in user object
+        // Better Auth Username Plugin stores it in the 'user' table
+        let { username } = user;
+        if (!username && user.id) {
+          try {
+            const result = await database.query(
+              'SELECT username FROM "user" WHERE id = $1 LIMIT 1',
+              [user.id]
+            );
+            const [firstRow] = result.rows ?? [];
+            if (firstRow) {
+              const { username: rowUsername } = firstRow;
+              if (rowUsername) {
+                username = rowUsername;
+              }
+            }
+          } catch (dbError) {
+            // Log but don't fail - username might not be set yet
+            console.warn('Failed to fetch username from Better Auth database:', dbError);
+          }
+        }
+
+        // Create user object with username if found
+        const betterAuthUserWithUsername = {
+          ...user,
+          username: username || user.username || undefined,
+        };
+
         // Upsert Adonis User record
         // This stores the mapping in our database (users.better_auth_user_id)
         const adonisUser = await UserSyncService.syncUser({
-          betterAuthUser: user,
+          betterAuthUser: betterAuthUserWithUsername,
           provider: account?.providerId || 'email',
           requestPath: requestPath || undefined,
           clientIp: clientIp || undefined,
