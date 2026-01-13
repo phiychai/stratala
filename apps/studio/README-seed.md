@@ -4,7 +4,7 @@ This script seeds 20 blog posts with images in your Payload CMS instance using P
 
 ## Prerequisites
 
-1. **Payload CMS configured**: Make sure your `.env` file in `apps/cms/payload/` has:
+1. **Payload CMS configured**: Make sure your `.env` file in `apps/studio/` has:
    - `PAYLOAD_SECRET` - Required
    - `DATABASE_URI` or `PAYLOAD_DATABASE_URI` - Required (PostgreSQL connection string)
 
@@ -17,7 +17,7 @@ This script seeds 20 blog posts with images in your Payload CMS instance using P
 From the project root:
 
 ```bash
-cd apps/cms/payload
+cd apps/studio
 pnpm seed
 ```
 
@@ -91,7 +91,7 @@ Make sure your database is running and the connection string is correct:
 # Check if PostgreSQL is running
 docker-compose ps postgres
 
-# Verify DATABASE_URI in apps/cms/payload/.env
+# Verify DATABASE_URI in apps/studio/.env
 ```
 
 ### Image Download Failed

@@ -4,7 +4,7 @@
  * Seeds 20 blog posts with images using Payload's Local API
  *
  * Usage:
- *   cd apps/cms/payload
+ *   cd apps/studio
  *   pnpm seed
  *
  * Environment variables:

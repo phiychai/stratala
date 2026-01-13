@@ -15,6 +15,7 @@ import { Media } from './collections/Media'
 import Spaces from './collections/Spaces'
 import Posts from './collections/Posts'
 import Videos from './collections/Videos'
+import EditorsPicks from './collections/EditorsPicks'
 import Pages from './collections/Pages'
 import Categories from './collections/Categories'
 import Tags from './collections/Tags'
@@ -30,8 +31,8 @@ import Navigation from './globals/Navigation'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
-// Resolve to workspace root: apps/cms/payload/src -> root (4 levels up)
-const rootDir = path.resolve(dirname, '../../../../')
+// Resolve to workspace root: apps/studio/src -> root (3 levels up)
+const rootDir = path.resolve(dirname, '../../../')
 
 export default buildConfig({
   admin: {
@@ -49,6 +50,7 @@ export default buildConfig({
     Media,
     Posts,
     Videos,
+    EditorsPicks,
     Pages,
     Categories,
     Tags,

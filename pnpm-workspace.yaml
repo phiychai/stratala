@@ -1,7 +1,7 @@
 packages:
   - apps/backend
   - apps/web
-  - apps/cms/*
+  - apps/studio
   - packages/**
 
 onlyBuiltDependencies:

@@ -16,10 +16,11 @@ const Spaces: CollectionConfig = {
     plural: 'Spaces',
   },
   access: {
-    // All authenticated users can read all spaces (for discovery/browsing)
+    // Public read access for discovery/browsing (needed for explore page)
+    // Authenticated users can also read all spaces
     // The tenants collection is NOT in the tenant-scoped collections list,
     // so the multi-tenant plugin should NOT filter it
-    read: ({ req }) => Boolean(req.user),
+    read: () => true, // Public read access for discovery
     // All authenticated users can create spaces
     create: ({ req: { user } }) => !!user,
     // Publishers can update spaces they created or are assigned to
