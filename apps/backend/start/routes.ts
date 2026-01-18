@@ -1,10 +1,10 @@
 /*
-||--------------------------------------------------------------------------
-|| Routes file
-||--------------------------------------------------------------------------
-||
-|| The routes file is used for defining the HTTP routes.
-||
+|||--------------------------------------------------------------------------
+||| Routes file
+|||--------------------------------------------------------------------------
+|||
+||| The routes file is used for defining the HTTP routes.
+|||
 */
 
 import router from '@adonisjs/core/services/router';
@@ -20,6 +20,9 @@ const AuthController = () => import('#controllers/auth_controller');
 const AuthErrorsController = () => import('#controllers/admin/auth_errors_controller');
 const AdminController = () => import('#controllers/admin/admin_controller');
 const AdminSessionsController = () => import('#controllers/admin/admin_sessions_controller');
+const FeedController = () => import('#controllers/feed_controller');
+const EngagementController = () => import('#controllers/engagement_controller');
+const TrendingController = () => import('#controllers/trending_controller');
 
 // Swagger documentation
 /**
@@ -59,9 +62,9 @@ router.get('/', async () => ({
 }));
 
 /*
-||--------------------------------------------------------------------------
-|| Public Routes
-||--------------------------------------------------------------------------
+|||--------------------------------------------------------------------------
+||| Public Routes
+|||--------------------------------------------------------------------------
 */
 // Public user lookup by username
 /**
@@ -77,9 +80,9 @@ router.get('/', async () => ({
 router.get('/api/public/users/:username', [UserController, 'getByUsername']);
 
 /*
-||--------------------------------------------------------------------------
-|| Authentication Routes (Better Auth)
-||--------------------------------------------------------------------------
+|||--------------------------------------------------------------------------
+||| Authentication Routes (Better Auth)
+|||--------------------------------------------------------------------------
 */
 // Better Auth endpoints (using controller for Swagger documentation)
 // All methods use a shared handler to avoid code duplication
@@ -93,9 +96,9 @@ router.get('/api/auth/get-session', [AuthController, 'getSession']);
 router.any('/api/auth/*', [AuthController, 'catchAll']);
 
 /*
-||--------------------------------------------------------------------------
-|| User Routes
-||--------------------------------------------------------------------------
+|||--------------------------------------------------------------------------
+||| User Routes
+|||--------------------------------------------------------------------------
 */
 router
   .group(() => {
@@ -109,9 +112,9 @@ router
   .use(middleware.auth());
 
 /*
-||--------------------------------------------------------------------------
-|| CMS Proxy Routes (Payload)
-||--------------------------------------------------------------------------
+|||--------------------------------------------------------------------------
+||| CMS Proxy Routes (Payload)
+|||--------------------------------------------------------------------------
 */
 router
   .group(() => {
@@ -128,9 +131,9 @@ router
   .prefix('/api/cms');
 
 /*
-||--------------------------------------------------------------------------
-|| Admin Routes
-||--------------------------------------------------------------------------
+|||--------------------------------------------------------------------------
+||| Admin Routes
+|||--------------------------------------------------------------------------
 */
 router
   .group(() => {
@@ -159,9 +162,9 @@ router
   .use(middleware.auth());
 
 /*
-||--------------------------------------------------------------------------
-|| Billing Routes (Lago)
-||--------------------------------------------------------------------------
+|||--------------------------------------------------------------------------
+||| Billing Routes (Lago)
+|||--------------------------------------------------------------------------
 */
 router
   .group(() => {
@@ -185,6 +188,45 @@ router
   })
   .prefix('/api/billing')
   .use(middleware.auth());
+
+/*
+|||--------------------------------------------------------------------------
+||| Feed Routes (Follows & Personalized Feed)
+|||--------------------------------------------------------------------------
+*/
+router
+  .group(() => {
+    // Personalized feed endpoint
+    router.get('/', [FeedController, 'getPersonalizedFeed']);
+    // Space follow management
+    router.get('/spaces', [FeedController, 'getFollowedSpaces']);
+    router.get('/spaces/:spaceId', [FeedController, 'checkFollowStatus']);
+    router.post('/spaces/:spaceId', [FeedController, 'followSpace']);
+    router.delete('/spaces/:spaceId', [FeedController, 'unfollowSpace']);
+  })
+  .prefix('/api/feed')
+  .use(middleware.auth());
+
+/*
+|||--------------------------------------------------------------------------
+||| Engagement Routes (Views & Likes)
+|||--------------------------------------------------------------------------
+*/
+router
+  .group(() => {
+    router.post('/content/:contentType/:contentId/view', [EngagementController, 'trackView']);
+    router.post('/content/:contentType/:contentId/like', [EngagementController, 'likeContent']);
+    router.delete('/content/:contentType/:contentId/like', [EngagementController, 'unlikeContent']);
+    router.get('/content/:contentType/:contentId/like', [EngagementController, 'getLikeStatus']);
+  })
+  .prefix('/api/engagement');
+
+/*
+|||--------------------------------------------------------------------------
+||| Trending Routes
+|||--------------------------------------------------------------------------
+*/
+router.get('/api/trending', [TrendingController, 'getTrending']);
 
 /*
 |||--------------------------------------------------------------------------
