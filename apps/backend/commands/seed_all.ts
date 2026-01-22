@@ -2,7 +2,7 @@ import { BaseCommand } from '@adonisjs/core/ace';
 import pg from 'pg';
 
 import type { CommandOptions } from '@adonisjs/core/types/ace';
-import type { UserRoleType } from '@turborepo-saas-starter/shared-types';
+import type { UserRoleType } from '@stratala/shared-types';
 
 import { auth } from '#config/better_auth';
 import User from '#models/user';

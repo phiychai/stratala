@@ -1,7 +1,7 @@
 import type User from '#models/user';
 import type { BetterAuthUser } from '#services/user_sync_service';
 import type { BetterAuthSession } from '#types/context';
-import type { UserProfile } from '@turborepo-saas-starter/shared-types';
+import type { UserProfile } from '@stratala/shared-types';
 
 // Use shared UserProfile type - it matches the DTO structure
 export type UserProfileDTO = UserProfile;
@@ -30,6 +30,9 @@ export class UserProfileDTOBuilder {
       // Authorization
       role: user.role,
       isActive: user.isActive,
+
+      // Link to Payload user (for content roles)
+      payloadUserId: user.payloadUserId,
 
       // Preferences
       preferences: user.preferences,

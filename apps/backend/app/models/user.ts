@@ -1,7 +1,7 @@
 import { BaseModel, column } from '@adonisjs/lucid/orm';
 import { DateTime } from 'luxon';
 
-import type { UserPreferences, UserRoleType } from '@turborepo-saas-starter/shared-types';
+import type { UserPreferences, UserRoleType } from '@stratala/shared-types';
 
 export default class User extends BaseModel {
   @column({ isPrimary: true })

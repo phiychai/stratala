@@ -8,7 +8,7 @@ import { pathToFileURL } from 'url';
 import logger from '@adonisjs/core/services/logger';
 
 // Payload config will be imported dynamically to handle monorepo path resolution
-// The config path is relative to the backend app: ../../../cms/payload/src/payload.config
+// The config path is relative to the backend app: ../../studio/src/payload.config
 
 /**
  * Payload Service
@@ -49,10 +49,10 @@ class PayloadService {
 
         // Resolve to workspace root, then to Payload config
         // From: apps/backend/app/services/payload_service.ts
-        // To: apps/cms/payload/src/payload.config.ts
+        // To: apps/studio/src/payload.config.ts
         // Go up 4 levels: services -> app -> backend -> apps -> root
         const workspaceRoot = join(currentDir, '../../../..');
-        const payloadConfigPath = join(workspaceRoot, 'apps/cms/payload/src/payload.config.ts');
+        const payloadConfigPath = join(workspaceRoot, 'apps/studio/src/payload.config.ts');
 
         // Try to use tsx to load TypeScript files if available
         // Otherwise, try direct import (may fail if TypeScript loader not registered)

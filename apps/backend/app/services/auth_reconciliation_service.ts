@@ -5,290 +5,285 @@ import AuthSyncError from '#models/auth_sync_error';
 import User from '#models/user';
 import { UserSyncService, type BetterAuthUser } from '#services/user_sync_service';
 
-export class AuthReconciliationService {
-  /**
-   * Retry failed user syncs
-   * Attempts to re-sync Better Auth users to AdonisJS users table
-   */
-  static async retryFailedSyncs(maxRetries: number = 3): Promise<{
-    success: number;
-    failed: number;
-  }> {
-    const errors = await AuthSyncError.query()
-      .where('eventType', 'upsert_failed')
-      .where('handled', false)
-      .where('retryCount', '<', maxRetries)
-      .orderBy('createdAt', 'asc')
-      .limit(50); // Process in batches
+/**
+ * Retry failed user syncs
+ * Attempts to re-sync Better Auth users to AdonisJS users table
+ */
+export async function retryFailedSyncs(maxRetries: number = 3): Promise<{
+  success: number;
+  failed: number;
+}> {
+  const errors = await AuthSyncError.query()
+    .where('eventType', 'upsert_failed')
+    .where('handled', false)
+    .where('retryCount', '<', maxRetries)
+    .orderBy('createdAt', 'asc')
+    .limit(50); // Process in batches
 
-    let success = 0;
+  let success = 0;
+  let failed = 0;
+
+  for (const error of errors) {
+    try {
+      // Get Better Auth user data from error payload
+      if (!error.externalUserId) {
+        await error.markAsHandled();
+        continue;
+      }
+
+      // Fetch Better Auth user from Better Auth database
+      const betterAuthUser = await getBetterAuthUser(error.externalUserId);
+
+      if (!betterAuthUser) {
+        await error.incrementRetry();
+        failed++;
+        continue;
+      }
+
+      // Retry sync
+      const adonisUser = await UserSyncService.syncUser({
+        betterAuthUser,
+        provider: error.provider || 'email',
+        requestPath: error.requestPath || undefined,
+        clientIp: undefined, // Don't log IP on retry
+      });
+
+      if (adonisUser) {
+        await error.markAsHandled();
+        success++;
+        logger.info(`Reconciled user: ${adonisUser.email}`);
+      } else {
+        await error.incrementRetry();
+        failed++;
+      }
+    } catch (err: unknown) {
+      logger.error(
+        `Reconciliation retry failed: ${err instanceof Error ? err.message : String(err)}`
+      );
+      await error.incrementRetry();
+      failed++;
+    }
+  }
+
+  return { success, failed };
+}
+
+/**
+ * Fix missing mappings
+ * Attempts to establish mapping between Better Auth users and Adonis users
+ */
+export async function fixMissingMappings(): Promise<{
+  fixed: number;
+  failed: number;
+}> {
+  const errors = await AuthSyncError.query()
+    .where('eventType', 'missing_mapping')
+    .where('handled', false)
+    .orderBy('createdAt', 'asc')
+    .limit(50);
+
+  let fixed = 0;
+  let failed = 0;
+
+  for (const error of errors) {
+    try {
+      if (!error.externalUserId) {
+        await error.markAsHandled();
+        failed++;
+        continue;
+      }
+
+      // Try to find Adonis user by better_auth_user_id (shouldn't happen, but just in case)
+      let adonisUser = await User.findBy('better_auth_user_id', error.externalUserId);
+
+      // If not found, try to sync from Better Auth
+      if (!adonisUser) {
+        const betterAuthUser = await getBetterAuthUser(error.externalUserId);
+        if (betterAuthUser) {
+          adonisUser = await UserSyncService.syncUser({
+            betterAuthUser,
+            provider: error.provider || 'email',
+            requestPath: error.requestPath || undefined,
+            clientIp: undefined,
+          });
+        }
+      }
+
+      if (adonisUser) {
+        await error.markAsHandled();
+        fixed++;
+        logger.info(`Fixed missing mapping: ${adonisUser.email}`);
+      } else {
+        // Can't fix without user - mark as handled to avoid retrying forever
+        await error.markAsHandled();
+        failed++;
+      }
+    } catch (err: unknown) {
+      logger.error(
+        `Failed to fix missing mapping: ${err instanceof Error ? err.message : String(err)}`
+      );
+      await error.incrementRetry();
+      failed++;
+    }
+  }
+
+  return { fixed, failed };
+}
+
+/**
+ * Sync all Better Auth users that don't exist in AdonisJS
+ * Useful for syncing users that were created before sync hooks were set up
+ */
+export async function syncAllMissingUsers(): Promise<{
+  synced: number;
+  failed: number;
+  skipped: number;
+}> {
+  try {
+    // Get all Better Auth users
+    // Note: Better Auth may or may not have soft deletes enabled
+    // We'll filter out soft-deleted users in the application code if the field exists
+    const betterAuthUsers = await db.from('user').select('*');
+
+    let synced = 0;
     let failed = 0;
+    let skipped = 0;
 
-    for (const error of errors) {
+    for (const baUser of betterAuthUsers) {
       try {
-        // Get Better Auth user data from error payload
-        if (!error.externalUserId) {
-          await error.markAsHandled();
+        // Skip soft-deleted Better Auth users (if soft deletes are enabled)
+        // Better Auth uses 'deletedAt' (camelCase) or 'deleted_at' (snake_case)
+        if (baUser.deletedAt || baUser.deleted_at) {
+          skipped++;
           continue;
         }
 
-        // Fetch Better Auth user from Better Auth database
-        const betterAuthUser = await this.getBetterAuthUser(error.externalUserId);
+        // Check if user already exists in AdonisJS
+        // This will find users even if they were soft-deleted (if soft deletes are enabled)
+        const existingUser = await User.query()
+          .where('better_auth_user_id', baUser.id)
+          .orWhere('email', baUser.email)
+          .first();
 
-        if (!betterAuthUser) {
-          await error.incrementRetry();
-          failed++;
+        if (existingUser) {
+          skipped++;
           continue;
         }
 
-        // Retry sync
+        // Map Better Auth user format
+        const betterAuthUser = {
+          id: baUser.id,
+          email: baUser.email,
+          name: baUser.name || null,
+          image: baUser.image || null,
+          emailVerified: baUser.emailVerified || false,
+          username: baUser.username || null,
+        };
+
+        // Sync user
         const adonisUser = await UserSyncService.syncUser({
           betterAuthUser,
-          provider: error.provider || 'email',
-          requestPath: error.requestPath || undefined,
-          clientIp: undefined, // Don't log IP on retry
+          provider: 'email',
+          requestPath: undefined,
+          clientIp: undefined,
         });
 
         if (adonisUser) {
-          await error.markAsHandled();
-          success++;
-          logger.info(`Reconciled user: ${adonisUser.email}`);
+          synced++;
+          logger.info(`Synced missing user: ${adonisUser.email}`);
         } else {
-          await error.incrementRetry();
           failed++;
         }
       } catch (err: unknown) {
         logger.error(
-          `Reconciliation retry failed: ${err instanceof Error ? err.message : String(err)}`
+          `Failed to sync user ${baUser.email}: ${err instanceof Error ? err.message : String(err)}`
         );
-        await error.incrementRetry();
         failed++;
       }
     }
 
-    return { success, failed };
+    return { synced, failed, skipped };
+  } catch (err: unknown) {
+    logger.error(`Error syncing all users: ${err instanceof Error ? err.message : String(err)}`);
+    throw err;
   }
+}
 
-  /**
-   * Fix missing mappings
-   * Attempts to establish mapping between Better Auth users and Adonis users
-   */
-  static async fixMissingMappings(): Promise<{
-    fixed: number;
-    failed: number;
-  }> {
-    const errors = await AuthSyncError.query()
-      .where('eventType', 'missing_mapping')
-      .where('handled', false)
-      .orderBy('createdAt', 'asc')
-      .limit(50);
+/**
+ * Get Better Auth user from Better Auth database
+ * Note: Better Auth uses its own database tables
+ */
+export async function getBetterAuthUser(betterAuthUserId: string): Promise<BetterAuthUser | null> {
+  try {
+    // Better Auth stores users in its own database
+    // The table name depends on Better Auth configuration
+    // Common table names: 'user', 'users', or configured via Better Auth
+    const result = await db
+      .from('user') // Better Auth default table name
+      .where('id', betterAuthUserId)
+      .first();
 
-    let fixed = 0;
-    let failed = 0;
-
-    for (const error of errors) {
-      try {
-        if (!error.externalUserId) {
-          await error.markAsHandled();
-          failed++;
-          continue;
-        }
-
-        // Try to find Adonis user by better_auth_user_id (shouldn't happen, but just in case)
-        let adonisUser = await User.findBy('better_auth_user_id', error.externalUserId);
-
-        // If not found, try to sync from Better Auth
-        if (!adonisUser) {
-          const betterAuthUser = await this.getBetterAuthUser(error.externalUserId);
-          if (betterAuthUser) {
-            adonisUser = await UserSyncService.syncUser({
-              betterAuthUser,
-              provider: error.provider || 'email',
-              requestPath: error.requestPath || undefined,
-              clientIp: undefined,
-            });
-          }
-        }
-
-        if (adonisUser) {
-          await error.markAsHandled();
-          fixed++;
-          logger.info(`Fixed missing mapping: ${adonisUser.email}`);
-        } else {
-          // Can't fix without user - mark as handled to avoid retrying forever
-          await error.markAsHandled();
-          failed++;
-        }
-      } catch (err: unknown) {
-        logger.error(
-          `Failed to fix missing mapping: ${err instanceof Error ? err.message : String(err)}`
-        );
-        await error.incrementRetry();
-        failed++;
-      }
-    }
-
-    return { fixed, failed };
-  }
-
-  /**
-   * Sync all Better Auth users that don't exist in AdonisJS
-   * Useful for syncing users that were created before sync hooks were set up
-   */
-  static async syncAllMissingUsers(): Promise<{
-    synced: number;
-    failed: number;
-    skipped: number;
-  }> {
-    try {
-      // Get all Better Auth users
-      // Note: Better Auth may or may not have soft deletes enabled
-      // We'll filter out soft-deleted users in the application code if the field exists
-      const betterAuthUsers = await db.from('user').select('*');
-
-      let synced = 0;
-      let failed = 0;
-      let skipped = 0;
-
-      for (const baUser of betterAuthUsers) {
-        try {
-          // Skip soft-deleted Better Auth users (if soft deletes are enabled)
-          // Better Auth uses 'deletedAt' (camelCase) or 'deleted_at' (snake_case)
-          if (baUser.deletedAt || baUser.deleted_at) {
-            skipped++;
-            continue;
-          }
-
-          // Check if user already exists in AdonisJS
-          // This will find users even if they were soft-deleted (if soft deletes are enabled)
-          const existingUser = await User.query()
-            .where('better_auth_user_id', baUser.id)
-            .orWhere('email', baUser.email)
-            .first();
-
-          if (existingUser) {
-            skipped++;
-            continue;
-          }
-
-          // Map Better Auth user format
-          const betterAuthUser = {
-            id: baUser.id,
-            email: baUser.email,
-            name: baUser.name || null,
-            image: baUser.image || null,
-            emailVerified: baUser.emailVerified || false,
-            username: baUser.username || null,
-          };
-
-          // Sync user
-          const adonisUser = await UserSyncService.syncUser({
-            betterAuthUser,
-            provider: 'email',
-            requestPath: undefined,
-            clientIp: undefined,
-          });
-
-          if (adonisUser) {
-            synced++;
-            logger.info(`Synced missing user: ${adonisUser.email}`);
-          } else {
-            failed++;
-          }
-        } catch (err: unknown) {
-          logger.error(
-            `Failed to sync user ${baUser.email}: ${err instanceof Error ? err.message : String(err)}`
-          );
-          failed++;
-        }
-      }
-
-      return { synced, failed, skipped };
-    } catch (err: unknown) {
-      logger.error(`Error syncing all users: ${err instanceof Error ? err.message : String(err)}`);
-      throw err;
-    }
-  }
-
-  /**
-   * Get Better Auth user from Better Auth database
-   * Note: Better Auth uses its own database tables
-   */
-  static async getBetterAuthUser(betterAuthUserId: string): Promise<BetterAuthUser | null> {
-    try {
-      // Better Auth stores users in its own database
-      // The table name depends on Better Auth configuration
-      // Common table names: 'user', 'users', or configured via Better Auth
-      const result = await db
-        .from('user') // Better Auth default table name
-        .where('id', betterAuthUserId)
-        .first();
-
-      if (!result) {
-        return null;
-      }
-
-      // Map Better Auth user format to what UserSyncService expects
-      return {
-        id: result.id,
-        email: result.email,
-        name: result.name || null,
-        image: result.image || null,
-        emailVerified: result.emailVerified || false,
-        username: result.username || null, // If using Username Plugin
-      };
-    } catch (err: unknown) {
-      logger.error(
-        `Error fetching Better Auth user: ${err instanceof Error ? err.message : String(err)}`
-      );
+    if (!result) {
       return null;
     }
+
+    // Map Better Auth user format to what UserSyncService expects
+    return {
+      id: result.id,
+      email: result.email,
+      name: result.name || null,
+      image: result.image || null,
+      emailVerified: result.emailVerified || false,
+      username: result.username || null, // If using Username Plugin
+    };
+  } catch (err: unknown) {
+    logger.error(
+      `Error fetching Better Auth user: ${err instanceof Error ? err.message : String(err)}`
+    );
+    return null;
   }
+}
 
-  /**
-   * Get Better Auth user from Better Auth database by email
-   */
-  static async getBetterAuthUserByEmail(email: string): Promise<BetterAuthUser | null> {
-    try {
-      const result = await db.from('user').where('email', email).first();
+/**
+ * Get Better Auth user from Better Auth database by email
+ */
+export async function getBetterAuthUserByEmail(email: string): Promise<BetterAuthUser | null> {
+  try {
+    const result = await db.from('user').where('email', email).first();
 
-      if (!result) {
-        return null;
-      }
-
-      return {
-        id: result.id,
-        email: result.email,
-        name: result.name || null,
-        image: result.image || null,
-        emailVerified: result.emailVerified || false,
-        username: result.username || null,
-      };
-    } catch (err: unknown) {
-      logger.error(
-        `Error fetching Better Auth user by email: ${err instanceof Error ? err.message : String(err)}`
-      );
+    if (!result) {
       return null;
     }
+
+    return {
+      id: result.id,
+      email: result.email,
+      name: result.name || null,
+      image: result.image || null,
+      emailVerified: result.emailVerified || false,
+      username: result.username || null,
+    };
+  } catch (err: unknown) {
+    logger.error(
+      `Error fetching Better Auth user by email: ${err instanceof Error ? err.message : String(err)}`
+    );
+    return null;
   }
+}
 
-  /**
-   * Run full reconciliation
-   * Retries failed syncs and fixes missing mappings
-   */
-  static async runReconciliation(): Promise<{
-    syncs: { success: number; failed: number };
-    mappings: { fixed: number; failed: number };
-  }> {
-    logger.info('Starting auth reconciliation...');
+/**
+ * Run full reconciliation
+ * Retries failed syncs and fixes missing mappings
+ */
+export async function runReconciliation(): Promise<{
+  syncs: { success: number; failed: number };
+  mappings: { fixed: number; failed: number };
+}> {
+  logger.info('Starting auth reconciliation...');
 
-    const [syncs, mappings] = await Promise.all([
-      this.retryFailedSyncs(),
-      this.fixMissingMappings(),
-    ]);
+  const [syncs, mappings] = await Promise.all([retryFailedSyncs(), fixMissingMappings()]);
 
-    logger.info('Reconciliation complete', { syncs, mappings });
+  logger.info('Reconciliation complete', { syncs, mappings });
 
-    return { syncs, mappings };
-  }
+  return { syncs, mappings };
 }

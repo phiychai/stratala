@@ -1,5 +1,5 @@
 import type { LagoApiResponse, LagoEvent, LagoCharge } from '#types/billing';
-import type { Plan, Subscription } from '@turborepo-saas-starter/shared-types';
+import type { Plan, Subscription } from '@stratala/shared-types';
 
 import env from '#start/env';
 

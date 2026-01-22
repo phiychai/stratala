@@ -19,16 +19,35 @@ export default class AuthMiddleware {
 
   async handle(ctx: HttpContext, next: NextFn) {
     try {
+      // Get headers from request
+      const requestHeaders = ctx.request.headers() as Record<string, string>;
+
+      // Debug logging in development
+      if (process.env.NODE_ENV === 'development') {
+        const cookieHeader = requestHeaders.cookie || requestHeaders.Cookie;
+        logger.debug(`Auth middleware: ${ctx.request.method()} ${ctx.request.url()}`);
+        logger.debug(`Cookie header present: ${!!cookieHeader}`);
+        if (cookieHeader) {
+          logger.debug(`Cookie header value: ${cookieHeader.substring(0, 50)}...`);
+        }
+      }
+
       // Convert AdonisJS request to fetch Request for Better Auth
-      const url = new URL(ctx.request.url(), `http://${ctx.request.header('host')}`);
+      // Use the request URL directly - Better Auth will validate based on headers
+      const url = new URL(ctx.request.url(), `http://${ctx.request.header('host') || 'localhost:3333'}`);
 
       const fetchRequest = new Request(url, {
         method: ctx.request.method(),
-        headers: ctx.request.headers() as Record<string, string>,
+        headers: requestHeaders,
       });
 
       // Validate session using Better Auth
       const session = await auth.api.getSession({ headers: fetchRequest.headers });
+
+      // Debug logging in development
+      if (process.env.NODE_ENV === 'development') {
+        logger.debug(`Better Auth session validated: ${!!session?.user}`);
+      }
 
       if (!session || !session.user) {
         return ctx.response.unauthorized({

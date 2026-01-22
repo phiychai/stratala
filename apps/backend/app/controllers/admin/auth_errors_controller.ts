@@ -3,7 +3,7 @@ import type { HttpContext } from '@adonisjs/core/http';
 import * as abilities from '#abilities/main';
 import AuthSyncError from '#models/auth_sync_error';
 import { AuthErrorLogger } from '#services/auth_error_logger';
-import { AuthReconciliationService } from '#services/auth_reconciliation_service';
+import { runReconciliation } from '#services/auth_reconciliation_service';
 
 export default class AuthErrorsController {
   /**
@@ -95,7 +95,7 @@ export default class AuthErrorsController {
   async reconcile({ auth, response }: HttpContext) {
     await abilities.manageUsers.execute(auth.user!);
 
-    const result = await AuthReconciliationService.runReconciliation();
+    const result = await runReconciliation();
 
     return response.json({
       message: 'Reconciliation complete',

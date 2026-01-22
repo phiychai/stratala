@@ -8,7 +8,7 @@ import { UserProfileDTOBuilder, type UserProfileDTO } from '../dto/user_profile_
 
 import type { BetterAuthInstance } from '#types/better_auth';
 import type { HttpContext } from '@adonisjs/core/http';
-import type { UserPreferences } from '@turborepo-saas-starter/shared-types';
+import type { UserPreferences } from '@stratala/shared-types';
 
 import * as abilities from '#abilities/main';
 import { auth } from '#config/better_auth';

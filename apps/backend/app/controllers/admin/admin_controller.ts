@@ -6,10 +6,13 @@ import * as abilities from '#abilities/main';
 import { auth } from '#config/better_auth';
 import User from '#models/user';
 import UserPolicy from '#policies/user_policy';
-import { AuthReconciliationService } from '#services/auth_reconciliation_service';
+import {
+  syncAllMissingUsers,
+  getBetterAuthUserByEmail,
+} from '#services/auth_reconciliation_service';
 import { BetterAuthSyncService } from '#services/better_auth_sync_service';
-import { PayloadUserSyncService } from '#services/payload_user_sync_service';
 import { EmailSyncService } from '#services/email_sync_service';
+import { PayloadUserSyncService } from '#services/payload_user_sync_service';
 import { UserSyncService } from '#services/user_sync_service';
 import { createUserValidator } from '#validators/admin_validator';
 
@@ -425,7 +428,7 @@ export default class AdminController {
     await abilities.manageUsers.execute(auth.user!);
 
     try {
-      const result = await AuthReconciliationService.syncAllMissingUsers();
+      const result = await syncAllMissingUsers();
 
       return response.ok({
         message: 'User sync completed',
@@ -477,7 +480,7 @@ export default class AdminController {
       }
 
       // Get Better Auth user by email
-      const betterAuthUser = await AuthReconciliationService.getBetterAuthUserByEmail(email);
+      const betterAuthUser = await getBetterAuthUserByEmail(email);
 
       if (!betterAuthUser) {
         return response.notFound({

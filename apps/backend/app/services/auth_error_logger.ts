@@ -2,7 +2,7 @@ import hash from '@adonisjs/core/services/hash';
 import logger from '@adonisjs/core/services/logger';
 import { DateTime } from 'luxon';
 
-import type { AuthSyncErrorPayload } from '@turborepo-saas-starter/shared-types';
+import type { AuthSyncErrorPayload } from '@stratala/shared-types';
 
 import AuthSyncError from '#models/auth_sync_error';
 

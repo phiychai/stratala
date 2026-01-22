@@ -1,7 +1,7 @@
 import { BaseModel, column } from '@adonisjs/lucid/orm';
 import { DateTime } from 'luxon';
 
-import type { AuthSyncErrorPayload } from '@turborepo-saas-starter/shared-types';
+import type { AuthSyncErrorPayload } from '@stratala/shared-types';
 
 export type AuthSyncErrorType =
   | 'upsert_failed'

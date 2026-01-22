@@ -325,7 +325,7 @@ export const auth = betterAuth({
 
   // Security
   trustedOrigins: [
-    'http://localhost:3000', // Nuxt dev
+    'http://localhost:3100', // Nuxt dev
     'http://0.0.0.0:3000',
     'https://webdev.lan',
     'https://admin.webdev.lan',

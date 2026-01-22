@@ -2,7 +2,7 @@ import { BaseCommand } from '@adonisjs/core/ace';
 
 import type { CommandOptions } from '@adonisjs/core/types/ace';
 
-import { AuthReconciliationService } from '#services/auth_reconciliation_service';
+import { runReconciliation } from '#services/auth_reconciliation_service';
 
 export default class ReconcileAuth extends BaseCommand {
   static commandName = 'reconcile:auth';
@@ -16,7 +16,7 @@ export default class ReconcileAuth extends BaseCommand {
     this.logger.info('Starting authentication reconciliation...');
 
     try {
-      const result = await AuthReconciliationService.runReconciliation();
+      const result = await runReconciliation();
 
       this.logger.info('Reconciliation complete:');
       this.logger.info(`  Syncs: ${result.syncs.success} succeeded, ${result.syncs.failed} failed`);

@@ -1,7 +1,7 @@
 import logger from '@adonisjs/core/services/logger';
 import db from '@adonisjs/lucid/services/db';
 
-import type { UserRoleType } from '@turborepo-saas-starter/shared-types';
+import type { UserRoleType } from '@stratala/shared-types';
 
 import User from '#models/user';
 import { AuthErrorLogger } from '#services/auth_error_logger';
