@@ -1,35 +1,89 @@
 <script setup lang="ts">
-definePageMeta({
-  middleware: 'auth',
+import { useTrendingContent } from '~/composables/useTrendingContent';
+import ContentCard from '~/components/content/ContentCard.vue';
+
+// Remove auth middleware for casual visitors
+// definePageMeta({
+//   middleware: 'auth',
+// });
+
+// Fetch trending content
+const { content, error } = useTrendingContent({
+  type: 'all',
+  limit: 30,
 });
 
-// Create data object for Posts component
-const postsData = computed(() => ({
-  id: 'posts-home',
-  limit: 20,
-  tagline: undefined,
-  headline: 'Posts',
-  posts: [], // Empty array - Posts component will fetch its own
-}));
-
-// Create data object for Videos component
-const videosData = computed(() => ({
-  id: 'videos-home',
-  limit: 20,
-  tagline: undefined,
-  headline: 'Videos',
-  videos: [], // Empty array - Videos component will fetch its own
-}));
+// Group content by source
+const editorsPicks = computed(() =>
+  content.value.filter((item) => item.source === 'editors-pick').slice(0, 5)
+);
+const trending = computed(() =>
+  content.value.filter((item) => item.source === 'trending').slice(0, 20)
+);
 
 useSeoMeta({
-  title: 'Home',
-  description: 'Your dashboard',
+  title: 'Home - Discovery Hub',
+  description: 'Discover trending content, editor picks, and featured posts and videos',
 });
 </script>
 
 <template>
   <UDashboardPanel class="pb-[64px]" variant="ghost">
-    <Posts :data="postsData" />
-    <!-- <Videos :data="videosData" /> -->
+    <UContainer ref="articleContentRef" class="max-w-none overflow-auto pt-4">
+      <!-- Editor's Picks Section -->
+      <div v-if="editorsPicks.length > 0" class="mb-12">
+        <h2 class="text-2xl font-bold mb-6">Editor's Picks</h2>
+        <UBlogPosts orientation="horizontal">
+          <ContentCard
+            v-for="item in editorsPicks"
+            :key="`editor-${item.content.id}`"
+            :content="item"
+          />
+        </UBlogPosts>
+      </div>
+
+      <!-- Trending Section -->
+      <div v-if="trending.length > 0" class="mb-12">
+        <h2 class="text-2xl font-bold mb-6">Trending Now</h2>
+        <UBlogPosts
+          orientation="horizontal"
+          :ui="{
+            base: 'flex flex-col gap-4 lg:gap-y-4',
+            variants: {
+              orientation: {
+                horizontal: 'sm:grid sm:grid-cols-2 lg:grid-cols-3',
+                vertical: '',
+              },
+            },
+          }"
+        >
+          <ContentCard
+            v-for="item in trending"
+            :key="`trending-${item.content.id}`"
+            :content="item"
+          />
+        </UBlogPosts>
+      </div>
+
+      <!-- Error State -->
+      <div v-if="error" class="flex items-center justify-center py-12">
+        <UAlert
+          color="error"
+          variant="soft"
+          title="Error loading content"
+          :description="error.message || 'Failed to fetch content'"
+        />
+      </div>
+
+      <!-- Empty State -->
+      <div v-else-if="content.length === 0" class="flex items-center justify-center py-12">
+        <UAlert
+          color="neutral"
+          variant="soft"
+          title="No content found"
+          description="There is no content available at this time."
+        />
+      </div>
+    </UContainer>
   </UDashboardPanel>
 </template>

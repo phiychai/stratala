@@ -1,25 +1,257 @@
 <script setup lang="ts">
+import { useRoute, useRouter } from 'vue-router';
+import type { UnifiedContent } from '~/types/content';
+import ContentCard from '~/components/content/ContentCard.vue';
+import { useFollowSpace } from '~/composables/useFollowSpace';
+
 definePageMeta({
   middleware: 'auth',
 });
 
-// Create data object for Posts component
-const postsData = computed(() => ({
-  id: 'posts-home',
-  limit: 20,
-  tagline: undefined,
-  headline: 'Posts',
-  posts: [], // Empty array - Posts component will fetch its own
-}));
+const route = useRoute();
+const router = useRouter();
+
+// Query parameters
+const searchQuery = computed(() => (route.query.search as string) || '');
+const selectedCategory = computed(() => (route.query.category as string) || '');
+const selectedTag = computed(() => (route.query.tag as string) || '');
+const contentType = computed(() => (route.query.type as 'post' | 'video' | 'all') || 'all');
+
+// Fetch explore content
+const { data, error, refresh } = useFetch<{
+  content: UnifiedContent[];
+  count: number;
+  categories: Array<{ id: string; name: string; slug: string }>;
+  tags: Array<{ id: string; name: string; slug: string }>;
+}>('/api/explore', {
+  query: {
+    search: searchQuery,
+    category: selectedCategory,
+    tag: selectedTag,
+    type: contentType,
+    limit: 20,
+    page: 1,
+  },
+  watch: [searchQuery, selectedCategory, selectedTag, contentType],
+});
+
+const content = computed(() => data.value?.content || []);
+const categories = computed(() => data.value?.categories || []);
+const tags = computed(() => data.value?.tags || []);
+
+// View mode (grid/list)
+const viewMode = ref<'grid' | 'list'>('grid');
+
+// Fetch spaces for creator directory
+const { data: spacesData } = useFetch<{
+  spaces: Array<{ id: string; name: string; slug: string; description?: string }>;
+}>('/api/explore/spaces', {
+  key: 'explore-spaces',
+});
+
+const spaces = computed(() => spacesData.value?.spaces || []);
+
+// Follow space functionality
+const { isFollowing: isFollowingMap, toggleFollow, loading: followLoading } = useFollowSpace();
+
+// Navigation menu items
+const categoryMenuItems = computed(() => {
+  const items = [
+    {
+      label: 'All Categories',
+      active: !selectedCategory.value,
+      click: () => {
+        router.push({ query: { ...route.query, category: undefined } });
+      },
+    },
+  ];
+
+  for (const cat of categories.value) {
+    items.push({
+      label: cat.name,
+      active: selectedCategory.value === cat.slug,
+      click: () => {
+        router.push({ query: { ...route.query, category: cat.slug } });
+      },
+    });
+  }
+
+  return items;
+});
+
+// Search handler
+const searchInput = ref(searchQuery.value);
+function handleSearch() {
+  router.push({
+    query: {
+      ...route.query,
+      search: searchInput.value || undefined,
+    },
+  });
+}
+
+// Type filter
+function setContentType(type: 'post' | 'video' | 'all') {
+  router.push({
+    query: {
+      ...route.query,
+      type,
+    },
+  });
+}
 
 useSeoMeta({
-  title: 'Home',
-  description: 'Your dashboard',
+  title: 'Explore - Discover Content',
+  description: 'Browse categories, tags, and search for posts and videos',
 });
 </script>
 
 <template>
   <UDashboardPanel class="pb-[64px]" variant="ghost">
-    <Posts :data="postsData" />
+    <UContainer ref="articleContentRef" class="max-w-none overflow-auto pt-4">
+      <!-- Header -->
+      <div class="mb-6">
+        <h1 class="text-3xl font-bold mb-4">Explore</h1>
+
+        <!-- Search Bar -->
+        <div class="flex gap-4 mb-4">
+          <UInput
+            v-model="searchInput"
+            placeholder="Search posts and videos..."
+            class="flex-1"
+            @keyup.enter="handleSearch"
+          >
+            <template #trailing>
+              <UButton icon="i-heroicons-magnifying-glass" variant="ghost" @click="handleSearch" />
+            </template>
+          </UInput>
+        </div>
+
+        <!-- Type Filter -->
+        <div class="flex gap-2 mb-4">
+          <UButton
+            :variant="contentType === 'all' ? 'solid' : 'outline'"
+            @click="setContentType('all')"
+          >
+            All
+          </UButton>
+          <UButton
+            :variant="contentType === 'post' ? 'solid' : 'outline'"
+            @click="setContentType('post')"
+          >
+            Posts
+          </UButton>
+          <UButton
+            :variant="contentType === 'video' ? 'solid' : 'outline'"
+            @click="setContentType('video')"
+          >
+            Videos
+          </UButton>
+        </div>
+      </div>
+
+      <!-- Category Navigation -->
+      <UDashboardNavbar :ui="{ right: 'gap-3' }" class="border-b-0 mb-6">
+        <template #left>
+          <UNavigationMenu :items="categoryMenuItems" color="neutral" />
+        </template>
+      </UDashboardNavbar>
+
+      <!-- Error State -->
+      <div v-if="error" class="flex items-center justify-center py-12">
+        <UAlert
+          color="error"
+          variant="soft"
+          title="Error loading content"
+          :description="error.message || 'Failed to fetch explore content'"
+        />
+      </div>
+
+      <!-- Empty State -->
+      <div v-else-if="content.length === 0" class="flex items-center justify-center py-12">
+        <UAlert
+          color="neutral"
+          variant="soft"
+          title="No content found"
+          description="Try adjusting your search or filters."
+        />
+      </div>
+
+      <!-- Content Section with View Mode Toggle -->
+      <div v-else>
+        <!-- View Mode Toggle -->
+        <div class="flex items-center justify-end mb-4">
+          <div class="flex gap-2">
+            <UButton
+              :icon="viewMode === 'grid' ? 'i-heroicons-squares-2x2' : 'i-heroicons-squares-2x2'"
+              :variant="viewMode === 'grid' ? 'solid' : 'outline'"
+              size="sm"
+              @click="viewMode = 'grid'"
+            >
+              Grid
+            </UButton>
+            <UButton
+              :icon="viewMode === 'list' ? 'i-heroicons-bars-3' : 'i-heroicons-bars-3'"
+              :variant="viewMode === 'list' ? 'solid' : 'outline'"
+              size="sm"
+              @click="viewMode = 'list'"
+            >
+              List
+            </UButton>
+          </div>
+        </div>
+
+        <!-- Content Grid/List -->
+        <UBlogPosts :orientation="viewMode === 'grid' ? 'horizontal' : 'vertical'">
+          <ContentCard
+            v-for="(item, index) in content"
+            :key="`explore-${item.type}-${item.content.id}`"
+            :content="item"
+            :orientation="
+              viewMode === 'grid' && index === 0
+                ? 'horizontal'
+                : viewMode === 'grid'
+                  ? 'vertical'
+                  : 'horizontal'
+            "
+            :class="[viewMode === 'grid' && index === 0 && 'col-span-full']"
+          />
+        </UBlogPosts>
+      </div>
+
+      <!-- Creator Directory Section -->
+      <div v-if="spaces.length > 0" class="mt-12">
+        <h2 class="text-2xl font-bold mb-6">Creator Directory</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <UCard
+            v-for="space in spaces"
+            :key="`space-${space.id}`"
+            class="hover:shadow-lg transition-shadow"
+          >
+            <template #header>
+              <div class="flex items-center justify-between">
+                <h3 class="font-semibold text-lg">{{ space.name }}</h3>
+                <UButton
+                  :icon="isFollowingMap[space.id] ? 'i-heroicons-check' : 'i-heroicons-plus'"
+                  :variant="isFollowingMap[space.id] ? 'solid' : 'outline'"
+                  :color="isFollowingMap[space.id] ? 'primary' : 'gray'"
+                  size="sm"
+                  :loading="followLoading[space.id]"
+                  @click="toggleFollow(space.id)"
+                >
+                  {{ isFollowingMap[space.id] ? 'Following' : 'Follow' }}
+                </UButton>
+              </div>
+            </template>
+            <p v-if="space.description" class="text-sm text-gray-600 mb-2">
+              {{ space.description }}
+            </p>
+            <UButton :to="`/@${space.slug}`" variant="ghost" size="sm" class="w-full">
+              View Space
+            </UButton>
+          </UCard>
+        </div>
+      </div>
+    </UContainer>
   </UDashboardPanel>
 </template>
