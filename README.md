@@ -7,7 +7,7 @@
 > incomplete, breaking changes may occur, and documentation is still being
 > finalized.
 
-**Monorepo for building modern SaaS applications**
+**A modern content platform for creators — like Substack, YouTube, and Medium**
 
 [![Turborepo](https://img.shields.io/badge/Built%20with-Turborepo-EF4444?style=for-the-badge&logo=turborepo&logoColor=white)](https://turbo.build)
 [![Nuxt](https://img.shields.io/badge/Nuxt-4.0-00DC82?style=for-the-badge&logo=nuxt&logoColor=white)](https://nuxt.com)
@@ -28,7 +28,35 @@ shared packages_
 
 ## ✨ Features
 
-### 🏗️ **Monorepo Architecture**
+### 📝 **Content Creation & Publishing**
+
+- **Rich Text Editor** - Create beautiful articles with a powerful WYSIWYG
+  editor
+- **Video Support** - Upload and stream video content (like YouTube)
+- **Newsletter Publishing** - Send posts directly to subscriber inboxes (like
+  Substack)
+- **Draft & Schedule** - Write drafts and schedule posts for later publication
+- **Categories & Tags** - Organize content with a flexible taxonomy system
+- **SEO Optimization** - Automatic meta tags, sitemaps, and structured data
+
+### 👥 **Creator & Audience Features**
+
+- **Creator Profiles** - Customizable profiles for writers and video creators
+- **Follow System** - Readers can follow their favorite creators
+- **Engagement Metrics** - Track views, likes, and reader engagement
+- **Comments & Discussions** - Foster community around your content
+- **Trending Content** - Algorithmic discovery of popular posts
+- **Personalized Feeds** - Curated content based on user interests
+
+### 💰 **Monetization**
+
+- **Paid Subscriptions** - Offer premium content behind paywalls (like Substack)
+- **Tiered Memberships** - Multiple subscription levels with different benefits
+- **Usage-Based Billing** - Metered billing for premium features
+- **Multi-Gateway Payments** - Stripe, PayPal, and Adyen support
+- **Invoice Management** - Automatic invoicing with tax handling
+
+### 🏗️ **Platform Architecture**
 
 - **Turborepo** - High-performance build system with intelligent caching
 - **pnpm Workspaces** - Fast, disk space efficient package management
@@ -50,16 +78,6 @@ shared packages_
   GitHub)
 - **API Documentation** - Auto-generated Swagger/OpenAPI docs
 
-### 💳 **Billing & Subscriptions**
-
-- **Lago** - Open-source billing platform for modern SaaS
-  - Subscription management (recurring billing, tiers)
-  - Usage-based billing (metered/pay-as-you-go)
-  - Multi-gateway support (Stripe, PayPal, Adyen)
-  - Invoice generation with tax handling
-  - REST API for easy integration
-  - Beautiful Admin Dashboard
-
 ### 🛠️ **Developer Experience**
 
 - **ESLint 9** - Modern flat config with shared rules across workspace
@@ -73,7 +91,7 @@ shared packages_
 
 - **Type-safe APIs** - End-to-end type safety with TypeScript
 - **Security Headers** - nuxt-security module configured
-- **SEO Optimized** - Meta tags, sitemaps, and structured data
+- **CDN Ready** - Optimized for global content delivery
 - **Performance** - Optimized builds with tree-shaking and code splitting
 
 ---
@@ -137,8 +155,8 @@ turborepo-saas-starter/
 
 ```bash
 # Clone the repository
-git clone https://github.com/yourusername/turborepo-saas-starter.git
-cd turborepo-saas-starter
+git clone https://github.com/yourusername/stratala.git
+cd stratala
 
 # Install dependencies
 pnpm install
@@ -261,7 +279,7 @@ mkdir -p packages/my-package/src
 # Create package.json
 cat > packages/my-package/package.json << EOF
 {
-  "name": "@turborepo-saas-starter/my-package",
+  "name": "@stratala/my-package",
   "version": "1.0.0",
   "private": true,
   "main": "./dist/index.js",
@@ -307,8 +325,10 @@ Nuxt 4 + Vue 3
 ├── Radix Vue            // Headless UI primitives
 ├── Tailwind CSS         // Utility-first CSS
 ├── VeeValidate + Zod    // Form validation
-├── Payload Local API    // CMS integration
-└── Nuxt Content         // File-based CMS
+├── Payload Local API    // CMS integration for content
+├── Video Player         // Video streaming support
+├── Feed System          // Personalized content feeds
+└── Engagement           // Likes, follows, comments
 ```
 
 #### Backend (AdonisJS)
@@ -317,6 +337,11 @@ Nuxt 4 + Vue 3
 AdonisJS 6
 ├── Lucid ORM           // Database ORM
 ├── Better Auth         // Modern authentication with OAuth
+├── Content Management  // Posts, videos, media handling
+├── Engagement APIs     // Follows, likes, views, comments
+├── Feed Generation     // Personalized content feeds
+├── Trending Engine     // Content discovery algorithms
+├── Billing Service     // Subscriptions and payments
 ├── Validator (Vine)    // Request validation
 ├── Swagger             // API documentation
 └── PostgreSQL/SQLite   // Database options
@@ -357,9 +382,24 @@ graph TD
     F --> D
 ```
 
+### Content Flow Architecture
+
+```mermaid
+graph LR
+    A[Creator] -->|Writes| B[Payload CMS]
+    B -->|Publishes| C[AdonisJS Backend]
+    C -->|Generates| D[Personalized Feeds]
+    C -->|Tracks| E[Engagement Metrics]
+    D -->|Serves| F[Readers]
+    F -->|Interacts| E
+    E -->|Updates| D
+```
+
 ---
 
-## 💳 Lago Billing Integration
+## 💳 Monetization & Billing
+
+Stratala provides flexible monetization options for creators, powered by Lago.
 
 ### Setup Lago
 
@@ -370,85 +410,72 @@ docker-compose up -d
 # Access Lago Admin Dashboard
 open http://localhost:3001
 
-# Create your first plan via API
+# Create your first subscription plan via API
 curl -X POST http://localhost:3100/api/v1/plans \
   -H "Authorization: Bearer YOUR_API_KEY" \
   -H "Content-Type: application/json" \
-  -d '{"plan": {"code": "starter", "name": "Starter Plan", "interval": "monthly", "amount_cents": 2900}}'
+  -d '{"plan": {"code": "creator-pro", "name": "Creator Pro", "interval": "monthly", "amount_cents": 999}}'
 ```
 
-### Features
+### Monetization Features
 
-#### 💰 **Subscription Management**
+#### 💰 **Paid Subscriptions**
 
-- Recurring billing (monthly, yearly, weekly)
-- Tiered pricing and seat-based billing
-- Free trials and grace periods
-- Upgrade/downgrade handling
-- Proration support
+- **Premium Content** - Put articles and videos behind paywalls
+- **Tiered Plans** - Offer multiple subscription levels (Basic, Pro, Premium)
+- **Recurring Billing** - Monthly, yearly, or custom billing intervals
+- **Free Trials** - Let readers try premium content before subscribing
+- **Proration** - Handle plan upgrades/downgrades seamlessly
 
-#### 📊 **Usage-Based Billing**
+#### 📊 **Creator Analytics**
 
-- Track API calls, storage, compute
-- Metered billing (pay-as-you-go)
-- Custom billable metrics
-- Real-time usage tracking
-- Aggregation rules (sum, count, max, etc.)
+- **Subscriber Count** - Track total and active subscribers
+- **Revenue Metrics** - MRR, ARR, and revenue growth
+- **Engagement Stats** - Views, likes, and comments per post
+- **Audience Insights** - Reader demographics and behavior
 
-#### 🧾 **Invoice Management**
+#### 🧾 **Payment Management**
 
-- Automatic invoice generation
-- PDF invoices with custom branding
-- Tax calculation and handling
-- Multiple currencies support
-- Dunning management (failed payments)
+- **Automatic Invoicing** - Generate invoices for all transactions
+- **Multi-Currency** - Support for global audiences
+- **Tax Handling** - Automatic tax calculation
+- **Payment Recovery** - Dunning management for failed payments
 
-#### 🔌 **Multi-Gateway Support**
+#### 🔌 **Payment Gateways**
 
 - **Stripe** - Credit cards, ACH, SEPA
-- **PayPal** - PayPal accounts
+- **PayPal** - PayPal accounts and cards
 - **Adyen** - Global payment methods
-- Custom payment providers via API
 
-#### 🎨 **Admin Dashboard**
-
-- Customer management
-- Plan configuration
-- Invoice viewing
-- Real-time analytics
-- Webhook management
-
-### Example Integration
+### Example: Creating a Paid Newsletter
 
 ```typescript
 // apps/backend/app/services/billing_service.ts
 import BillingService from '#services/billing_service';
 
-// Create customer
+// 1. Set up creator's billing account
 const customer = await BillingService.createCustomer({
-  externalId: user.id,
-  name: user.fullName,
-  email: user.email,
+  externalId: creator.id,
+  name: creator.fullName,
+  email: creator.email,
   currency: 'USD',
 });
 
-// Create subscription
+// 2. Create a subscription plan for premium content
 const subscription = await BillingService.createSubscription({
-  externalCustomerId: user.id,
-  planCode: 'starter',
-  name: 'Starter Subscription',
+  externalCustomerId: reader.id,
+  planCode: 'newsletter-premium',
+  name: 'Premium Newsletter Access',
 });
 
-// Track usage (for metered billing)
-await BillingService.sendEvent({
-  transactionId: `api_${Date.now()}`,
-  externalCustomerId: user.id,
-  code: 'api_calls',
-  properties: { endpoint: '/api/data' },
-});
+// 3. Check if reader has access to premium content
+const hasAccess = await BillingService.checkSubscription(
+  reader.id,
+  'newsletter-premium'
+);
 
-// Get customer invoices
-const invoices = await BillingService.getInvoices(user.id);
+// 4. Get creator's revenue
+const invoices = await BillingService.getInvoices(creator.id);
 ```
 
 ### Documentation
@@ -628,7 +655,15 @@ docker-compose -f docker-compose.prod.yml up -d
 - **Frontend (Nuxt)**: Vercel, Netlify, Cloudflare Pages
 - **Backend (AdonisJS)**: Railway, Render, DigitalOcean App Platform
 - **CMS (Payload)**: Self-hosted on any VPS or platform
+- **Media Storage**: AWS S3, Cloudflare R2, or MinIO for video/images
 - **Lago**: Docker Compose, Kubernetes, or managed hosting
+
+### Scaling Considerations
+
+- **CDN**: Use a CDN for media delivery and static assets
+- **Database**: PostgreSQL with read replicas for high traffic
+- **Caching**: Redis for session storage and feed caching
+- **Video**: Consider dedicated video streaming services for high volume
 
 ---
 
@@ -672,8 +707,8 @@ Built with amazing open-source technologies:
 
 <div align="center">
 
-**[⬆ back to top](#-turborepo-saas-starter)**
+**[⬆ back to top](#-stratala)**
 
-Made with ❤️ by developers, for developers
+Made with ❤️ for creators and readers everywhere
 
 </div>
