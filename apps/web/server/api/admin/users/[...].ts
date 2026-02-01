@@ -23,7 +23,7 @@ export default defineEventHandler(async (event) => {
     if (value !== undefined) {
       if (Array.isArray(value)) {
         // For arrays, append each value
-        value.forEach((v) => params.append(key, String(v)));
+        for (const v of value) params.append(key, String(v));
       } else {
         params.append(key, String(value));
       }

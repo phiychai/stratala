@@ -1,5 +1,6 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
+  telemetry: false,
   components: [
     { path: '~/components', pathPrefix: false },
     { path: '~/components/block', pathPrefix: false },
@@ -161,5 +162,25 @@ export default defineNuxtConfig({
     server: {
       allowedHosts: ['webdev.lan', 'admin.webdev.lan', 'cms.webdev.lan'],
     },
+    optimizeDeps: {
+      exclude: ['@nuxtjs/mdc'],
+    },
+    build: {
+      rollupOptions: {
+        output: {
+          manualChunks: undefined,
+        },
+      },
+    },
+  },
+
+  // MDC configuration
+  mdc: {
+    components: {
+      prose: true,
+    },
+    // Temporarily disable highlight to avoid Rollup parsing errors
+    // Re-enable once the build issue is resolved
+    highlight: false,
   },
 });

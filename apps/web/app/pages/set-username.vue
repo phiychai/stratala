@@ -80,7 +80,7 @@ watch(username, (value) => {
 
       isValid.value = true;
       isAvailable.value = result.data?.available || false;
-    } catch (_error) {
+    } catch {
       isValid.value = false;
       isAvailable.value = false;
     }

@@ -66,10 +66,10 @@ export default defineCachedEventHandler(
 
         const results = await Promise.all(postBlockPromises);
 
-        results.forEach(({ block, posts }) => {
+        for (const { block, posts } of results) {
           // Attach posts to the block
           block.posts = posts;
-        });
+        }
       }
 
       return page;

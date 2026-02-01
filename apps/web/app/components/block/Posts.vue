@@ -88,8 +88,6 @@ const feedOrientation = computed(() => props.data?.orientation || 'horizontal');
               }
             : undefined
         "
-        :orientation="index === 0 ? 'horizontal' : 'vertical'"
-        :class="[index === 0 && 'col-span-full']"
         :ui="{
           description: 'line-clamp-2',
         }"

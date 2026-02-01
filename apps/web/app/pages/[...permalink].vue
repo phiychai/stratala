@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { Page, PageBlock } from '@turborepo-saas-starter/shared-types';
+import type { Page, PageBlock } from '@stratala/shared-types';
 import { withLeadingSlash, withoutTrailingSlash } from 'ufo';
 
 const { isAuthenticated } = useAuth();

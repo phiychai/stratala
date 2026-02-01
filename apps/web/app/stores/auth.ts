@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia';
 import { signIn, signUp, signOut } from '~/lib/auth-client';
-import type { UserProfile } from '@turborepo-saas-starter/shared-types';
+import type { UserProfile } from '@stratala/shared-types';
 import type { AuthState } from '~/types/stores';
 import { UserRole } from '~/types/enums';
 
@@ -415,9 +415,9 @@ export const useAuthStore = defineStore('auth', {
         try {
           // Clear common localStorage key formats for this store
           const keysToRemove = ['auth', 'pinia-auth', 'pinia/auth'];
-          keysToRemove.forEach((key) => {
+          for (const key of keysToRemove) {
             localStorage.removeItem(key);
-          });
+          }
 
           // Also check for exact match keys that might be used by the plugin
           // The plugin typically uses just the store ID as the key

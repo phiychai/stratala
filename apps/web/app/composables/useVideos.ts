@@ -1,4 +1,4 @@
-import type { Video } from '@turborepo-saas-starter/shared-types';
+import type { Video } from '@stratala/shared-types';
 
 export interface UseVideosOptions {
   limit?: number;

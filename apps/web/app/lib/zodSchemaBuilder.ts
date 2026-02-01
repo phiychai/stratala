@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import type { FormField } from '@turborepo-saas-starter/shared-types';
+import type { FormField } from '@stratala/shared-types';
 
 export const buildZodSchema = (fields: FormField[]) => {
   const schema: Record<string, z.ZodTypeAny> = {};

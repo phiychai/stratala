@@ -56,13 +56,13 @@ export function useTableOfContents(
       const { tag } = node;
 
       if (nodeType === 'heading' || (tag && /^h[1-6]$/.test(tag))) {
-        const depth = tag ? parseInt(tag.replace('h', ''), 10) : node.depth || 1;
+        const depth = tag ? Number.parseInt(tag.replace('h', ''), 10) : node.depth || 1;
         const text = extractTextFromLexicalNode(node).trim();
 
         if (text) {
           const id = text
             .toLowerCase()
-            .replace(/[^a-z0-9]+/g, '-')
+            .replace(/[^\da-z]+/g, '-')
             .replace(/^-+|-+$/g, '');
 
           const link: TocLink = { id, text, depth };
@@ -118,7 +118,7 @@ export function useTableOfContents(
         const text = match[2].trim();
         const id = text
           .toLowerCase()
-          .replace(/[^a-z0-9]+/g, '-')
+          .replace(/[^\da-z]+/g, '-')
           .replace(/^-+|-+$/g, '');
 
         const link: TocLink = { id, text, depth };

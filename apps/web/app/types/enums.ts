@@ -5,7 +5,7 @@
  * This prevents magic strings and ensures type safety.
  */
 
-import { UserRole, type UserRoleType, ROLE_LABELS } from '@turborepo-saas-starter/shared-types';
+import { UserRole, type UserRoleType, ROLE_LABELS } from '@stratala/shared-types';
 
 /**
  * User Status Enum
@@ -118,9 +118,4 @@ export function getUserStatusOptions() {
 /**
  * Re-export UserRole and related types from shared-types for convenience
  */
-export {
-  UserRole,
-  type UserRoleType,
-  ROLE_LABELS,
-  USER_ROLES,
-} from '@turborepo-saas-starter/shared-types';
+export { UserRole, type UserRoleType, ROLE_LABELS, USER_ROLES } from '@stratala/shared-types';

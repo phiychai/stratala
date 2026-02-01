@@ -1,4 +1,4 @@
-import type { Tenant, Post } from '@turborepo-saas-starter/shared-types';
+import type { Tenant, Post } from '@stratala/shared-types';
 
 /**
  * useUserProfile Composable

@@ -1,6 +1,6 @@
 import type { ParsedContentv2 } from '@nuxt/content';
 import type { BadgeProps, LinkProps, AvatarProps } from '#ui/types';
-import type { UserProfile } from '@turborepo-saas-starter/shared-types';
+import type { UserProfile } from '@stratala/shared-types';
 
 // Re-export types from organized type files
 export type * from './components';
@@ -23,7 +23,7 @@ export interface BlogPost extends ParsedContentv2 {
 
 /**
  * Legacy User type (for backward compatibility)
- * @deprecated Use UserProfile from @turborepo-saas-starter/shared-types instead
+ * @deprecated Use UserProfile from @stratalainstead
  */
 // eslint-disable-next-line @typescript-eslint/no-empty-object-type
 export interface User extends UserProfile {}

@@ -1,6 +1,8 @@
 <script setup lang="ts">
-import type { Post, PayloadUser } from '@turborepo-saas-starter/shared-types';
+import type { Post, PayloadUser } from '@stratala/shared-types';
 import { useTableOfContents } from '~/composables/useTableOfContents';
+import { useContentLike } from '~/composables/useContentLike';
+import { useContentView } from '~/composables/useContentView';
 
 const route = useRoute();
 const { enabled, state } = useLivePreview();
@@ -52,6 +54,39 @@ if (!data.value || error.value) {
 
 const post = computed(() => data.value?.post);
 
+// Like functionality
+const { getLikeStatus, toggleLike } = useContentLike();
+const { trackView } = useContentView();
+const liked = ref(false);
+const likeCount = ref(0);
+const likeLoading = ref(false);
+
+// Fetch like status on mount
+onMounted(async () => {
+  if (post.value) {
+    const status = await getLikeStatus('post', String(post.value.id));
+    liked.value = status.isLiked;
+    likeCount.value = status.count;
+
+    // Track view
+    trackView('post', String(post.value.id));
+  }
+});
+
+async function handleLike() {
+  if (likeLoading.value || !post.value) return;
+  likeLoading.value = true;
+  try {
+    const success = await toggleLike('post', String(post.value.id));
+    if (success) {
+      liked.value = !liked.value;
+      likeCount.value = liked.value ? likeCount.value + 1 : Math.max(0, likeCount.value - 1);
+    }
+  } finally {
+    likeLoading.value = false;
+  }
+}
+
 // Normalize categories for simpler template usage
 const normalizedCategories = computed(() => {
   if (!post.value?.categories) return [];
@@ -91,6 +126,7 @@ const spaceName = computed(() => {
 
   return null;
 });
+
 const relatedPosts = computed(() => data.value?.relatedPosts);
 const author = computed(() => post.value?.author as Partial<PayloadUser>);
 
@@ -325,6 +361,16 @@ useSeoMeta({
               variant="ghost"
               color="neutral"
             />
+            <UButton
+              :icon="liked ? 'i-heroicons-heart-solid' : 'i-heroicons-heart'"
+              :color="liked ? 'red' : 'neutral'"
+              size="sm"
+              variant="ghost"
+              :loading="likeLoading"
+              @click="handleLike"
+            >
+              {{ likeCount }}
+            </UButton>
 
             <USlideover
               v-model:open="commentsSlideoverOpen"

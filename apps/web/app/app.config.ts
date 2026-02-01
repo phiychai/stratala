@@ -117,7 +117,12 @@ export default defineAppConfig({
       },
     },
     blogPosts: {
-      base: 'flex flex-col gap-8 lg:gap-y-16 pt-0',
+      base: 'flex flex-col gap-5 lg:gap-y-9 pt-0',
+      variants: {
+        orientation: {
+          horizontal: 'sm:grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4',
+        },
+      },
     },
     prose: {
       h1: {

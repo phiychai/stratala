@@ -68,7 +68,7 @@ const { otp, verifying, resending, resendCooldown, error, handleVerify } = useOt
         router.push('/set-username');
         return { success: true };
       }
-    } catch (_fetchError) {
+    } catch {
       // If fetch fails, continue to login redirect
       // Session check failed - user will be redirected to login
     }

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { NavigationMenuItem } from '@nuxt/ui';
-import type { Navigation } from '@turborepo-saas-starter/shared-types/payload-types';
+import type { Navigation } from '@stratalapayload-types';
 
 const route = useRoute();
 const { isAuthenticated } = useAuth();

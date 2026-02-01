@@ -1,4 +1,4 @@
-import type { Post } from '@turborepo-saas-starter/shared-types';
+import type { Post } from '@stratala/shared-types';
 
 export interface Category {
   id: string;

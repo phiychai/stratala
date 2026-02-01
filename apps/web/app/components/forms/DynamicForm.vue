@@ -2,7 +2,7 @@
 import { useForm } from 'vee-validate';
 import { toTypedSchema } from '@vee-validate/zod';
 import { buildZodSchema } from '~/lib/zodSchemaBuilder';
-import type { FormField } from '@turborepo-saas-starter/shared-types';
+import type { FormField } from '@stratala/shared-types';
 import BaseFormField from './BaseFormField.vue';
 import BaseButton from '../base/BaseButton.vue';
 

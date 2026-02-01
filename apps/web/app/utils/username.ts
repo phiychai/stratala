@@ -1,4 +1,4 @@
-import type { PayloadUser } from '@turborepo-saas-starter/shared-types';
+import type { PayloadUser } from '@stratala/shared-types';
 
 interface UserNameOptions {
   abbrev?: boolean;

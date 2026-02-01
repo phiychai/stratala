@@ -1,4 +1,4 @@
-import type { UserProfile } from '@turborepo-saas-starter/shared-types';
+import type { UserProfile } from '@stratala/shared-types';
 
 type UserDisplayNameInput =
   | Pick<UserProfile, 'firstName' | 'lastName' | 'username' | 'email' | 'fullName'>

@@ -52,19 +52,18 @@ export default defineEventHandler(async (event): Promise<HealthCheckResult> => {
         })
     );
 
-    if (result.status === 'ok') {
-      results.adonisApi = {
-        status: 'healthy',
-        message: 'Operational',
-        responseTime: time,
-      };
-    } else {
-      results.adonisApi = {
-        status: 'degraded',
-        message: 'API responded but status is not ok',
-        responseTime: time,
-      };
-    }
+    results.adonisApi =
+      result.status === 'ok'
+        ? {
+            status: 'healthy',
+            message: 'Operational',
+            responseTime: time,
+          }
+        : {
+            status: 'degraded',
+            message: 'API responded but status is not ok',
+            responseTime: time,
+          };
   } catch (error) {
     results.adonisApi = {
       status: 'unhealthy',
@@ -145,17 +144,16 @@ export default defineEventHandler(async (event): Promise<HealthCheckResult> => {
         ? (error as { statusCode?: number }).statusCode
         : undefined;
 
-    if (statusCode === 401 || statusCode === 403) {
-      results.lago = {
-        status: 'healthy',
-        message: 'Connected (authentication required)',
-      };
-    } else {
-      results.lago = {
-        status: 'unhealthy',
-        message: error instanceof Error ? error.message : 'Connection failed',
-      };
-    }
+    results.lago =
+      statusCode === 401 || statusCode === 403
+        ? {
+            status: 'healthy',
+            message: 'Connected (authentication required)',
+          }
+        : {
+            status: 'unhealthy',
+            message: error instanceof Error ? error.message : 'Connection failed',
+          };
   }
 
   return results;

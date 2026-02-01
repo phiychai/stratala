@@ -1,17 +1,10 @@
-import type { Post } from '@turborepo-saas-starter/shared-types';
+import type { Post } from '@stratala/shared-types';
 import { usePayloadImage } from './usePayloadImage';
 
-export interface TransformedPost extends Post {
+export type TransformedPost = Omit<Post, 'author' | 'image'> & {
   imageUrl?: string;
-  author?: {
-    firstName?: string;
-    lastName?: string;
-    avatar?: {
-      src: string;
-      alt: string;
-    };
-  };
-}
+  author?: Post['author'];
+};
 
 /**
  * Composable for transforming posts to include image URLs and properly formatted authors
@@ -33,26 +26,14 @@ export function usePostTransform() {
             : null
       );
 
+      // Author is already properly typed as User from Post type
       const author = post.author && typeof post.author === 'object' ? post.author : null;
-      // Author avatar might be in a different format, handle accordingly
-      const authorAvatarUrl =
-        author && 'avatar' in author ? getImageUrl(author.avatar as any) : undefined;
 
       return {
         ...post,
-        // Only include imageUrl if it's a valid string (not undefined or empty)
+        // Only include imageUrl if it's a valid string
         ...(imageUrl ? { imageUrl } : {}),
-        author: author
-          ? {
-              ...author,
-              avatar: authorAvatarUrl
-                ? {
-                    src: authorAvatarUrl,
-                    alt: `${author.firstName || ''} ${author.lastName || ''}`.trim() || 'Author',
-                  }
-                : undefined,
-            }
-          : undefined,
+        author: author || undefined,
       };
     });
   }

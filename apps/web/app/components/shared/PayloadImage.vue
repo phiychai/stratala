@@ -2,7 +2,7 @@
 import { getPayloadAssetURL } from '@@/server/utils/payload-utils';
 import { watch, ref, computed } from 'vue';
 import type { PayloadImageProps } from '~/types/components';
-import type { Media } from '@turborepo-saas-starter/shared-types';
+import type { Media } from '@stratala/shared-types';
 
 const props = withDefaults(defineProps<PayloadImageProps>(), {
   width: undefined,

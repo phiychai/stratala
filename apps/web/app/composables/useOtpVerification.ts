@@ -31,11 +31,9 @@ export function useOtpVerification(options: {
     if (value > 0 && !cooldownInterval) {
       cooldownInterval = setInterval(() => {
         resendCooldown.value--;
-        if (resendCooldown.value <= 0) {
-          if (cooldownInterval) {
-            clearInterval(cooldownInterval);
-            cooldownInterval = null;
-          }
+        if (resendCooldown.value <= 0 && cooldownInterval) {
+          clearInterval(cooldownInterval);
+          cooldownInterval = null;
         }
       }, 1000);
     }

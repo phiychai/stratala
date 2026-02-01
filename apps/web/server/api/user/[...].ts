@@ -19,7 +19,7 @@ export default defineEventHandler(async (event) => {
     if (value !== undefined) {
       if (Array.isArray(value)) {
         // For arrays, append each value
-        value.forEach((v) => params.append(key, String(v)));
+        for (const v of value) params.append(key, String(v));
       } else {
         params.append(key, String(value));
       }
@@ -58,17 +58,17 @@ export default defineEventHandler(async (event) => {
     // Handle Set-Cookie specially - native fetch supports getSetCookie()
     const cookies = responseHeaders.getSetCookie?.() || [];
     if (cookies.length > 0) {
-      cookies.forEach((cookie) => {
+      for (const cookie of cookies) {
         appendResponseHeader(event, 'set-cookie', cookie);
-      });
+      }
     }
 
     // Forward other headers
-    responseHeaders.forEach((value, key) => {
+    for (const [key, value] of responseHeaders.entries()) {
       if (key.toLowerCase() !== 'set-cookie') {
         setHeader(event, key, value);
       }
-    });
+    }
 
     // Set status code
     setResponseStatus(event, response.status);

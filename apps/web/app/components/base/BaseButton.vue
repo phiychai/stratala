@@ -23,7 +23,7 @@ const buttonIcon = computed(() => {
   if (props.customIcon) return props.customIcon;
   if (props.icon && iconMap[props.icon]) return iconMap[props.icon];
   if (props.icon) return props.icon; // Already in iconify format
-  return undefined;
+  return;
 });
 
 const href = computed(() => {

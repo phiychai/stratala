@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { Post, PayloadUser } from '@turborepo-saas-starter/shared-types';
+import type { Post, PayloadUser } from '@stratala/shared-types';
 import { useTableOfContents } from '~/composables/useTableOfContents';
 
 const route = useRoute();

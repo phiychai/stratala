@@ -113,13 +113,13 @@ export default defineEventHandler(async (event) => {
       });
 
       // Forward all headers - since we requested identity, there should be no content-encoding
-      response.headers.forEach((value, key) => {
+      for (const [key, value] of response.headers.entries()) {
         const lowerKey = key.toLowerCase();
         // Forward all headers except content-length (will be recalculated)
         if (lowerKey !== 'content-length') {
           setHeader(event, key, value);
         }
-      });
+      }
       setResponseStatus(event, response.status);
 
       // Get the response as arrayBuffer to preserve binary data
@@ -148,7 +148,7 @@ export default defineEventHandler(async (event) => {
   for (const [key, value] of Object.entries(query)) {
     if (value !== undefined) {
       if (Array.isArray(value)) {
-        value.forEach((v) => params.append(key, String(v)));
+        for (const v of value) params.append(key, String(v));
       } else {
         params.append(key, String(value));
       }
@@ -202,15 +202,15 @@ export default defineEventHandler(async (event) => {
     const responseHeaders = response.headers;
     const cookies = responseHeaders.getSetCookie?.() || [];
     if (cookies.length > 0) {
-      cookies.forEach((cookie) => {
+      for (const cookie of cookies) {
         appendResponseHeader(event, 'set-cookie', cookie);
-      });
+      }
     }
 
     // Forward other headers
     // IMPORTANT: Don't forward content-encoding for HTML responses
     // The browser needs to handle decompression, but we're modifying the content
-    responseHeaders.forEach((value, key) => {
+    for (const [key, value] of responseHeaders.entries()) {
       const lowerKey = key.toLowerCase();
       if (
         lowerKey !== 'set-cookie' &&
@@ -220,7 +220,7 @@ export default defineEventHandler(async (event) => {
       ) {
         setHeader(event, key, value);
       }
-    });
+    }
 
     // Set status code
     setResponseStatus(event, response.status);
@@ -278,16 +278,16 @@ export default defineEventHandler(async (event) => {
     return responseText;
   } catch (error: unknown) {
     // Handle connection errors gracefully
-    if (error instanceof Error) {
-      // ECONNRESET, ECONNREFUSED, etc. are connection errors
-      if (error.message.includes('ECONNRESET') || error.message.includes('ECONNREFUSED')) {
-        console.error('❌ Payload CMS connection error:', error.message);
-        throw createError({
-          statusCode: 502,
-          statusMessage: 'Payload CMS is not available',
-          data: 'Failed to connect to Payload CMS. Please ensure it is running.',
-        });
-      }
+    if (
+      error instanceof Error && // ECONNRESET, ECONNREFUSED, etc. are connection errors
+      (error.message.includes('ECONNRESET') || error.message.includes('ECONNREFUSED'))
+    ) {
+      console.error('❌ Payload CMS connection error:', error.message);
+      throw createError({
+        statusCode: 502,
+        statusMessage: 'Payload CMS is not available',
+        data: 'Failed to connect to Payload CMS. Please ensure it is running.',
+      });
     }
 
     console.error('❌ Payload CMS proxy error:', error);

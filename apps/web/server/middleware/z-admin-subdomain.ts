@@ -13,18 +13,17 @@ export default defineEventHandler((event) => {
   const isAdminPageRoute = path.startsWith('/admin');
   const isAdminApiRoute = path.startsWith('/api/admin');
 
-  if (isAdminPageRoute || isAdminApiRoute) {
-    // Check if request is from admin subdomain
-    if (!isAdminSubdomainRequest(event)) {
-      // Not on admin subdomain - block access
-      throw createError({
-        statusCode: 403,
-        statusMessage: 'Admin routes are only accessible via admin subdomain',
-        data: {
-          message:
-            'Please access admin routes through the admin subdomain (e.g., admin.example.com)',
-        },
-      });
-    }
+  if (
+    (isAdminPageRoute || isAdminApiRoute) && // Check if request is from admin subdomain
+    !isAdminSubdomainRequest(event)
+  ) {
+    // Not on admin subdomain - block access
+    throw createError({
+      statusCode: 403,
+      statusMessage: 'Admin routes are only accessible via admin subdomain',
+      data: {
+        message: 'Please access admin routes through the admin subdomain (e.g., admin.example.com)',
+      },
+    });
   }
 });

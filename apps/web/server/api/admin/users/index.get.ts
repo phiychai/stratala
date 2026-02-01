@@ -14,7 +14,7 @@ export default defineEventHandler(async (event) => {
   for (const [key, value] of Object.entries(query)) {
     if (value !== undefined) {
       if (Array.isArray(value)) {
-        value.forEach((v) => params.append(key, String(v)));
+        for (const v of value) params.append(key, String(v));
       } else {
         params.append(key, String(value));
       }

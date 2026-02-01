@@ -7,7 +7,7 @@ import type {
   Subscription,
   Invoice,
   UserProfile,
-} from '@turborepo-saas-starter/shared-types';
+} from '@stratala/shared-types';
 
 export interface AuthState {
   user: UserProfile | null;

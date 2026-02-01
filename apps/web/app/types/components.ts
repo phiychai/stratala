@@ -15,7 +15,7 @@ import type {
   BlockPricing,
   BlockPost,
   BlockForm,
-} from '@turborepo-saas-starter/shared-types';
+} from '@stratala/shared-types';
 
 export interface ButtonProps {
   id: string;

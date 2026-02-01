@@ -72,7 +72,7 @@ export default defineEventHandler(async (event) => {
       // In production, you might want to change DashboardUser.id to string
       const numericId =
         typeof user.id === 'string'
-          ? parseInt(user.id.slice(0, 8), 16) || Date.now() % 1000000
+          ? Number.parseInt(user.id.slice(0, 8), 16) || Date.now() % 1000000
           : user.id;
 
       return {
