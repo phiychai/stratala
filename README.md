@@ -1,11 +1,5 @@
 <div align="center">
-
-# 🚀 Turborepo SaaS Starter
-
-> **⚠️ NOT PRODUCTION READY YET** This project is currently under active
-> development and is not recommended for production use. Features may be
-> incomplete, breaking changes may occur, and documentation is still being
-> finalized.
+# 📝 Stratala
 
 **A modern content platform for creators — like Substack, YouTube, and Medium**
 
