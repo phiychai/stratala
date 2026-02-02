@@ -1,7 +1,7 @@
-<div align="center">
-# 📝 Stratala
 
-**A modern content platform for creators — like Substack, YouTube, and Medium**
+# Stratala - The modern content platform for creators.
+
+**A unified space where writers, video creators, and storytellers publish, grow, and earn — all in one place.**
 
 [![Turborepo](https://img.shields.io/badge/Built%20with-Turborepo-EF4444?style=for-the-badge&logo=turborepo&logoColor=white)](https://turbo.build)
 [![Nuxt](https://img.shields.io/badge/Nuxt-4.0-00DC82?style=for-the-badge&logo=nuxt&logoColor=white)](https://nuxt.com)
@@ -9,14 +9,11 @@
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.8-3178C6?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org)
 [![pnpm](https://img.shields.io/badge/pnpm-10.15-F69220?style=for-the-badge&logo=pnpm&logoColor=white)](https://pnpm.io)
 
-_A fully-featured, enterprise-grade monorepo with frontend, backend, CMS, and
-shared packages_
+Stratala is a next-generation content platform that blends the best of Substack, YouTube, and Medium. It empowers creators to share their work in any format - text, video, or audio - while building direct relationships with their audiences. With built-in monetization tools, analytics, and community features, Stratala gives creators full control over their content and income.
 
 [Features](#-features) • [Quick Start](#-quick-start) •
 [Architecture](#-architecture) • [Testing](./TESTING.md) •
 [Documentation](#-documentation)
-
-</div>
 
 ---
 
