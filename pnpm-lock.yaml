@@ -38,7 +38,7 @@ importers:
     dependencies:
       '@adonisjs/auth':
         specifier: ^9.5.1
-        version: 9.5.1(3a76907f9f54fc0b127ab354a5045b9b)
+        version: 9.5.1(4661bb4184592cd7b1da254f9ac5f191)
       '@adonisjs/bouncer':
         specifier: ^3.1.6
         version: 3.1.6(@adonisjs/core@6.19.0(@adonisjs/assembler@7.8.2(babel-plugin-macros@3.1.0)(typescript@5.9.3))(@vinejs/vine@4.1.0)(bcrypt@5.1.1))
@@ -55,8 +55,8 @@ importers:
         specifier: ^9.2.0
         version: 9.2.0(@adonisjs/core@6.19.0(@adonisjs/assembler@7.8.2(babel-plugin-macros@3.1.0)(typescript@5.9.3))(@vinejs/vine@4.1.0)(bcrypt@5.1.1))
       '@adonisjs/session':
-        specifier: ^7.5.1
-        version: 7.5.1(@adonisjs/core@6.19.0(@adonisjs/assembler@7.8.2(babel-plugin-macros@3.1.0)(typescript@5.9.3))(@vinejs/vine@4.1.0)(bcrypt@5.1.1))(@adonisjs/redis@9.2.0(@adonisjs/core@6.19.0(@adonisjs/assembler@7.8.2(babel-plugin-macros@3.1.0)(typescript@5.9.3))(@vinejs/vine@4.1.0)(bcrypt@5.1.1)))(@japa/api-client@3.1.0(@japa/assert@4.1.1(@japa/runner@4.4.0))(@japa/runner@4.4.0))
+        specifier: ^7.7.1
+        version: 7.7.1(@adonisjs/core@6.19.0(@adonisjs/assembler@7.8.2(babel-plugin-macros@3.1.0)(typescript@5.9.3))(@vinejs/vine@4.1.0)(bcrypt@5.1.1))(@adonisjs/lucid@21.8.0(@adonisjs/assembler@7.8.2(babel-plugin-macros@3.1.0)(typescript@5.9.3))(@adonisjs/core@6.19.0(@adonisjs/assembler@7.8.2(babel-plugin-macros@3.1.0)(typescript@5.9.3))(@vinejs/vine@4.1.0)(bcrypt@5.1.1))(@vinejs/vine@4.1.0)(better-sqlite3@12.2.0)(luxon@3.7.1)(pg@8.16.3))(@adonisjs/redis@9.2.0(@adonisjs/core@6.19.0(@adonisjs/assembler@7.8.2(babel-plugin-macros@3.1.0)(typescript@5.9.3))(@vinejs/vine@4.1.0)(bcrypt@5.1.1)))(@japa/api-client@3.1.0(@japa/assert@4.1.1(@japa/runner@4.4.0))(@japa/runner@4.4.0))
       '@turborepo-saas-starter/shared-types':
         specifier: workspace:*
         version: link:../../packages/shared-types
@@ -244,7 +244,7 @@ importers:
         version: 5.1.4(typescript@5.9.3)(vite@7.3.0(@types/node@25.2.0)(jiti@2.6.1)(lightningcss@1.30.2)(sass@1.77.4)(terser@5.46.0)(tsx@4.21.0)(yaml@2.8.1))
       vitest:
         specifier: 3.2.3
-        version: 3.2.3(@types/debug@4.1.12)(@types/node@25.2.0)(happy-dom@20.0.10)(jiti@2.6.1)(jsdom@26.1.0)(lightningcss@1.30.2)(sass@1.77.4)(terser@5.46.0)(tsx@4.21.0)(yaml@2.8.1)
+        version: 3.2.3(@types/debug@4.1.12)(@types/node@25.2.0)(happy-dom@20.5.0)(jiti@2.6.1)(jsdom@26.1.0)(lightningcss@1.30.2)(sass@1.77.4)(terser@5.46.0)(tsx@4.21.0)(yaml@2.8.1)
 
   apps/web:
     dependencies:
@@ -359,7 +359,7 @@ importers:
         version: 1.10.0(@typescript-eslint/utils@8.54.0(eslint@9.39.2(jiti@2.6.1))(typescript@5.9.3))(@vue/compiler-sfc@3.5.24)(eslint-import-resolver-node@0.3.9)(eslint-webpack-plugin@4.2.0(eslint@9.39.2(jiti@2.6.1))(webpack@5.101.3(esbuild@0.25.12)))(eslint@9.39.2(jiti@2.6.1))(magicast@0.5.1)(typescript@5.9.3)(vite@7.3.0(@types/node@25.2.0)(jiti@2.6.1)(lightningcss@1.30.2)(sass@1.77.4)(terser@5.46.0)(tsx@4.21.0)(yaml@2.8.1))
       '@nuxt/test-utils':
         specifier: ^3.20.1
-        version: 3.20.1(@playwright/test@1.56.1)(@vitest/ui@4.0.10)(@vue/test-utils@2.4.6)(happy-dom@20.0.10)(jsdom@26.1.0)(magicast@0.5.1)(playwright-core@1.56.1)(typescript@5.9.3)(vitest@4.0.10)
+        version: 3.20.1(@playwright/test@1.56.1)(@vitest/ui@4.0.10)(@vue/test-utils@2.4.6)(happy-dom@20.5.0)(jsdom@26.1.0)(magicast@0.5.1)(playwright-core@1.56.1)(typescript@5.9.3)(vitest@4.0.10)
       '@oxc-minify/binding-darwin-x64':
         specifier: 0.96.0
         version: 0.96.0
@@ -382,8 +382,8 @@ importers:
         specifier: ^9.39.2
         version: 9.39.2(jiti@2.6.1)
       happy-dom:
-        specifier: ^20.0.10
-        version: 20.0.10
+        specifier: ^20.5.0
+        version: 20.5.0
       prettier:
         specifier: 3.6.2
         version: 3.6.2
@@ -392,7 +392,7 @@ importers:
         version: 5.9.3
       vitest:
         specifier: ^4.0.10
-        version: 4.0.10(@types/debug@4.1.12)(@types/node@25.2.0)(@vitest/ui@4.0.10)(happy-dom@20.0.10)(jiti@2.6.1)(jsdom@26.1.0)(lightningcss@1.30.2)(sass@1.77.4)(terser@5.46.0)(tsx@4.21.0)(yaml@2.8.1)
+        version: 4.0.10(@types/debug@4.1.12)(@types/node@25.2.0)(@vitest/ui@4.0.10)(happy-dom@20.5.0)(jiti@2.6.1)(jsdom@26.1.0)(lightningcss@1.30.2)(sass@1.77.4)(terser@5.46.0)(tsx@4.21.0)(yaml@2.8.1)
       vue-tsc:
         specifier: ^3.0.1
         version: 3.0.5(typescript@5.9.3)
@@ -649,11 +649,12 @@ packages:
     resolution: {integrity: sha512-NnczRJusl0082GOjEFYwObW/yBGJtpfJFnkFCQdQ6eykgBHVNYaY6qstfob+l1bedetRj0hrDY6YfsWMkA0MCg==}
     engines: {node: '>=18.16.0'}
 
-  '@adonisjs/session@7.5.1':
-    resolution: {integrity: sha512-b1E0W/1nnJfAq3Gv8yPywgsxJ7uzzOBJxxulonXI4t1eSdvJzZGNrFScfVLOcjTwlxwrEFA847tULIQxgR4Spw==}
+  '@adonisjs/session@7.7.1':
+    resolution: {integrity: sha512-govnDxtc+ZVTOrmgFHi5IG6zs9ylsCH6cbgRvDDlH+15xYuy93mGhO+R96JoqgwVDSSuS0tFP/0HJQDglOoOPA==}
     engines: {node: '>=18.16.0'}
     peerDependencies:
       '@adonisjs/core': ^6.6.0
+      '@adonisjs/lucid': ^21.0.0
       '@adonisjs/redis': ^8.0.1 || ^9.0.0
       '@aws-sdk/client-dynamodb': ^3.658.0
       '@aws-sdk/util-dynamodb': ^3.658.0
@@ -661,6 +662,8 @@ packages:
       '@japa/browser-client': ^2.0.3
       edge.js: ^6.0.2
     peerDependenciesMeta:
+      '@adonisjs/lucid':
+        optional: true
       '@adonisjs/redis':
         optional: true
       '@aws-sdk/client-dynamodb':
@@ -4135,9 +4138,6 @@ packages:
   '@types/ms@2.1.0':
     resolution: {integrity: sha512-GsCCIZDE/p3i96vtEqx+7dBUGXrc7zeSK3wwPHIaRThS+9OhWIXRqzs4d6k1SVU8g91DrNRWxWUGhp5KXQb2VA==}
 
-  '@types/node@20.19.31':
-    resolution: {integrity: sha512-5jsi0wpncvTD33Sh1UCgacK37FFwDn+EG7wCmEvs62fCvBL+n8/76cAYDok21NF6+jaVWIqKwCZyX7Vbu8eB3A==}
-
   '@types/node@25.2.0':
     resolution: {integrity: sha512-DZ8VwRFUNzuqJ5khrvwMXHmvPe+zGayJhr2CDNiKB1WBE1ST8Djl00D0IC4vvNmHMdj6DlbYRIaFE7WHjlDl5w==}
 
@@ -4232,6 +4232,9 @@ packages:
 
   '@types/whatwg-mimetype@3.0.2':
     resolution: {integrity: sha512-c2AKvDT8ToxLIOUlN51gTiHXflsfIFisS4pO7pDPoKouJCESkhZnEy623gwP9laCy5lnLDAw1vAzu2vM2YLOrA==}
+
+  '@types/ws@8.18.1':
+    resolution: {integrity: sha512-ThVF6DCVhA8kUGy+aazFQ4kXQ7E1Ty7A3ypFOe0IcJV8O/M511G99AW24irKrW56Wt44yG9+ij8FaqoBGkuBXg==}
 
   '@types/yargs-parser@21.0.3':
     resolution: {integrity: sha512-I4q9QU9MQv4oEOz4tAHJtNz1cwuLxn2F3xcc2iV5WdqLPpUnj30aUuxt1mAxYTG+oe8CZMV/+6rU4S4gRDzqtQ==}
@@ -7410,8 +7413,8 @@ packages:
   h3@1.15.4:
     resolution: {integrity: sha512-z5cFQWDffyOe4vQ9xIqNfCZdV4p//vy6fBnr8Q1AWnVZ0teurKMG66rLj++TKwKPUP3u7iMUvrvKaEUiQw2QWQ==}
 
-  happy-dom@20.0.10:
-    resolution: {integrity: sha512-6umCCHcjQrhP5oXhrHQQvLB0bwb1UzHAHdsXy+FjtKoYjUhmNZsQL8NivwM1vDvNEChJabVrUYxUnp/ZdYmy2g==}
+  happy-dom@20.5.0:
+    resolution: {integrity: sha512-VQe+Q5CYiGOgcCERXhcfNsbnrN92FDEKciMH/x6LppU9dd0j4aTjCTlqONFOIMcAm/5JxS3+utowbXV1OoFr+g==}
     engines: {node: '>=20.0.0'}
 
   has-bigints@1.1.0:
@@ -11021,9 +11024,6 @@ packages:
   unctx@2.5.0:
     resolution: {integrity: sha512-p+Rz9x0R7X+CYDkT+Xg8/GhpcShTlU8n+cf9OtOEf7zEQsNcCZO1dPKNRDqvUTaq+P32PMMkxWHwfrxkqfqAYg==}
 
-  undici-types@6.21.0:
-    resolution: {integrity: sha512-iwDZqg0QAGrg9Rav5H4n0M64c3mkR59cJ6wQp+7C4nI0gsmExaedaYLNO44eT4AtBBwjbTiGPMlt2Md0T9H9JQ==}
-
   undici-types@7.16.0:
     resolution: {integrity: sha512-Zz+aZWSj8LE6zoxD+xrjh4VfkIG8Ya6LvYkZqtUQGJPZjYl53ypCaUwWqo7eI0x66KBGeRo+mlBEkMSeSZ38Nw==}
 
@@ -11959,7 +11959,7 @@ snapshots:
     transitivePeerDependencies:
       - babel-plugin-macros
 
-  '@adonisjs/auth@9.5.1(3a76907f9f54fc0b127ab354a5045b9b)':
+  '@adonisjs/auth@9.5.1(4661bb4184592cd7b1da254f9ac5f191)':
     dependencies:
       '@adonisjs/core': 6.19.0(@adonisjs/assembler@7.8.2(babel-plugin-macros@3.1.0)(typescript@5.9.3))(@vinejs/vine@4.1.0)(bcrypt@5.1.1)
       '@adonisjs/presets': 2.6.4(@adonisjs/assembler@7.8.2(babel-plugin-macros@3.1.0)(typescript@5.9.3))(@adonisjs/core@6.19.0(@adonisjs/assembler@7.8.2(babel-plugin-macros@3.1.0)(typescript@5.9.3))(@vinejs/vine@4.1.0)(bcrypt@5.1.1))
@@ -11967,7 +11967,7 @@ snapshots:
       basic-auth: 2.0.1
     optionalDependencies:
       '@adonisjs/lucid': 21.8.0(@adonisjs/assembler@7.8.2(babel-plugin-macros@3.1.0)(typescript@5.9.3))(@adonisjs/core@6.19.0(@adonisjs/assembler@7.8.2(babel-plugin-macros@3.1.0)(typescript@5.9.3))(@vinejs/vine@4.1.0)(bcrypt@5.1.1))(@vinejs/vine@4.1.0)(better-sqlite3@12.2.0)(luxon@3.7.1)(pg@8.16.3)
-      '@adonisjs/session': 7.5.1(@adonisjs/core@6.19.0(@adonisjs/assembler@7.8.2(babel-plugin-macros@3.1.0)(typescript@5.9.3))(@vinejs/vine@4.1.0)(bcrypt@5.1.1))(@adonisjs/redis@9.2.0(@adonisjs/core@6.19.0(@adonisjs/assembler@7.8.2(babel-plugin-macros@3.1.0)(typescript@5.9.3))(@vinejs/vine@4.1.0)(bcrypt@5.1.1)))(@japa/api-client@3.1.0(@japa/assert@4.1.1(@japa/runner@4.4.0))(@japa/runner@4.4.0))
+      '@adonisjs/session': 7.7.1(@adonisjs/core@6.19.0(@adonisjs/assembler@7.8.2(babel-plugin-macros@3.1.0)(typescript@5.9.3))(@vinejs/vine@4.1.0)(bcrypt@5.1.1))(@adonisjs/lucid@21.8.0(@adonisjs/assembler@7.8.2(babel-plugin-macros@3.1.0)(typescript@5.9.3))(@adonisjs/core@6.19.0(@adonisjs/assembler@7.8.2(babel-plugin-macros@3.1.0)(typescript@5.9.3))(@vinejs/vine@4.1.0)(bcrypt@5.1.1))(@vinejs/vine@4.1.0)(better-sqlite3@12.2.0)(luxon@3.7.1)(pg@8.16.3))(@adonisjs/redis@9.2.0(@adonisjs/core@6.19.0(@adonisjs/assembler@7.8.2(babel-plugin-macros@3.1.0)(typescript@5.9.3))(@vinejs/vine@4.1.0)(bcrypt@5.1.1)))(@japa/api-client@3.1.0(@japa/assert@4.1.1(@japa/runner@4.4.0))(@japa/runner@4.4.0))
       '@japa/api-client': 3.1.0(@japa/assert@4.1.1(@japa/runner@4.4.0))(@japa/runner@4.4.0)
       '@japa/plugin-adonisjs': 4.0.0(@adonisjs/core@6.19.0(@adonisjs/assembler@7.8.2(babel-plugin-macros@3.1.0)(typescript@5.9.3))(@vinejs/vine@4.1.0)(bcrypt@5.1.1))(@japa/api-client@3.1.0(@japa/assert@4.1.1(@japa/runner@4.4.0))(@japa/runner@4.4.0))(@japa/runner@4.4.0)(playwright@1.56.1)
     transitivePeerDependencies:
@@ -12164,12 +12164,13 @@ snapshots:
       '@poppinss/colors': 4.1.5
       string-width: 7.2.0
 
-  '@adonisjs/session@7.5.1(@adonisjs/core@6.19.0(@adonisjs/assembler@7.8.2(babel-plugin-macros@3.1.0)(typescript@5.9.3))(@vinejs/vine@4.1.0)(bcrypt@5.1.1))(@adonisjs/redis@9.2.0(@adonisjs/core@6.19.0(@adonisjs/assembler@7.8.2(babel-plugin-macros@3.1.0)(typescript@5.9.3))(@vinejs/vine@4.1.0)(bcrypt@5.1.1)))(@japa/api-client@3.1.0(@japa/assert@4.1.1(@japa/runner@4.4.0))(@japa/runner@4.4.0))':
+  '@adonisjs/session@7.7.1(@adonisjs/core@6.19.0(@adonisjs/assembler@7.8.2(babel-plugin-macros@3.1.0)(typescript@5.9.3))(@vinejs/vine@4.1.0)(bcrypt@5.1.1))(@adonisjs/lucid@21.8.0(@adonisjs/assembler@7.8.2(babel-plugin-macros@3.1.0)(typescript@5.9.3))(@adonisjs/core@6.19.0(@adonisjs/assembler@7.8.2(babel-plugin-macros@3.1.0)(typescript@5.9.3))(@vinejs/vine@4.1.0)(bcrypt@5.1.1))(@vinejs/vine@4.1.0)(better-sqlite3@12.2.0)(luxon@3.7.1)(pg@8.16.3))(@adonisjs/redis@9.2.0(@adonisjs/core@6.19.0(@adonisjs/assembler@7.8.2(babel-plugin-macros@3.1.0)(typescript@5.9.3))(@vinejs/vine@4.1.0)(bcrypt@5.1.1)))(@japa/api-client@3.1.0(@japa/assert@4.1.1(@japa/runner@4.4.0))(@japa/runner@4.4.0))':
     dependencies:
       '@adonisjs/core': 6.19.0(@adonisjs/assembler@7.8.2(babel-plugin-macros@3.1.0)(typescript@5.9.3))(@vinejs/vine@4.1.0)(bcrypt@5.1.1)
-      '@poppinss/macroable': 1.0.5
+      '@poppinss/macroable': 1.1.0
       '@poppinss/utils': 6.10.1
     optionalDependencies:
+      '@adonisjs/lucid': 21.8.0(@adonisjs/assembler@7.8.2(babel-plugin-macros@3.1.0)(typescript@5.9.3))(@adonisjs/core@6.19.0(@adonisjs/assembler@7.8.2(babel-plugin-macros@3.1.0)(typescript@5.9.3))(@vinejs/vine@4.1.0)(bcrypt@5.1.1))(@vinejs/vine@4.1.0)(better-sqlite3@12.2.0)(luxon@3.7.1)(pg@8.16.3)
       '@adonisjs/redis': 9.2.0(@adonisjs/core@6.19.0(@adonisjs/assembler@7.8.2(babel-plugin-macros@3.1.0)(typescript@5.9.3))(@vinejs/vine@4.1.0)(bcrypt@5.1.1))
       '@japa/api-client': 3.1.0(@japa/assert@4.1.1(@japa/runner@4.4.0))(@japa/runner@4.4.0)
 
@@ -14609,7 +14610,7 @@ snapshots:
     transitivePeerDependencies:
       - magicast
 
-  '@nuxt/test-utils@3.20.1(@playwright/test@1.56.1)(@vitest/ui@4.0.10)(@vue/test-utils@2.4.6)(happy-dom@20.0.10)(jsdom@26.1.0)(magicast@0.5.1)(playwright-core@1.56.1)(typescript@5.9.3)(vitest@4.0.10)':
+  '@nuxt/test-utils@3.20.1(@playwright/test@1.56.1)(@vitest/ui@4.0.10)(@vue/test-utils@2.4.6)(happy-dom@20.5.0)(jsdom@26.1.0)(magicast@0.5.1)(playwright-core@1.56.1)(typescript@5.9.3)(vitest@4.0.10)':
     dependencies:
       '@nuxt/kit': 4.2.1(magicast@0.5.1)
       c12: 3.3.1(magicast@0.5.1)
@@ -14633,16 +14634,16 @@ snapshots:
       tinyexec: 1.0.1
       ufo: 1.6.1
       unplugin: 2.3.10
-      vitest-environment-nuxt: 1.0.1(@playwright/test@1.56.1)(@vitest/ui@4.0.10)(@vue/test-utils@2.4.6)(happy-dom@20.0.10)(jsdom@26.1.0)(magicast@0.5.1)(playwright-core@1.56.1)(typescript@5.9.3)(vitest@4.0.10)
+      vitest-environment-nuxt: 1.0.1(@playwright/test@1.56.1)(@vitest/ui@4.0.10)(@vue/test-utils@2.4.6)(happy-dom@20.5.0)(jsdom@26.1.0)(magicast@0.5.1)(playwright-core@1.56.1)(typescript@5.9.3)(vitest@4.0.10)
       vue: 3.5.24(typescript@5.9.3)
     optionalDependencies:
       '@playwright/test': 1.56.1
       '@vitest/ui': 4.0.10(vitest@4.0.10)
       '@vue/test-utils': 2.4.6
-      happy-dom: 20.0.10
+      happy-dom: 20.5.0
       jsdom: 26.1.0
       playwright-core: 1.56.1
-      vitest: 4.0.10(@types/debug@4.1.12)(@types/node@25.2.0)(@vitest/ui@4.0.10)(happy-dom@20.0.10)(jiti@2.6.1)(jsdom@26.1.0)(lightningcss@1.30.2)(sass@1.77.4)(terser@5.46.0)(tsx@4.21.0)(yaml@2.8.1)
+      vitest: 4.0.10(@types/debug@4.1.12)(@types/node@25.2.0)(@vitest/ui@4.0.10)(happy-dom@20.5.0)(jiti@2.6.1)(jsdom@26.1.0)(lightningcss@1.30.2)(sass@1.77.4)(terser@5.46.0)(tsx@4.21.0)(yaml@2.8.1)
     transitivePeerDependencies:
       - magicast
       - typescript
@@ -16561,10 +16562,6 @@ snapshots:
 
   '@types/ms@2.1.0': {}
 
-  '@types/node@20.19.31':
-    dependencies:
-      undici-types: 6.21.0
-
   '@types/node@25.2.0':
     dependencies:
       undici-types: 7.16.0
@@ -16667,6 +16664,10 @@ snapshots:
   '@types/web-bluetooth@0.0.21': {}
 
   '@types/whatwg-mimetype@3.0.2': {}
+
+  '@types/ws@8.18.1':
+    dependencies:
+      '@types/node': 25.2.0
 
   '@types/yargs-parser@21.0.3':
     optional: true
@@ -17245,7 +17246,7 @@ snapshots:
       sirv: 3.0.2
       tinyglobby: 0.2.15
       tinyrainbow: 3.0.3
-      vitest: 4.0.10(@types/debug@4.1.12)(@types/node@25.2.0)(@vitest/ui@4.0.10)(happy-dom@20.0.10)(jiti@2.6.1)(jsdom@26.1.0)(lightningcss@1.30.2)(sass@1.77.4)(terser@5.46.0)(tsx@4.21.0)(yaml@2.8.1)
+      vitest: 4.0.10(@types/debug@4.1.12)(@types/node@25.2.0)(@vitest/ui@4.0.10)(happy-dom@20.5.0)(jiti@2.6.1)(jsdom@26.1.0)(lightningcss@1.30.2)(sass@1.77.4)(terser@5.46.0)(tsx@4.21.0)(yaml@2.8.1)
 
   '@vitest/utils@3.2.3':
     dependencies:
@@ -20495,11 +20496,17 @@ snapshots:
       ufo: 1.6.1
       uncrypto: 0.1.3
 
-  happy-dom@20.0.10:
+  happy-dom@20.5.0:
     dependencies:
-      '@types/node': 20.19.31
+      '@types/node': 25.2.0
       '@types/whatwg-mimetype': 3.0.2
+      '@types/ws': 8.18.1
+      entities: 4.5.0
       whatwg-mimetype: 3.0.0
+      ws: 8.19.0
+    transitivePeerDependencies:
+      - bufferutil
+      - utf-8-validate
 
   has-bigints@1.1.0: {}
 
@@ -25210,8 +25217,6 @@ snapshots:
       magic-string: 0.30.21
       unplugin: 2.3.11
 
-  undici-types@6.21.0: {}
-
   undici-types@7.16.0: {}
 
   undici@7.10.0: {}
@@ -25732,9 +25737,9 @@ snapshots:
       tsx: 4.21.0
       yaml: 2.8.1
 
-  vitest-environment-nuxt@1.0.1(@playwright/test@1.56.1)(@vitest/ui@4.0.10)(@vue/test-utils@2.4.6)(happy-dom@20.0.10)(jsdom@26.1.0)(magicast@0.5.1)(playwright-core@1.56.1)(typescript@5.9.3)(vitest@4.0.10):
+  vitest-environment-nuxt@1.0.1(@playwright/test@1.56.1)(@vitest/ui@4.0.10)(@vue/test-utils@2.4.6)(happy-dom@20.5.0)(jsdom@26.1.0)(magicast@0.5.1)(playwright-core@1.56.1)(typescript@5.9.3)(vitest@4.0.10):
     dependencies:
-      '@nuxt/test-utils': 3.20.1(@playwright/test@1.56.1)(@vitest/ui@4.0.10)(@vue/test-utils@2.4.6)(happy-dom@20.0.10)(jsdom@26.1.0)(magicast@0.5.1)(playwright-core@1.56.1)(typescript@5.9.3)(vitest@4.0.10)
+      '@nuxt/test-utils': 3.20.1(@playwright/test@1.56.1)(@vitest/ui@4.0.10)(@vue/test-utils@2.4.6)(happy-dom@20.5.0)(jsdom@26.1.0)(magicast@0.5.1)(playwright-core@1.56.1)(typescript@5.9.3)(vitest@4.0.10)
     transitivePeerDependencies:
       - '@cucumber/cucumber'
       - '@jest/globals'
@@ -25749,7 +25754,7 @@ snapshots:
       - typescript
       - vitest
 
-  vitest@3.2.3(@types/debug@4.1.12)(@types/node@25.2.0)(happy-dom@20.0.10)(jiti@2.6.1)(jsdom@26.1.0)(lightningcss@1.30.2)(sass@1.77.4)(terser@5.46.0)(tsx@4.21.0)(yaml@2.8.1):
+  vitest@3.2.3(@types/debug@4.1.12)(@types/node@25.2.0)(happy-dom@20.5.0)(jiti@2.6.1)(jsdom@26.1.0)(lightningcss@1.30.2)(sass@1.77.4)(terser@5.46.0)(tsx@4.21.0)(yaml@2.8.1):
     dependencies:
       '@types/chai': 5.2.3
       '@vitest/expect': 3.2.3
@@ -25777,7 +25782,7 @@ snapshots:
     optionalDependencies:
       '@types/debug': 4.1.12
       '@types/node': 25.2.0
-      happy-dom: 20.0.10
+      happy-dom: 20.5.0
       jsdom: 26.1.0
     transitivePeerDependencies:
       - jiti
@@ -25793,7 +25798,7 @@ snapshots:
       - tsx
       - yaml
 
-  vitest@4.0.10(@types/debug@4.1.12)(@types/node@25.2.0)(@vitest/ui@4.0.10)(happy-dom@20.0.10)(jiti@2.6.1)(jsdom@26.1.0)(lightningcss@1.30.2)(sass@1.77.4)(terser@5.46.0)(tsx@4.21.0)(yaml@2.8.1):
+  vitest@4.0.10(@types/debug@4.1.12)(@types/node@25.2.0)(@vitest/ui@4.0.10)(happy-dom@20.5.0)(jiti@2.6.1)(jsdom@26.1.0)(lightningcss@1.30.2)(sass@1.77.4)(terser@5.46.0)(tsx@4.21.0)(yaml@2.8.1):
     dependencies:
       '@vitest/expect': 4.0.10
       '@vitest/mocker': 4.0.10(vite@7.2.2(@types/node@25.2.0)(jiti@2.6.1)(lightningcss@1.30.2)(sass@1.77.4)(terser@5.46.0)(tsx@4.21.0)(yaml@2.8.1))
@@ -25819,7 +25824,7 @@ snapshots:
       '@types/debug': 4.1.12
       '@types/node': 25.2.0
       '@vitest/ui': 4.0.10(vitest@4.0.10)
-      happy-dom: 20.0.10
+      happy-dom: 20.5.0
       jsdom: 26.1.0
     transitivePeerDependencies:
       - jiti
