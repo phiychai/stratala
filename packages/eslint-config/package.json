@@ -1,5 +1,5 @@
 {
-  "name": "@turborepo-saas-starter/eslint-config",
+  "name": "@stratala/eslint-config",
   "version": "1.0.0",
   "type": "module",
   "description": "Shared ESLint and Prettier configuration",
@@ -10,6 +10,7 @@
     "./typescript": "./typescript.js",
     "./vue": "./vue.js",
     "./node": "./node.js",
+    "./next": "./next.js",
     "./prettier.config.cjs": "./prettier.config.cjs"
   },
   "scripts": {
@@ -23,16 +24,20 @@
     "@typescript-eslint/eslint-plugin": "^8.54.0",
     "@typescript-eslint/parser": "^8.54.0",
     "eslint": "^9.39.2",
+    "eslint-config-flat-gitignore": "^0.3.0",
     "eslint-config-prettier": "^10.1.1",
     "eslint-import-resolver-typescript": "^4.4.4",
-    "eslint-plugin-import": "^2.32.0",
+    "eslint-plugin-import-x": "^4.12.0",
+    "eslint-plugin-n": "^17.18.0",
     "eslint-plugin-prettier": "^5.5.5",
+    "eslint-plugin-regexp": "^2.7.0",
+    "eslint-plugin-unicorn": "^58.0.0",
     "eslint-plugin-vue": "^10.7.0",
+    "globals": "^16.2.0",
     "prettier": "^3.6.2",
     "typescript-eslint": "^8.47.0"
   },
   "devDependencies": {
-    "prettier-plugin-organize-imports": "^4.3.0",
     "typescript": "^5.9.3"
   },
   "peerDependencies": {

@@ -1,5 +1,5 @@
 {
-  "name": "@turborepo-saas-starter/shared-config",
+  "name": "@stratala/shared-config",
   "version": "1.0.0",
   "description": "Shared configuration files for the app platform",
   "private": true,

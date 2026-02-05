@@ -1,5 +1,5 @@
 {
-  "name": "@turborepo-saas-starter/shared-types",
+  "name": "@stratala/shared-types",
   "version": "1.0.0",
   "description": "Shared TypeScript types and interfaces for the app platform",
   "private": true,

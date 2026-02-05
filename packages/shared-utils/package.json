@@ -1,5 +1,5 @@
 {
-  "name": "@turborepo-saas-starter/shared-utils",
+  "name": "@stratala/shared-utils",
   "version": "1.0.0",
   "description": "Shared utility functions for the app platform",
   "private": true,
@@ -23,7 +23,7 @@
     "type-check": "tsc --noEmit"
   },
   "dependencies": {
-    "@turborepo-saas-starter/shared-types": "workspace:*",
+    "@stratala/shared-types": "workspace:*",
     "clsx": "^2.1.1",
     "tailwind-merge": "^3.4.0"
   },

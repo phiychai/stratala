@@ -72,6 +72,7 @@ export interface Config {
     media: Media;
     posts: Post;
     videos: Video;
+    'editors-picks': EditorsPick;
     pages: Page;
     categories: Category;
     tags: Tag;
@@ -92,6 +93,7 @@ export interface Config {
     media: MediaSelect<false> | MediaSelect<true>;
     posts: PostsSelect<false> | PostsSelect<true>;
     videos: VideosSelect<false> | VideosSelect<true>;
+    'editors-picks': EditorsPicksSelect<false> | EditorsPicksSelect<true>;
     pages: PagesSelect<false> | PagesSelect<true>;
     categories: CategoriesSelect<false> | CategoriesSelect<true>;
     tags: TagsSelect<false> | TagsSelect<true>;
@@ -445,6 +447,39 @@ export interface Video {
   updatedAt: string;
   createdAt: string;
   _status?: ('draft' | 'published') | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "editors-picks".
+ */
+export interface EditorsPick {
+  id: number;
+  /**
+   * Type of content being featured
+   */
+  contentType: 'post' | 'video';
+  /**
+   * Select a post to feature
+   */
+  post?: (number | null) | Post;
+  /**
+   * Select a video to feature
+   */
+  video?: (number | null) | Video;
+  /**
+   * Order for displaying featured content (lower numbers appear first)
+   */
+  featuredOrder: number;
+  /**
+   * Date when this content was featured
+   */
+  featuredAt: string;
+  /**
+   * Internal notes about why this content was featured
+   */
+  notes?: string | null;
+  updatedAt: string;
+  createdAt: string;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -802,6 +837,10 @@ export interface PayloadLockedDocument {
         value: number | Video;
       } | null)
     | ({
+        relationTo: 'editors-picks';
+        value: number | EditorsPick;
+      } | null)
+    | ({
         relationTo: 'pages';
         value: number | Page;
       } | null)
@@ -995,6 +1034,20 @@ export interface VideosSelect<T extends boolean = true> {
   updatedAt?: T;
   createdAt?: T;
   _status?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "editors-picks_select".
+ */
+export interface EditorsPicksSelect<T extends boolean = true> {
+  contentType?: T;
+  post?: T;
+  video?: T;
+  featuredOrder?: T;
+  featuredAt?: T;
+  notes?: T;
+  updatedAt?: T;
+  createdAt?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema

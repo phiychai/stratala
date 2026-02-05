@@ -19,6 +19,9 @@ export interface UserProfile {
   role: import('./roles').UserRoleType;
   isActive: boolean;
 
+  // Link to Payload user (for content roles)
+  payloadUserId: string | null;
+
   // Preferences (from Adonis User)
   preferences: import('./preferences').UserPreferences | null;
 
