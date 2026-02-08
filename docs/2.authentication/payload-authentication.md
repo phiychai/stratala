@@ -200,7 +200,7 @@ async syncUserToPayload(user: User) {
 
 **Implementation:**
 ```typescript
-// In Payload config: apps/cms/payload/payload.config.ts
+// In Payload config: apps/studio/payload.config.ts
 import { CollectionConfig } from 'payload/types';
 import { auth } from '@better-auth/server'; // Better Auth server instance
 
@@ -345,7 +345,7 @@ access: {
 ```typescript
 // In PayloadService (AdonisJS)
 import { getPayload } from 'payload';
-import config from '../../../cms/payload/payload.config';
+import config from '../../studio/src/payload.config';
 
 class PayloadService {
   private payload: Payload;
@@ -409,7 +409,7 @@ The frontend (Nuxt) uses Payload's REST API for public content:
 
 ```typescript
 // In payload-server.ts (Nuxt)
-const response = await fetch(`${payloadUrl}/api/posts`, {
+const response = await fetch(`${STUDIO_URL}/api/posts`, {
   method: 'GET',
   headers: {
     'Content-Type': 'application/json',
@@ -623,7 +623,7 @@ SSO allows users logged into the main site (Better Auth) to automatically access
 #### Step 1: Configure Custom Authentication Strategy in Payload
 
 ```typescript
-// apps/cms/payload/payload.config.ts
+// apps/studio/payload.config.ts
 import { PayloadConfig } from 'payload';
 import { BetterAuth } from 'better-auth'; // Better Auth instance
 
@@ -705,7 +705,7 @@ export default {
 #### Step 2: Helper Functions
 
 ```typescript
-// apps/cms/payload/src/utils/sso-helpers.ts
+// apps/studio/src/utils/sso-helpers.ts
 
 /**
  * Extract Better Auth session token from cookie string

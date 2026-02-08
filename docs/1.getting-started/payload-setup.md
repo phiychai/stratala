@@ -16,7 +16,7 @@ Payload CMS is the content management system used in this project. It runs as a 
 
 ```bash
 # From project root
-cd apps/cms/payload
+cd apps/studio
 
 # Install dependencies (if not already installed)
 pnpm install
@@ -31,12 +31,12 @@ The Payload admin panel will be available at http://localhost:3002/admin
 
 ```bash
 # From project root
-turbo dev --filter='@turborepo-saas-starter/payload'
+turbo dev --filter='@stratala/payload'
 ```
 
 ## Environment Variables
 
-Create a `.env` file in `apps/cms/payload/`:
+Create a `.env` file in `apps/studio/`:
 
 ```bash
 # Database
@@ -56,7 +56,7 @@ PORT=3002
 
 1. **Start Payload CMS**:
    ```bash
-   cd apps/cms/payload
+   cd apps/studio
    pnpm dev
    ```
 
@@ -191,7 +191,7 @@ lsof -i :3002
 
 2. Check for TypeScript errors:
    ```bash
-   cd apps/cms/payload
+   cd apps/studio
    pnpm type-check
    ```
 
