@@ -1,16 +1,15 @@
 import vuePlugin from 'eslint-plugin-vue';
 import tseslint from 'typescript-eslint';
 import vueParser from 'vue-eslint-parser';
-import baseConfig from './base.js';
+import typescriptConfig from './typescript.js';
 
 /**
  * Vue/Nuxt ESLint configuration
- * Extends base and TypeScript configs with Vue-specific rules
+ * Extends shared TypeScript config with Vue-specific rules
  */
 export default tseslint.config(
-  ...baseConfig,
+  ...typescriptConfig,
   ...vuePlugin.configs['flat/recommended'],
-  ...tseslint.configs.recommended,
   {
     files: ['**/*.vue'],
     languageOptions: {
@@ -52,55 +51,6 @@ export default tseslint.config(
       'vue/max-attributes-per-line': 'off', // Let Prettier handle this
       'vue/singleline-html-element-content-newline': 'off', // Let Prettier handle this
       'vue/html-indent': 'off', // Let Prettier handle this
-
-      // TypeScript rules for Vue
-      '@typescript-eslint/no-unused-vars': [
-        'warn',
-        {
-          argsIgnorePattern: '^_',
-          varsIgnorePattern: '^_',
-          caughtErrorsIgnorePattern: '^_',
-        },
-      ],
-      '@typescript-eslint/no-explicit-any': 'warn',
-      '@typescript-eslint/consistent-type-imports': [
-        'error',
-        {
-          prefer: 'type-imports',
-          fixStyle: 'inline-type-imports',
-        },
-      ],
-
-      // Disable base rules that are covered by TypeScript equivalents
-      'no-unused-vars': 'off',
-    },
-  },
-  {
-    files: ['**/*.ts', '**/*.tsx', '**/*.mts', '**/*.cts'],
-    languageOptions: {
-      parser: tseslint.parser,
-      parserOptions: {
-        projectService: true,
-      },
-    },
-    rules: {
-      '@typescript-eslint/no-unused-vars': [
-        'warn',
-        {
-          argsIgnorePattern: '^_',
-          varsIgnorePattern: '^_',
-          caughtErrorsIgnorePattern: '^_',
-        },
-      ],
-      '@typescript-eslint/no-explicit-any': 'warn',
-      '@typescript-eslint/consistent-type-imports': [
-        'error',
-        {
-          prefer: 'type-imports',
-          fixStyle: 'inline-type-imports',
-        },
-      ],
-      'no-unused-vars': 'off',
     },
   }
 );

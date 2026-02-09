@@ -58,7 +58,7 @@ module.exports = {
   // Vue-specific settings
   vueIndentScriptAndStyle: false,
 
-  plugins: ['prettier-plugin-organize-imports'],
+  // Note: import ordering is handled by eslint-plugin-import-x, not Prettier
 
   // Plugin-specific overrides
   overrides: [

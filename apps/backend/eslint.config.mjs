@@ -1,7 +1,7 @@
 import { dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-import nodeConfig from '@turborepo-saas-starter/eslint-config/node';
+import nodeConfig from '@stratala/eslint-config/node';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);

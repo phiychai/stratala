@@ -1,38 +1,46 @@
-import { dirname } from 'path'
-import { fileURLToPath } from 'url'
-import { FlatCompat } from '@eslint/eslintrc'
+import { dirname } from 'node:path';
+import { fileURLToPath } from 'node:url';
 
-const __filename = fileURLToPath(import.meta.url)
-const __dirname = dirname(__filename)
+import { FlatCompat } from '@eslint/eslintrc';
+import nextConfig from '@stratala/eslint-config/next';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 const compat = new FlatCompat({
   baseDirectory: __dirname,
-})
+});
+
+// Filter out @typescript-eslint plugin from shared config to avoid conflict
+// with next/typescript which registers its own instance
+const filteredNextConfig = nextConfig.map((config) => {
+  if (config.plugins?.['@typescript-eslint']) {
+    const { '@typescript-eslint': _, ...restPlugins } = config.plugins;
+    return { ...config, plugins: restPlugins };
+  }
+  return config;
+});
 
 const eslintConfig = [
+  ...filteredNextConfig,
   ...compat.extends('next/core-web-vitals', 'next/typescript'),
   {
+    languageOptions: {
+      parserOptions: {
+        tsconfigRootDir: __dirname,
+      },
+    },
+  },
+  {
+    // CMS-specific overrides
     rules: {
       '@typescript-eslint/ban-ts-comment': 'warn',
       '@typescript-eslint/no-empty-object-type': 'warn',
-      '@typescript-eslint/no-explicit-any': 'warn',
-      '@typescript-eslint/no-unused-vars': [
-        'warn',
-        {
-          vars: 'all',
-          args: 'after-used',
-          ignoreRestSiblings: false,
-          argsIgnorePattern: '^_',
-          varsIgnorePattern: '^_',
-          destructuredArrayIgnorePattern: '^_',
-          caughtErrorsIgnorePattern: '^(_|ignore)',
-        },
-      ],
     },
   },
   {
     ignores: ['.next/'],
   },
-]
+];
 
-export default eslintConfig
+export default eslintConfig;

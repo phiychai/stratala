@@ -1,13 +1,13 @@
 import { dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-import vueConfig from '@turborepo-saas-starter/eslint-config/vue';
+import vueConfig from '@stratala/eslint-config/vue';
 import withNuxt from './.nuxt/eslint.config.mjs';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
-// Filter out import and vue plugins from vueConfig since Nuxt provides its own
+// Filter out import-x and vue plugins from vueConfig since Nuxt provides its own
 const vueConfigWithoutImport = vueConfig
   .map((config) => {
     // Skip configs that set up Vue plugin or Vue parser (Nuxt handles this)
@@ -15,15 +15,15 @@ const vueConfigWithoutImport = vueConfig
       return null;
     }
 
-    // Filter out import plugin
-    if (config.plugins?.import) {
+    // Filter out import-x plugin
+    if (config.plugins?.['import-x']) {
       const plugins = { ...config.plugins };
-      delete plugins.import;
+      delete plugins['import-x'];
       return {
         ...config,
         plugins,
         rules: Object.fromEntries(
-          Object.entries(config.rules || {}).filter(([key]) => !key.startsWith('import/'))
+          Object.entries(config.rules || {}).filter(([key]) => !key.startsWith('import-x/'))
         ),
       };
     }

@@ -1,7 +1,7 @@
 import type { Linter } from 'eslint';
 
 /**
- * TypeScript declaration for @turborepo-saas-starter/eslint-config/vue
+ * TypeScript declaration for @stratala/eslint-config/vue
  * Vue.js ESLint configuration
  */
 declare const vueConfig: Linter.Config[];

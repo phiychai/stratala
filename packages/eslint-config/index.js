@@ -1,5 +1,5 @@
 /**
- * Main entry point for @turborepo-saas-starter/eslint-config
+ * Main entry point for @stratala
  * Re-exports the base configuration
  */
 export { default } from './base.js';

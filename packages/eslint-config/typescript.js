@@ -4,8 +4,9 @@ import baseConfig from './base.js';
 /**
  * TypeScript ESLint configuration
  * Extends base config with TypeScript-specific rules
+ * This is the single source of truth for all TS rules — node.js and vue.js extend this
  */
-export default tseslint.config(...baseConfig, ...tseslint.configs.recommended, {
+export default tseslint.config(...baseConfig, ...tseslint.configs.strict, {
   files: ['**/*.ts', '**/*.tsx', '**/*.mts', '**/*.cts'],
   languageOptions: {
     parser: tseslint.parser,
@@ -40,6 +41,10 @@ export default tseslint.config(...baseConfig, ...tseslint.configs.recommended, {
       },
     ],
     '@typescript-eslint/no-import-type-side-effects': 'error',
+
+    // Relax some strict rules that are too aggressive
+    '@typescript-eslint/no-dynamic-delete': 'warn',
+    '@typescript-eslint/no-invalid-void-type': 'warn',
 
     // Disable base rules that are covered by TypeScript equivalents
     'no-unused-vars': 'off',
