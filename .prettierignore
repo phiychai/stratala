@@ -61,8 +61,8 @@ apps/backend/ace.js
 *.sqlite3
 *.db
 
-# CMS
-apps/cms
+# Studio (Payload CMS)
+apps/studio
 
 # Temporary files
 tmp

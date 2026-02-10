@@ -41,11 +41,11 @@ services:
     networks:
       - saas-network
 
-  # Payload CMS
+  # Payload Studio
   payload:
     build:
       context: .
-      dockerfile: ./apps/cms/payload/Dockerfile
+      dockerfile: ./apps/studio/Dockerfile
     container_name: saas-payload
     restart: unless-stopped
     ports:
@@ -66,13 +66,13 @@ services:
       - .:/app
       # Preserve node_modules at root level (workspace hoisting)
       - /app/node_modules
-      # Preserve payload-specific node_modules
-      - /app/apps/cms/payload/node_modules
+      # Preserve studio-specific node_modules
+      - /app/apps/studio/node_modules
       # Payload media uploads
-      - payload_uploads:/app/apps/cms/payload/media
-    working_dir: /app/apps/cms/payload
+      - payload_uploads:/app/apps/studio/media
+    working_dir: /app/apps/studio
     networks:
-      - saas-network
+      - stratala-network
     command: pnpm dev
 
   # Lago - Billing & Subscription Management (All-in-One)
