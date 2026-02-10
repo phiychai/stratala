@@ -1,5 +1,5 @@
-
-# Stratala - The modern content platform for creators.
+![Stratala](https://media.canva.com/v2/image-resize/format:JPG/height:912/quality:92/uri:ifs%3A%2F%2FM%2F169e333b-80e5-4fe6-b62a-b5f6b228707c/watermark:F/width:1600?csig=AAAAAAAAAAAAAAAAAAAAAAeEXxgS3YURRzhR9OgSnMf3Npzj20e8T5Zm7PMlDnu3&exp=1770767163&osig=AAAAAAAAAAAAAAAAAAAAACr_v6dw0jnSr5Sxk7FOb_xqGaczFGto-Qd9Rmy2HMld&signer=media-rpc&x-canva-quality=screen_3x)
+# Stratala - The modern content platform for creators
 
 **A unified space where writers, video creators, and storytellers publish, grow, and earn — all in one place.**
 
