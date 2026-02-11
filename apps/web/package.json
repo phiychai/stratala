@@ -30,7 +30,7 @@
     "@nuxtjs/seo": "3.2.2",
     "@payloadcms/richtext-lexical": "3.64.0",
     "@pinia/nuxt": "^0.11.3",
-    "@standard-schema/spec": "^1.0.0",
+    "@standard-schema/spec": "^1.1.0",
     "@stratala/shared-types": "workspace:*",
     "@stratala/shared-utils": "workspace:*",
     "@unovis/ts": "^1.6.1",
