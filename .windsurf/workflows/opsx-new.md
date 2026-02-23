@@ -91,5 +91,5 @@ After completing the steps, summarize:
 
 **Plane Integration**
 
-After the change is created and has a `tasks.md`, run `/opsx-plane-sync <name>`
+After `tasks.md` has been created (via `/opsx:continue`), run `/opsx:plane-sync <name>`
 to create corresponding **Todo** issues in the Plane **Stratala** project.
