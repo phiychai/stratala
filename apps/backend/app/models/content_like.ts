@@ -26,4 +26,3 @@ export default class ContentLike extends BaseModel {
   @belongsTo(() => User)
   declare user: BelongsTo<typeof User>;
 }
-

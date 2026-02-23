@@ -28,4 +28,3 @@ export default class ContentView extends BaseModel {
   })
   declare user: BelongsTo<typeof User> | null;
 }
-

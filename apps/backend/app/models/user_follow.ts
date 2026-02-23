@@ -23,4 +23,3 @@ export default class UserFollow extends BaseModel {
   @belongsTo(() => User)
   declare user: BelongsTo<typeof User>;
 }
-

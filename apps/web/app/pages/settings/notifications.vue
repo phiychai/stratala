@@ -7,7 +7,7 @@ const state = reactive<{ [key: string]: boolean }>({
   important_updates: true,
 });
 
-const sections = [
+const sections: Array<{ title: string; description: string; fields: Array<{ name: string; label: string; description: string }> }> = [
   {
     title: 'Notification channels',
     description: 'Where can we notify you?',

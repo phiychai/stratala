@@ -127,4 +127,3 @@ export function useVideoCategories(videos?: Ref<Video[]>) {
     handleCategoryClick,
   };
 }
-
