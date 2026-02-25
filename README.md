@@ -58,10 +58,9 @@ Stratala is a next-generation content platform that blends the best of Substack,
 ### 🎨 **Modern Frontend**
 
 - **Nuxt 4** - The Intuitive Vue Framework with server-side rendering
-- **Nuxt UI Pro** - Beautiful, accessible components built on Radix Vue
+- **Nuxt UI** - Beautiful, accessible components built on Radix Vue
 - **TypeScript** - Full type safety across the entire stack
-- **Payload CMS** - Headless CMS for content management
-- **Visual Editing** - Live preview and editing with Payload integration
+- **Visual Editing** - Live preview and editing
 
 ### ⚡ **Powerful Backend**
 
@@ -106,8 +105,8 @@ turborepo-saas-starter/
 │   │   ├── database/         # Migrations and seeders
 │   │   └── start/            # Kernel and routes
 │   │
-│   └── cms/                   # Payload CMS
-│       └── payload/          # Payload CMS instance
+│   └── studio/                # Payload
+│       └── payload/          # Payload instance
 │
 ├── packages/
 │   ├── eslint-config/        # Shared ESLint configurations
@@ -165,7 +164,7 @@ This will start:
 
 - 🌐 **Frontend** at http://localhost:3000
 - 🔌 **Backend API** at http://localhost:3333
-- 📦 **Payload CMS** at http://localhost:3001
+- 📦 **Studio** at http://localhost:3001
 
 ### Environment Setup
 
@@ -340,10 +339,10 @@ AdonisJS 6
 └── PostgreSQL/SQLite   // Database options
 ```
 
-#### CMS (Payload)
+#### Studio (Payload)
 
 ```typescript
-Payload CMS
+Payload
 ├── PostgreSQL         // Database
 ├── Local API          // Server-side integration
 ├── REST API           // Client-side integration
