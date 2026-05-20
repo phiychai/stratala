@@ -1,8 +1,53 @@
+import type { LagoAccountResponse } from '#types/billing';
 import type { HttpContext } from '@adonisjs/core/http';
 
 import billingService from '#services/billing_service';
 
 export default class BillingController {
+  /**
+   * Helper method to get or create a billing account for a user
+   * Centralizes the account retrieval/creation logic to avoid duplication
+   * @param userId - The user ID to use as external_id
+   * @param userName - The user's full name or email for account creation
+   * @param userEmail - The user's email address
+   * @returns The billing account or null if operation fails
+   */
+  private async getOrCreateBillingAccount(
+    userId: string,
+    userName: string,
+    userEmail: string
+  ): Promise<LagoAccountResponse | null> {
+    try {
+      // Attempt to retrieve existing account
+      const existingAccount = await billingService.getCustomer(userId);
+      if (existingAccount) {
+        return existingAccount as LagoAccountResponse;
+      }
+    } catch (error) {
+      // Only proceed to creation if the error indicates the account doesn't exist
+      const isNotFound =
+        error instanceof Error && 'statusCode' in error && (error as any).statusCode === 404;
+      if (!isNotFound) {
+        console.error(`Failed to retrieve billing account for user ${userId}:`, error);
+        return null;
+      }
+      console.debug(`Account not found for user ${userId}, creating new account`);
+    }
+
+    try {
+      // Create new account if it doesn't exist
+      const newAccount = await billingService.createCustomer({
+        externalId: userId,
+        name: userName,
+        email: userEmail,
+        currency: 'USD',
+      });
+      return newAccount as LagoAccountResponse;
+    } catch (error) {
+      console.error(`Failed to create billing account for user ${userId}:`, error);
+      return null;
+    }
+  }
   /**
    * @getOrCreateAccount
    * @summary Get or create billing account
@@ -15,18 +60,15 @@ export default class BillingController {
   async getOrCreateAccount({ response, auth }: HttpContext) {
     try {
       const user = auth.user!;
+      const userId = user.id.toString();
+      const userName = user.fullName || user.email;
 
-      // Try to get existing account using user ID as external_id
-      let account;
-      try {
-        account = await billingService.getCustomer(user.id.toString());
-      } catch {
-        // Account doesn't exist, create it
-        account = await billingService.createCustomer({
-          externalId: user.id.toString(),
-          name: user.fullName || user.email,
-          email: user.email,
-          currency: 'USD',
+      const account = await this.getOrCreateBillingAccount(userId, userName, user.email);
+
+      if (!account) {
+        return response.internalServerError({
+          message: 'Failed to get or create billing account',
+          error: 'Account creation failed',
         });
       }
 
@@ -34,9 +76,10 @@ export default class BillingController {
         account,
       });
     } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
       return response.internalServerError({
         message: 'Failed to get or create billing account',
-        error: error.message,
+        error: errorMessage,
       });
     }
   }
@@ -91,29 +134,30 @@ export default class BillingController {
       const user = auth.user!;
       const { planName, externalKey } = request.body();
 
-      if (!planName) {
+      // Validate required fields
+      if (!planName || typeof planName !== 'string' || !planName.trim()) {
         return response.badRequest({
-          message: 'Plan name is required',
+          message: 'Plan name is required and must be a string',
         });
       }
 
-      // Get or create account using user ID as external_id
-      let account;
-      try {
-        account = await billingService.getCustomer(user.id.toString());
-      } catch {
-        account = await billingService.createCustomer({
-          externalId: user.id.toString(),
-          name: user.fullName || user.email,
-          email: user.email,
-          currency: 'USD',
+      const userId = user.id.toString();
+      const userName = user.fullName || user.email;
+
+      // Ensure billing account exists before creating subscription
+      const account = await this.getOrCreateBillingAccount(userId, userName, user.email);
+
+      if (!account) {
+        return response.internalServerError({
+          message: 'Failed to create subscription',
+          error: 'Could not create or retrieve billing account',
         });
       }
 
-      // Use user ID as external_id for subscription
+      // Create subscription with validated data
       const subscription = await billingService.createSubscription({
-        externalCustomerId: user.id.toString(),
-        planCode: planName,
+        externalCustomerId: userId,
+        planCode: planName.trim(),
         externalId: externalKey,
       });
 
@@ -122,9 +166,10 @@ export default class BillingController {
         subscription,
       });
     } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
       return response.internalServerError({
         message: 'Failed to create subscription',
-        error: error.message,
+        error: errorMessage,
       });
     }
   }

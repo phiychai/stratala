@@ -4,7 +4,7 @@ import type { FormField } from '@stratala/shared-types';
 export const buildZodSchema = (fields: FormField[]) => {
   const schema: Record<string, z.ZodTypeAny> = {};
 
-  fields.forEach((field) => {
+  for (const field of fields) {
     let fieldSchema: z.ZodTypeAny;
 
     switch (field.type) {
@@ -21,17 +21,15 @@ export const buildZodSchema = (fields: FormField[]) => {
         break;
 
       case 'file':
-        if (field.required) {
-          fieldSchema = z.instanceof(File, {
-            message: `${field.label || field.name} is required`,
-          });
-        } else {
-          fieldSchema = z
-            .instanceof(File, {
-              message: `${field.label || field.name} must be a valid file if provided`,
+        fieldSchema = field.required
+          ? z.instanceof(File, {
+              message: `${field.label || field.name} is required`,
             })
-            .or(z.undefined());
-        }
+          : z
+              .instanceof(File, {
+                message: `${field.label || field.name} must be a valid file if provided`,
+              })
+              .or(z.undefined());
 
         break;
 
@@ -42,7 +40,7 @@ export const buildZodSchema = (fields: FormField[]) => {
 
     if (field.validation) {
       const rules = field.validation.split('|');
-      rules.forEach((rule) => {
+      for (const rule of rules) {
         const [ruleName, ruleValue] = rule.split(':');
         const normalizedRule = ruleName?.toLowerCase();
 
@@ -57,7 +55,7 @@ export const buildZodSchema = (fields: FormField[]) => {
               break;
 
             case 'min': {
-              const min = ruleValue ? parseInt(ruleValue, 10) : 0;
+              const min = ruleValue ? Number.parseInt(ruleValue, 10) : 0;
               fieldSchema = fieldSchema.min(
                 min,
                 `${field.label || field.name} must be at least ${min} characters`
@@ -66,7 +64,7 @@ export const buildZodSchema = (fields: FormField[]) => {
             }
 
             case 'max': {
-              const max = ruleValue ? parseInt(ruleValue, 10) : Infinity;
+              const max = ruleValue ? Number.parseInt(ruleValue, 10) : Infinity;
               fieldSchema = fieldSchema.max(
                 max,
                 `${field.label || field.name} must be at most ${max} characters`
@@ -75,7 +73,7 @@ export const buildZodSchema = (fields: FormField[]) => {
             }
 
             case 'length': {
-              const length = ruleValue ? parseInt(ruleValue, 10) : 0;
+              const length = ruleValue ? Number.parseInt(ruleValue, 10) : 0;
               fieldSchema = fieldSchema.length(
                 length,
                 `${field.label || field.name} must be exactly ${length} characters`
@@ -89,7 +87,7 @@ export const buildZodSchema = (fields: FormField[]) => {
               });
           }
         }
-      });
+      }
     }
 
     if (field.required) {
@@ -104,7 +102,7 @@ export const buildZodSchema = (fields: FormField[]) => {
     if (field.name) {
       schema[field.name] = fieldSchema;
     }
-  });
+  }
 
   return z.object(schema);
 };

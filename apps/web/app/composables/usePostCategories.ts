@@ -47,7 +47,7 @@ export function usePostCategories(posts?: Ref<Post[]>) {
 
     const categoryMap = new Map<string, Category>();
 
-    posts.value.forEach((post) => {
+    for (const post of posts.value) {
       if (post.categories) {
         const postCategories = Array.isArray(post.categories) ? post.categories : [];
         postCategories.forEach((cat: unknown) => {
@@ -78,7 +78,7 @@ export function usePostCategories(posts?: Ref<Post[]>) {
           }
         });
       }
-    });
+    }
 
     return Array.from(categoryMap.values()).sort((a, b) => a.name.localeCompare(b.name));
   });
@@ -101,7 +101,7 @@ export function usePostCategories(posts?: Ref<Post[]>) {
       {
         label: 'All',
         active: !route.query.category,
-        click: () => handleCategoryClick(undefined),
+        click: () => handleCategoryClick(),
       },
     ];
 

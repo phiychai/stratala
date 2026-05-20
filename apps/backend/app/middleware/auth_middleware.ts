@@ -34,7 +34,10 @@ export default class AuthMiddleware {
 
       // Convert AdonisJS request to fetch Request for Better Auth
       // Use the request URL directly - Better Auth will validate based on headers
-      const url = new URL(ctx.request.url(), `http://${ctx.request.header('host') || 'localhost:3333'}`);
+      const url = new URL(
+        ctx.request.url(),
+        `http://${ctx.request.header('host') || 'localhost:3333'}`
+      );
 
       const fetchRequest = new Request(url, {
         method: ctx.request.method(),

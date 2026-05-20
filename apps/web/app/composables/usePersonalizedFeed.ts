@@ -29,6 +29,7 @@ export function usePersonalizedFeed(
 ): UsePersonalizedFeedReturn {
   const route = useRoute();
   const router = useRouter();
+  const requestFetch = useRequestFetch();
 
   const perPage = options.limit || 20;
   const currentPage = ref(options.page || Number(route.query.page) || 1);
@@ -48,6 +49,7 @@ export function usePersonalizedFeed(
     count: number;
     totalDocs: number;
   }>('/api/feed', {
+    $fetch: requestFetch,
     key: () => `feed-${currentPage.value}-${sortBy.value}`,
     query: {
       page: currentPage,

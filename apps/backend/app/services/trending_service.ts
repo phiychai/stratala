@@ -26,7 +26,6 @@ export default class TrendingService {
    * Calculate trending score for content
    */
   static async calculateTrendingScore(
-    content: any,
     viewCount: number,
     likeCount: number,
     publishedAt: string | null,
@@ -86,11 +85,22 @@ export default class TrendingService {
     queryParams.append('trash', 'false');
 
     const url = `${baseUrl}/api/${collection}${queryParams.toString() ? `?${queryParams.toString()}` : ''}`;
-    const response = await fetch(url);
-    if (!response.ok) {
-      throw new Error(`Failed to fetch ${collection}: ${response.statusText}`);
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 seconds timeout
+    try {
+      const response = await fetch(url, { signal: controller.signal });
+      clearTimeout(timeoutId);
+      if (!response.ok) {
+        throw new Error(`Failed to fetch ${collection}: ${response.statusText}`);
+      }
+      return (await response.json()) as { docs: any[]; totalDocs: number };
+    } catch (error) {
+      clearTimeout(timeoutId);
+      if (error instanceof Error && error.name === 'AbortError') {
+        throw new Error(`Failed to fetch ${collection}: Request timed out after 10 seconds`);
+      }
+      throw error;
     }
-    return await response.json();
   }
 
   /**
@@ -176,7 +186,6 @@ export default class TrendingService {
 
         // Calculate trending score
         const trendingScore = await this.calculateTrendingScore(
-          item,
           views,
           likes,
           item.publishedAt || null,

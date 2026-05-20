@@ -38,10 +38,10 @@ export default defineEventHandler(async (event) => {
 
   // Debug logging in development
   if (process.env.NODE_ENV === 'development') {
-    console.error('[Feed API] Proxying to:', fullUrl);
-    console.error('[Feed API] Has cookie header:', !!headers.cookie);
+    console.info('[Feed API] Proxying to:', fullUrl);
+    console.info('[Feed API] Has cookie header:', !!headers.cookie);
     if (headers.cookie) {
-      console.error('[Feed API] Cookie preview:', headers.cookie.substring(0, 100));
+      console.info('[Feed API] Cookie preview:', headers.cookie.substring(0, 100));
     }
   }
 
@@ -98,11 +98,8 @@ export default defineEventHandler(async (event) => {
       });
     }
 
-    // Read and return the response body
-    const responseText = await response.text();
-    setHeader(event, 'content-type', 'application/json');
-
-    return responseText;
+    const data = await response.json();
+    return data;
   } catch (error: unknown) {
     // Re-throw H3 errors
     if (error && typeof error === 'object' && 'statusCode' in error) {

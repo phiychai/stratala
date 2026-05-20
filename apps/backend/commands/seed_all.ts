@@ -115,7 +115,7 @@ export default class SeedAll extends BaseCommand {
                   existingUser.betterAuthUserId,
                 ]);
                 this.logger.info('  ✓ Email verified');
-              } catch (verifyError) {
+              } catch {
                 // Non-fatal - email might already be verified
                 this.logger.debug('  Email verification check skipped');
               }

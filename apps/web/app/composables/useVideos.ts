@@ -88,4 +88,3 @@ export function useVideos(options: UseVideosOptions = {}): UseVideosReturn {
     handleCategoryChange,
   };
 }
-

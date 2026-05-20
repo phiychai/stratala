@@ -47,7 +47,7 @@ export function useVideoCategories(videos?: Ref<Video[]>) {
 
     const categoryMap = new Map<string, Category>();
 
-    videos.value.forEach((video) => {
+    for (const video of videos.value) {
       if (video.categories) {
         const videoCategories = Array.isArray(video.categories) ? video.categories : [];
         videoCategories.forEach((cat: unknown) => {
@@ -78,7 +78,7 @@ export function useVideoCategories(videos?: Ref<Video[]>) {
           }
         });
       }
-    });
+    }
 
     return Array.from(categoryMap.values()).sort((a, b) => a.name.localeCompare(b.name));
   });
@@ -101,14 +101,14 @@ export function useVideoCategories(videos?: Ref<Video[]>) {
       {
         label: 'All',
         active: !route.query.category,
-        click: () => handleCategoryClick(undefined),
+        click: () => handleCategoryClick(),
       },
     ];
 
     const categoriesToUse = categories.value;
 
     if (categoriesToUse && categoriesToUse.length > 0) {
-      const categoryItems = categoriesToUse.map((category) => ({
+      const categoryItems = categoriesToUse.map((category: Category) => ({
         label: category.name,
         active: route.query.category === category.slug,
         click: () => handleCategoryClick(category.slug),
@@ -127,4 +127,3 @@ export function useVideoCategories(videos?: Ref<Video[]>) {
     handleCategoryClick,
   };
 }
-

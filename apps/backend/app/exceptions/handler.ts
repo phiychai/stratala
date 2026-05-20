@@ -23,6 +23,7 @@ export default class HttpExceptionHandler extends ExceptionHandler {
    * @note You should not attempt to send a response from this method.
    */
   async report(error: unknown, ctx: HttpContext) {
+    console.error('API Error:', error);
     return super.report(error, ctx);
   }
 }

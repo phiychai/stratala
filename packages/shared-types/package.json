@@ -13,9 +13,9 @@
     }
   },
   "scripts": {
-    "build": "tsc",
-    "dev": "tsc --watch",
-    "clean": "rm -rf dist",
+    "build": "pnpm run clean && tsc",
+    "dev": "pnpm run clean && tsc --watch",
+    "clean": "rm -rf dist tsconfig.tsbuildinfo",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "lint": "echo 'No linting needed for types package'",
