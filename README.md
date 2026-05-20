@@ -1,13 +1,15 @@
 ![Stratala](https://media.canva.com/v2/image-resize/format:JPG/height:912/quality:92/uri:ifs%3A%2F%2FM%2Fbfa71bf4-bce6-4a28-9993-1e5b45b503f3/watermark:F/width:1600?csig=AAAAAAAAAAAAAAAAAAAAAFy71lZI0QKDhEYPmrobzkZBmn_v82qsqBw9X_I1Rqou&exp=1770772306&osig=AAAAAAAAAAAAAAAAAAAAADG5stF6osoKjx2ZHlNHUbcQmc8nl32v7qZnn4J6DCEG&signer=media-rpc&x-canva-quality=screen_3x)
 # Stratala - The modern content platform for creators
 
-**A unified space where writers, video creators, and storytellers publish, grow, and earn — all in one place.**
+
 
 [![Turborepo](https://img.shields.io/badge/Built%20with-Turborepo-EF4444?style=for-the-badge&logo=turborepo&logoColor=white)](https://turbo.build)
 [![Nuxt](https://img.shields.io/badge/Nuxt-4.0-00DC82?style=for-the-badge&logo=nuxt&logoColor=white)](https://nuxt.com)
 [![AdonisJS](https://img.shields.io/badge/AdonisJS-6.0-5A45FF?style=for-the-badge&logo=adonisjs&logoColor=white)](https://adonisjs.com)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.8-3178C6?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org)
 [![pnpm](https://img.shields.io/badge/pnpm-10.15-F69220?style=for-the-badge&logo=pnpm&logoColor=white)](https://pnpm.io)
+
+**A unified space where writers, video creators, and storytellers publish, grow, and earn — all in one place.**
 
 Stratala is a next-generation content platform that blends the best of Substack, YouTube, and Medium. It empowers creators to share their work in any format - text, video, or audio - while building direct relationships with their audiences. With built-in monetization tools, analytics, and community features, Stratala gives creators full control over their content and income.
 
@@ -56,10 +58,9 @@ Stratala is a next-generation content platform that blends the best of Substack,
 ### 🎨 **Modern Frontend**
 
 - **Nuxt 4** - The Intuitive Vue Framework with server-side rendering
-- **Nuxt UI Pro** - Beautiful, accessible components built on Radix Vue
+- **Nuxt UI** - Beautiful, accessible components built on Radix Vue
 - **TypeScript** - Full type safety across the entire stack
-- **Payload CMS** - Headless CMS for content management
-- **Visual Editing** - Live preview and editing with Payload integration
+- **Visual Editing** - Live preview and editing
 
 ### ⚡ **Powerful Backend**
 
@@ -104,8 +105,8 @@ turborepo-saas-starter/
 │   │   ├── database/         # Migrations and seeders
 │   │   └── start/            # Kernel and routes
 │   │
-│   └── cms/                   # Payload CMS
-│       └── payload/          # Payload CMS instance
+│   └── studio/                # Payload
+│       └── payload/          # Payload instance
 │
 ├── packages/
 │   ├── eslint-config/        # Shared ESLint configurations
@@ -163,7 +164,7 @@ This will start:
 
 - 🌐 **Frontend** at http://localhost:3000
 - 🔌 **Backend API** at http://localhost:3333
-- 📦 **Payload CMS** at http://localhost:3001
+- 📦 **Studio** at http://localhost:3001
 
 ### Environment Setup
 
@@ -338,10 +339,10 @@ AdonisJS 6
 └── PostgreSQL/SQLite   // Database options
 ```
 
-#### CMS (Payload)
+#### Studio (Payload)
 
 ```typescript
-Payload CMS
+Payload
 ├── PostgreSQL         // Database
 ├── Local API          // Server-side integration
 ├── REST API           // Client-side integration
