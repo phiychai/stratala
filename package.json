@@ -31,7 +31,8 @@
     "docker:prod": "docker-compose -f docker-compose.yml -f docker-compose.prod.yml up -d",
     "docker:prod:build": "docker-compose -f docker-compose.yml -f docker-compose.prod.yml up --build -d",
     "seed:reset": "tsx scripts/reset-all-databases.ts",
-    "seed:all": "cd apps/backend && node ace seed:all"
+    "seed:all": "cd apps/backend && node ace seed:all",
+    "plane-sync": "tsx scripts/plane-sync.ts"
   },
   "keywords": [
     "monorepo",
@@ -46,8 +47,10 @@
   "devDependencies": {
     "@playwright/test": "^1.56.1",
     "@types/node": "^25.2.0",
+    "dotenv": "^16.4.7",
     "playwright": "^1.56.1",
     "prettier": "^3.0.0",
+    "tsx": "^4.21.0",
     "turbo": "^2.6.1",
     "typescript": "^5.9.3"
   },
@@ -82,8 +85,5 @@
     "@oxc-minify/binding-darwin-x64": "0.96.0",
     "@oxc-parser/binding-darwin-x64": "0.96.0",
     "@oxc-transform/binding-darwin-x64": "0.96.0"
-  },
-  "dependencies": {
-    "@lexical/html": "^0.38.2"
   }
 }
