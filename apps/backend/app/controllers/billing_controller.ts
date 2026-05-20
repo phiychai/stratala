@@ -1,5 +1,5 @@
-import type { HttpContext } from '@adonisjs/core/http';
 import type { LagoAccountResponse } from '#types/billing';
+import type { HttpContext } from '@adonisjs/core/http';
 
 import billingService from '#services/billing_service';
 
@@ -24,7 +24,13 @@ export default class BillingController {
         return existingAccount as LagoAccountResponse;
       }
     } catch (error) {
-      // Account doesn't exist, proceed to creation
+      // Only proceed to creation if the error indicates the account doesn't exist
+      const isNotFound =
+        error instanceof Error && 'statusCode' in error && (error as any).statusCode === 404;
+      if (!isNotFound) {
+        console.error(`Failed to retrieve billing account for user ${userId}:`, error);
+        return null;
+      }
       console.debug(`Account not found for user ${userId}, creating new account`);
     }
 
@@ -129,7 +135,7 @@ export default class BillingController {
       const { planName, externalKey } = request.body();
 
       // Validate required fields
-      if (!planName || typeof planName !== 'string') {
+      if (!planName || typeof planName !== 'string' || !planName.trim()) {
         return response.badRequest({
           message: 'Plan name is required and must be a string',
         });

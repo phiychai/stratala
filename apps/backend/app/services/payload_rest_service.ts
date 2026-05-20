@@ -43,8 +43,16 @@ class PayloadRestService {
         throw new Error(`Payload REST API error: ${response.status} ${errorText}`);
       }
 
-      const result = await response.json();
-      return { id: result.id || result.doc?.id || result.user?.id };
+      const result = (await response.json()) as {
+        id?: string;
+        doc?: { id?: string };
+        user?: { id?: string };
+      };
+      const createdId = result.id || result.doc?.id || result.user?.id;
+      if (!createdId) {
+        throw new Error('Payload REST API response did not include a user id');
+      }
+      return { id: createdId };
     } catch (error) {
       logger.error('Failed to create user via Payload REST API:', error);
       throw error;
@@ -74,9 +82,12 @@ class PayloadRestService {
         throw new Error(`Payload REST API error: ${response.status} ${errorText}`);
       }
 
-      const result = await response.json();
-      if (result.docs && result.docs.length > 0) {
-        return { id: result.docs[0].id };
+      const result = (await response.json()) as {
+        docs?: Array<{ id?: string }>;
+      };
+      const foundId = result.docs?.[0]?.id;
+      if (foundId) {
+        return { id: foundId };
       }
 
       return null;
@@ -114,7 +125,11 @@ class PayloadRestService {
         throw new Error(`Payload REST API error: ${response.status} ${errorText}`);
       }
 
-      const result = await response.json();
+      const result = (await response.json()) as {
+        id?: string;
+        doc?: { id?: string };
+        user?: { id?: string };
+      };
       return { id: result.id || result.doc?.id || result.user?.id || id };
     } catch (error) {
       logger.error('Failed to update user via Payload REST API:', error);

@@ -19,7 +19,7 @@ export default class FeedService {
       sort?: string;
       depth?: number;
     } = {}
-  ): Promise<{ docs: any[]; totalDocs: number }> {
+  ): Promise<{ docs: unknown[]; totalDocs: number }> {
     const baseUrl = env.get('PAYLOAD_PUBLIC_SERVER_URL', 'http://localhost:3002');
     const queryParams = new URLSearchParams();
 
@@ -46,7 +46,7 @@ export default class FeedService {
     if (!response.ok) {
       throw new Error(`Failed to fetch ${collection}: ${response.statusText}`);
     }
-    return await response.json();
+    return (await response.json()) as { docs: any[]; totalDocs: number };
   }
   /**
    * Get user's followed spaces

@@ -4,6 +4,7 @@ import type User from '#models/user';
 import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
 import { pathToFileURL } from 'url';
+import { lookup } from 'dns/promises';
 
 import logger from '@adonisjs/core/services/logger';
 
@@ -26,6 +27,51 @@ class PayloadService {
   private initializationPromise: Promise<Payload> | null = null;
 
   /**
+   * If we're running outside Docker and the DB URI points to host "postgres",
+   * rewrite it to localhost so Local API can connect in local CLI runs.
+   */
+  private async normalizePayloadDbHostForLocalRuntime(): Promise<void> {
+    const uri =
+      process.env.PAYLOAD_DATABASE_URI ||
+      process.env.DATABASE_URI ||
+      '';
+
+    if (!uri) {
+      return;
+    }
+
+    let parsed: URL;
+    try {
+      parsed = new URL(uri);
+    } catch {
+      return;
+    }
+
+    if (parsed.hostname !== 'postgres') {
+      return;
+    }
+
+    try {
+      await lookup(parsed.hostname);
+      return;
+    } catch {
+      // Host "postgres" is not resolvable in this runtime context.
+    }
+
+    parsed.hostname = 'localhost';
+    const normalizedUri = parsed.toString();
+    process.env.PAYLOAD_DATABASE_URI = normalizedUri;
+
+    if (process.env.DATABASE_URI && process.env.DATABASE_URI.includes('@postgres')) {
+      process.env.DATABASE_URI = normalizedUri;
+    }
+
+    logger.warn(
+      'Adjusted Payload DB host from "postgres" to "localhost" for local runtime compatibility'
+    );
+  }
+
+  /**
    * Initialize Payload Local API
    * Uses singleton pattern to ensure Payload is only initialized once
    */
@@ -40,6 +86,8 @@ class PayloadService {
 
     this.initializationPromise = (async () => {
       try {
+        await this.normalizePayloadDbHostForLocalRuntime();
+
         // Dynamic import of Payload config from monorepo path
         // Using absolute path with file:// protocol for proper resolution
 
@@ -54,20 +102,39 @@ class PayloadService {
         const workspaceRoot = join(currentDir, '../../../..');
         const payloadConfigPath = join(workspaceRoot, 'apps/studio/src/payload.config.ts');
 
-        // Try to use tsx to load TypeScript files if available
-        // Otherwise, try direct import (may fail if TypeScript loader not registered)
+        const configUrl = pathToFileURL(payloadConfigPath).href;
+
+        // Prefer jiti first because it works reliably when Ace has already
+        // registered ts-node. Keep tsx/native import as fallbacks.
         let configModule;
         try {
-          // First, try to use tsx if available
-          const { register } = await import('tsx/esm/api');
-          register();
-          const configUrl = pathToFileURL(payloadConfigPath).href;
-          configModule = await import(configUrl);
-        } catch (tsxError) {
-          // If tsx is not available, try direct import
-          // This will work if ts-node-maintained is already registered (via ace.js)
-          const configUrl = pathToFileURL(payloadConfigPath).href;
-          configModule = await import(configUrl);
+          const { default: createJiti } = await import('jiti');
+          const jiti = createJiti(import.meta.url, {
+            interopDefault: true,
+          });
+          const jitiModule = await jiti(payloadConfigPath);
+          configModule =
+            jitiModule && typeof jitiModule === 'object' && 'default' in jitiModule
+              ? jitiModule
+              : { default: jitiModule };
+        } catch (jitiError) {
+          try {
+            const { tsImport } = await import('tsx/esm/api');
+            configModule = await tsImport(configUrl, import.meta.url);
+          } catch (tsxError) {
+            try {
+              configModule = await import(configUrl);
+            } catch (nativeError) {
+              const jitiMessage = jitiError instanceof Error ? jitiError.message : String(jitiError);
+              const tsxMessage = tsxError instanceof Error ? tsxError.message : String(tsxError);
+              const nativeMessage =
+                nativeError instanceof Error ? nativeError.message : String(nativeError);
+
+              throw new Error(
+                `Failed to load Payload config via jiti (${jitiMessage}), tsx (${tsxMessage}), and native import (${nativeMessage})`
+              );
+            }
+          }
         }
 
         const config = configModule.default;
@@ -76,9 +143,21 @@ class PayloadService {
         logger.info('Payload Local API initialized successfully');
         return this.payload;
       } catch (error) {
-        logger.error('Failed to initialize Payload Local API:', error);
+        logger.error({ err: error }, 'Failed to initialize Payload Local API');
         logger.error('Make sure Payload CMS is set up and the config path is correct');
-        logger.error('Note: TypeScript files require a loader (tsx or ts-node)');
+
+        const errorMessage = error instanceof Error ? error.message : String(error);
+        logger.error(`Payload Local API root cause: ${errorMessage}`);
+        const likelyLoaderIssue =
+          errorMessage.includes('Unknown file extension') ||
+          errorMessage.includes('ERR_UNKNOWN_FILE_EXTENSION') ||
+          errorMessage.includes('Cannot use import statement outside a module') ||
+          errorMessage.includes('Cannot find module') && errorMessage.includes('payload.config');
+
+        if (likelyLoaderIssue) {
+          logger.error('Note: TypeScript config files require a loader such as tsx or ts-node');
+        }
+
         this.initializationPromise = null;
         throw error;
       }

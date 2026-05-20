@@ -18,7 +18,7 @@ export default class EngagementController {
       return response.badRequest({ message: 'Content type must be "post" or "video"' });
     }
 
-    const user = auth.user;
+    const { user } = auth;
     const ipAddress = request.ip();
 
     try {
@@ -57,7 +57,8 @@ export default class EngagementController {
       return response.badRequest({ message: 'Content type must be "post" or "video"' });
     }
 
-    try {
+
+  try {
       // Check if already liked
       const existing = await ContentLike.query()
         .where('content_type', contentType)

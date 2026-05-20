@@ -121,7 +121,7 @@ export default class FeedController {
 
     const { spaceId } = params;
 
-    ary {
+    try {
       await FeedService.unfollowSpace(user.id, spaceId);
       return response.ok({ success: true });
     } catch (error) {

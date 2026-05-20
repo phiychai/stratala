@@ -216,7 +216,7 @@ export class PayloadUserSyncService {
         }
       } catch (localApiError) {
         // Local API failed, fallback to REST API
-        logger.warn('Payload Local API failed, falling back to REST API:', localApiError);
+        logger.warn({ err: localApiError }, 'Payload Local API failed, falling back to REST API');
         useRestApi = true;
 
         // Find user via REST API
