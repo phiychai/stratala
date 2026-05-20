@@ -3735,8 +3735,20 @@ async function seed() {
         : Number(tenantsResult.docs[0].id);
       console.log(`✅ Using tenant: ${tenantsResult.docs[0].name} (${tenantId})\n`);
     } else {
-      console.warn(`⚠️  Warning: No tenants/spaces found. Posts will be created without tenant assignment.\n`);
-      console.warn(`   This may cause errors if the multi-tenant plugin requires tenant assignment.\n`);
+      console.warn('⚠️  No tenants/spaces found. Creating a default tenant...');
+
+      const createdTenant = await payload.create({
+        collection: 'tenants',
+        data: {
+          name: 'Default Space',
+          slug: 'default-space',
+          domain: 'default.localhost',
+          createdBy: authorId,
+        },
+      });
+
+      tenantId = typeof createdTenant.id === 'number' ? createdTenant.id : Number(createdTenant.id);
+      console.log(`✅ Created default tenant: Default Space (${tenantId})\n`);
     }
 
     console.log(`📝 Processing ${posts.length} posts...\n`);
@@ -3796,10 +3808,43 @@ async function seed() {
           ...(tenantId && { tenant: tenantId }),
         };
 
-        const createdPost = await payload.create({
-          collection: 'posts',
-          data: postData,
-        });
+        // Multi-tenant plugin behavior can vary by version/config:
+        // some setups accept `tenant`, others require `tenants` array entries.
+        let createdPost;
+        try {
+          createdPost = await payload.create({
+            collection: 'posts',
+            data: postData,
+          });
+        } catch (primaryError) {
+          const primaryMessage =
+            primaryError instanceof Error ? primaryError.message : String(primaryError);
+          const tenantFieldRejected =
+            tenantId !== null &&
+            /assigned tenant|tenant/i.test(primaryMessage);
+
+          if (!tenantFieldRejected || tenantId === null) {
+            throw primaryError;
+          }
+
+          console.log('  ⚠️  Tenant field rejected, retrying with plugin array shape...');
+          // eslint-disable-next-line @typescript-eslint/no-unused-vars
+          const { tenant: _ignoredTenant, ...baseWithoutTenant } = postData;
+          const fallbackPostData = {
+            ...baseWithoutTenant,
+            tenants: [
+              {
+                tenant: tenantId,
+              },
+            ],
+          };
+
+          createdPost = await payload.create({
+            collection: 'posts',
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            data: fallbackPostData as any,
+          });
+        }
 
         console.log(`  ✅ Post created: ${createdPost.id}`);
         successCount++;
@@ -3832,4 +3877,3 @@ async function seed() {
 
 // Run the seed
 seed();
-
