@@ -45,10 +45,10 @@
   "license": "ISC",
   "packageManager": "pnpm@10.24.0",
   "devDependencies": {
-    "@playwright/test": "^1.56.1",
+    "@playwright/test": "^1.60.0",
     "@types/node": "^25.9.1",
     "dotenv": "^16.4.7",
-    "playwright": "^1.56.1",
+    "playwright": "^1.60.0",
     "prettier": "^3.0.0",
     "tsx": "^4.21.0",
     "turbo": "^2.9.14",
