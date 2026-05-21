@@ -43,14 +43,14 @@ importers:
         specifier: 0.96.0
         version: 0.96.0
       '@oxc-transform/binding-darwin-x64':
-        specifier: 0.96.0
-        version: 0.96.0
+        specifier: 0.132.0
+        version: 0.132.0
 
   apps/backend:
     dependencies:
       '@adonisjs/auth':
         specifier: ^10.1.0
-        version: 10.1.0(@adonisjs/assembler@8.4.0(babel-plugin-macros@3.1.0)(typescript@6.0.3))(@adonisjs/core@7.3.3(@adonisjs/assembler@8.4.0(babel-plugin-macros@3.1.0)(typescript@6.0.3))(@vinejs/vine@4.4.0)(pino-pretty@13.1.1)(youch@4.1.1))(@adonisjs/lucid@22.4.2(@adonisjs/assembler@8.4.0(babel-plugin-macros@3.1.0)(typescript@6.0.3))(@adonisjs/core@7.3.3(@adonisjs/assembler@8.4.0(babel-plugin-macros@3.1.0)(typescript@6.0.3))(@vinejs/vine@4.4.0)(pino-pretty@13.1.1)(youch@4.1.1))(@vinejs/vine@4.4.0)(better-sqlite3@12.2.0)(luxon@3.7.1)(pg@8.16.3))(@adonisjs/session@8.1.0(e562de07ec85dab2d8af1ddf272a5c96))(@japa/api-client@3.2.1(@japa/assert@4.2.0(@japa/runner@5.3.0))(@japa/runner@5.3.0))(@japa/plugin-adonisjs@5.2.0(@adonisjs/core@7.3.3(@adonisjs/assembler@8.4.0(babel-plugin-macros@3.1.0)(typescript@6.0.3))(@vinejs/vine@4.4.0)(pino-pretty@13.1.1)(youch@4.1.1))(@japa/api-client@3.2.1(@japa/assert@4.2.0(@japa/runner@5.3.0))(@japa/runner@5.3.0))(@japa/runner@5.3.0)(playwright@1.56.1))
+        version: 10.1.0(@adonisjs/assembler@8.4.0(babel-plugin-macros@3.1.0)(typescript@6.0.3))(@adonisjs/core@7.3.3(@adonisjs/assembler@8.4.0(babel-plugin-macros@3.1.0)(typescript@6.0.3))(@vinejs/vine@4.4.0)(pino-pretty@13.1.1)(youch@4.1.1))(@adonisjs/lucid@22.4.2(@adonisjs/assembler@8.4.0(babel-plugin-macros@3.1.0)(typescript@6.0.3))(@adonisjs/core@7.3.3(@adonisjs/assembler@8.4.0(babel-plugin-macros@3.1.0)(typescript@6.0.3))(@vinejs/vine@4.4.0)(pino-pretty@13.1.1)(youch@4.1.1))(@vinejs/vine@4.4.0)(better-sqlite3@12.10.0)(luxon@3.7.1)(pg@8.16.3))(@adonisjs/session@8.1.0(34d5bb5dbaf3a9e5f6f1db2460826a93))(@japa/api-client@3.2.1(@japa/assert@4.2.0(@japa/runner@5.3.0))(@japa/runner@5.3.0))(@japa/plugin-adonisjs@5.2.0(@adonisjs/core@7.3.3(@adonisjs/assembler@8.4.0(babel-plugin-macros@3.1.0)(typescript@6.0.3))(@vinejs/vine@4.4.0)(pino-pretty@13.1.1)(youch@4.1.1))(@japa/api-client@3.2.1(@japa/assert@4.2.0(@japa/runner@5.3.0))(@japa/runner@5.3.0))(@japa/runner@5.3.0)(playwright@1.56.1))
       '@adonisjs/bouncer':
         specifier: ^4.0.0
         version: 4.0.0(@adonisjs/assembler@8.4.0(babel-plugin-macros@3.1.0)(typescript@6.0.3))(@adonisjs/core@7.3.3(@adonisjs/assembler@8.4.0(babel-plugin-macros@3.1.0)(typescript@6.0.3))(@vinejs/vine@4.4.0)(pino-pretty@13.1.1)(youch@4.1.1))
@@ -62,13 +62,13 @@ importers:
         version: 3.0.0(@adonisjs/assembler@8.4.0(babel-plugin-macros@3.1.0)(typescript@6.0.3))(@adonisjs/core@7.3.3(@adonisjs/assembler@8.4.0(babel-plugin-macros@3.1.0)(typescript@6.0.3))(@vinejs/vine@4.4.0)(pino-pretty@13.1.1)(youch@4.1.1))
       '@adonisjs/lucid':
         specifier: ^22.4.2
-        version: 22.4.2(@adonisjs/assembler@8.4.0(babel-plugin-macros@3.1.0)(typescript@6.0.3))(@adonisjs/core@7.3.3(@adonisjs/assembler@8.4.0(babel-plugin-macros@3.1.0)(typescript@6.0.3))(@vinejs/vine@4.4.0)(pino-pretty@13.1.1)(youch@4.1.1))(@vinejs/vine@4.4.0)(better-sqlite3@12.2.0)(luxon@3.7.1)(pg@8.16.3)
+        version: 22.4.2(@adonisjs/assembler@8.4.0(babel-plugin-macros@3.1.0)(typescript@6.0.3))(@adonisjs/core@7.3.3(@adonisjs/assembler@8.4.0(babel-plugin-macros@3.1.0)(typescript@6.0.3))(@vinejs/vine@4.4.0)(pino-pretty@13.1.1)(youch@4.1.1))(@vinejs/vine@4.4.0)(better-sqlite3@12.10.0)(luxon@3.7.1)(pg@8.16.3)
       '@adonisjs/redis':
         specifier: ^10.0.0
         version: 10.0.0(@adonisjs/core@7.3.3(@adonisjs/assembler@8.4.0(babel-plugin-macros@3.1.0)(typescript@6.0.3))(@vinejs/vine@4.4.0)(pino-pretty@13.1.1)(youch@4.1.1))
       '@adonisjs/session':
         specifier: ^8.1.0
-        version: 8.1.0(e562de07ec85dab2d8af1ddf272a5c96)
+        version: 8.1.0(34d5bb5dbaf3a9e5f6f1db2460826a93)
       '@poppinss/ts-exec':
         specifier: ^1.4.4
         version: 1.4.4(@swc/helpers@0.5.21)
@@ -83,13 +83,13 @@ importers:
         version: 3.73.0
       better-auth:
         specifier: ^1.6.11
-        version: 1.6.11(@opentelemetry/api@1.9.0)(better-sqlite3@12.2.0)(drizzle-kit@0.31.7)(drizzle-orm@0.45.2(@opentelemetry/api@1.9.0)(@types/better-sqlite3@7.6.13)(@types/pg@8.15.6)(better-sqlite3@12.2.0)(knex@3.2.10(better-sqlite3@12.2.0)(pg@8.16.3))(kysely@0.28.17)(pg@8.16.3))(next@15.4.11(@opentelemetry/api@1.9.0)(@playwright/test@1.56.1)(babel-plugin-macros@3.1.0)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)(sass@1.77.4))(pg@8.16.3)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)(vitest@4.0.10)(vue@3.5.34(typescript@6.0.3))
+        version: 1.6.11(@opentelemetry/api@1.9.0)(better-sqlite3@12.10.0)(drizzle-kit@0.31.7)(drizzle-orm@0.45.2(@opentelemetry/api@1.9.0)(@types/better-sqlite3@7.6.13)(@types/pg@8.15.6)(better-sqlite3@12.10.0)(knex@3.2.10(better-sqlite3@12.10.0)(pg@8.16.3))(kysely@0.28.17)(pg@8.16.3))(next@15.4.11(@opentelemetry/api@1.9.0)(@playwright/test@1.56.1)(babel-plugin-macros@3.1.0)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)(sass@1.77.4))(pg@8.16.3)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)(vitest@4.0.10)(vue@3.5.34(typescript@6.0.3))
       better-call:
         specifier: ^1.0.24
         version: 1.0.24
       better-sqlite3:
-        specifier: ^12.2.0
-        version: 12.2.0
+        specifier: ^12.10.0
+        version: 12.10.0
       ioredis:
         specifier: ^5.10.1
         version: 5.10.1
@@ -174,7 +174,7 @@ importers:
     dependencies:
       '@payloadcms/db-postgres':
         specifier: 3.84.1
-        version: 3.84.1(@opentelemetry/api@1.9.0)(@types/better-sqlite3@7.6.13)(better-sqlite3@12.2.0)(knex@3.2.10(better-sqlite3@12.2.0)(pg@8.20.0))(kysely@0.28.17)(payload@3.84.1(graphql@16.12.0)(typescript@6.0.3))
+        version: 3.84.1(@opentelemetry/api@1.9.0)(@types/better-sqlite3@7.6.13)(better-sqlite3@12.10.0)(knex@3.2.10(better-sqlite3@12.10.0)(pg@8.20.0))(kysely@0.28.17)(payload@3.84.1(graphql@16.12.0)(typescript@6.0.3))
       '@payloadcms/next':
         specifier: 3.84.1
         version: 3.84.1(@types/react@19.1.8)(graphql@16.12.0)(monaco-editor@0.55.1)(next@15.4.11(@babel/core@7.29.0)(@opentelemetry/api@1.9.0)(@playwright/test@1.56.1)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)(sass@1.77.4))(payload@3.84.1(graphql@16.12.0)(typescript@6.0.3))(react-dom@19.1.0(react@19.1.0))(react@19.1.0)(typescript@6.0.3)
@@ -273,8 +273,8 @@ importers:
         specifier: ^1.2.43
         version: 1.2.47
       '@iconify-json/tabler':
-        specifier: ^1.2.23
-        version: 1.2.23
+        specifier: ^1.2.35
+        version: 1.2.35
       '@nuxt/content':
         specifier: ^3.14.0
         version: 3.14.0(@valibot/to-json-schema@1.7.0(valibot@1.4.0(typescript@6.0.3)))(better-sqlite3@12.2.0)(drizzle-orm@0.45.2(@opentelemetry/api@1.9.0)(@types/better-sqlite3@7.6.13)(@types/pg@8.20.0)(better-sqlite3@12.2.0)(knex@3.2.10(better-sqlite3@12.2.0)(pg@8.20.0))(kysely@0.28.8)(pg@8.20.0))(magicast@0.5.3)(valibot@1.4.0(typescript@6.0.3))
@@ -380,7 +380,7 @@ importers:
         version: 1.15.2(@typescript-eslint/utils@8.59.4(eslint@10.4.0(jiti@2.7.0))(typescript@6.0.3))(@vue/compiler-sfc@3.5.34)(eslint-import-resolver-node@0.3.10)(eslint-webpack-plugin@4.2.0(eslint@10.4.0(jiti@2.7.0))(webpack@5.101.3(esbuild@0.27.7)(lightningcss@1.32.0)(postcss@8.5.15)))(eslint@10.4.0(jiti@2.7.0))(magicast@0.5.3)(typescript@6.0.3)(vite@7.3.3(@types/node@25.9.1)(jiti@2.7.0)(lightningcss@1.32.0)(sass@1.77.4)(terser@5.47.1)(tsx@4.22.3)(yaml@2.9.0))
       '@nuxt/test-utils':
         specifier: ^4.0.3
-        version: 4.0.3(@playwright/test@1.56.1)(@vitest/ui@4.0.10)(@vue/test-utils@2.4.6)(crossws@0.4.5(srvx@0.11.15))(happy-dom@20.0.10)(magicast@0.5.3)(playwright-core@1.60.0)(typescript@6.0.3)(vite@7.3.3(@types/node@25.9.1)(jiti@2.7.0)(lightningcss@1.32.0)(sass@1.77.4)(terser@5.47.1)(tsx@4.22.3)(yaml@2.9.0))(vitest@4.0.10)
+        version: 4.0.3(@playwright/test@1.56.1)(@vitest/ui@4.1.7)(@vue/test-utils@2.4.6)(crossws@0.4.5(srvx@0.11.15))(happy-dom@20.0.10)(magicast@0.5.3)(playwright-core@1.60.0)(typescript@6.0.3)(vite@7.3.3(@types/node@25.9.1)(jiti@2.7.0)(lightningcss@1.32.0)(sass@1.77.4)(terser@5.47.1)(tsx@4.22.3)(yaml@2.9.0))(vitest@4.0.10)
       '@oxc-minify/binding-darwin-x64':
         specifier: 0.96.0
         version: 0.96.0
@@ -388,8 +388,8 @@ importers:
         specifier: 0.96.0
         version: 0.96.0
       '@oxc-transform/binding-darwin-x64':
-        specifier: 0.96.0
-        version: 0.96.0
+        specifier: 0.132.0
+        version: 0.132.0
       '@stratala/eslint-config':
         specifier: workspace:*
         version: link:../../packages/eslint-config
@@ -400,8 +400,8 @@ importers:
         specifier: 19.1.6
         version: 19.1.6(@types/react@19.1.8)
       '@vitest/ui':
-        specifier: ^4.0.10
-        version: 4.0.10(vitest@4.0.10)
+        specifier: ^4.1.7
+        version: 4.1.7(vitest@4.0.10)
       '@vue/test-utils':
         specifier: ^2.4.6
         version: 2.4.6
@@ -419,7 +419,7 @@ importers:
         version: 6.0.3
       vitest:
         specifier: ^4.0.10
-        version: 4.0.10(@types/debug@4.1.13)(@types/node@25.9.1)(@vitest/ui@4.0.10)(happy-dom@20.0.10)(jiti@2.7.0)(lightningcss@1.32.0)(sass@1.77.4)(terser@5.47.1)(tsx@4.22.3)(yaml@2.9.0)
+        version: 4.0.10(@types/debug@4.1.13)(@types/node@25.9.1)(@vitest/ui@4.1.7)(happy-dom@20.0.10)(jiti@2.7.0)(lightningcss@1.32.0)(sass@1.77.4)(terser@5.47.1)(tsx@4.22.3)(yaml@2.9.0)
       vue-tsc:
         specifier: ^3.3.1
         version: 3.3.1(typescript@6.0.3)
@@ -472,7 +472,7 @@ importers:
         specifier: ^16.2.0
         version: 16.5.0
       prettier:
-        specifier: ^3.8.1
+        specifier: ^3.8.3
         version: 3.8.3
       typescript-eslint:
         specifier: ^8.47.0
@@ -2235,8 +2235,8 @@ packages:
   '@iconify-json/simple-icons@1.2.47':
     resolution: {integrity: sha512-wa/2O7G4sBmwSEWWLh5C+HeY00lVOoWYRKJOYQtk7lAbQrHUReD1ijiGOyTynV1YavxtNueL1CBA1UZmYJfOrQ==}
 
-  '@iconify-json/tabler@1.2.23':
-    resolution: {integrity: sha512-Knb8ykgMwB5uSoqrDv1xIdJYM03OP06OXjN6QvGXaTNtdHkW9ciKA+aftz6lwM2jwJA+bsUWeDzLBlPt2uJm4w==}
+  '@iconify-json/tabler@1.2.35':
+    resolution: {integrity: sha512-/sJMqHvh5ZWrEERVfDCT5NjVDeKJdhosFtKjJofAVl+P/3AzLiryOQw7WvrfDF25Xa5N/eoOQ15Y1jnhYXxBoQ==}
 
   '@iconify/collections@1.0.687':
     resolution: {integrity: sha512-7LNBKtLhXFHo2nvYOtw87ztzynQak7I64PkxKTBK8aQv9/7Lg0vGSxgalMnkpi4SFZGcCfOoizgCG0WU6fqVnA==}
@@ -3816,8 +3816,8 @@ packages:
     cpu: [x64]
     os: [darwin]
 
-  '@oxc-transform/binding-darwin-x64@0.96.0':
-    resolution: {integrity: sha512-xgqxnqhPYH2NYkgbqtnCJfhbXvxIf/pnhF/ig5UBK8PYpCEWIP/cfLpQRQ9DcQnRfuxi7RMIF6LdmB1AiS6Fkg==}
+  '@oxc-transform/binding-darwin-x64@0.132.0':
+    resolution: {integrity: sha512-e3vVXEbNw93aHr3si8eVpUgl+jWF6Ry8RgUihgSxiI+2c/VMxiPsEDghkqPcjujqsMYDRdISWJi23xk+PP72ow==}
     engines: {node: ^20.19.0 || >=22.12.0}
     cpu: [x64]
     os: [darwin]
@@ -6197,6 +6197,9 @@ packages:
   '@vitest/pretty-format@4.0.10':
     resolution: {integrity: sha512-99EQbpa/zuDnvVjthwz5bH9o8iPefoQZ63WV8+bsRJZNw3qQSvSltfut8yu1Jc9mqOYi7pEbsKxYTi/rjaq6PA==}
 
+  '@vitest/pretty-format@4.1.7':
+    resolution: {integrity: sha512-umgCarTOYQWIaDMvGDRZij+6b9oVeLIyJzfN+AS88e0ZOU3QTgNNSTtjQOpcvWr3np1N0j4WgZj+sb3oYBDscw==}
+
   '@vitest/runner@3.2.3':
     resolution: {integrity: sha512-83HWYisT3IpMaU9LN+VN+/nLHVBCSIUKJzGxC5RWUOsK1h3USg7ojL+UXQR3b4o4UBIWCYdD2fxuzM7PQQ1u8w==}
 
@@ -6220,11 +6223,19 @@ packages:
     peerDependencies:
       vitest: 4.0.10
 
+  '@vitest/ui@4.1.7':
+    resolution: {integrity: sha512-TP6utB2yX6rsJNVRo2qAlsi48i1YwFTrLV2tnTtWqJaYX7m4lRCCLirZBjU6xC5m0RsPHr+L2+N+eIPhgEzFfw==}
+    peerDependencies:
+      vitest: 4.1.7
+
   '@vitest/utils@3.2.3':
     resolution: {integrity: sha512-4zFBCU5Pf+4Z6v+rwnZ1HU1yzOKKvDkMXZrymE2PBlbjKJRlrOxbvpfPSvJTGRIwGoahaOGvp+kbCoxifhzJ1Q==}
 
   '@vitest/utils@4.0.10':
     resolution: {integrity: sha512-kOuqWnEwZNtQxMKg3WmPK1vmhZu9WcoX69iwWjVz+jvKTsF1emzsv3eoPcDr6ykA3qP2bsCQE7CwqfNtAVzsmg==}
+
+  '@vitest/utils@4.1.7':
+    resolution: {integrity: sha512-T532WBu791cBxJlCl6SO+J14l81DQx6uQHm1bQbmCDY7nqlEIgkza/UFnSBNaUtSf41unldDFjdOBYEQC4b5Hw==}
 
   '@volar/language-core@2.4.28':
     resolution: {integrity: sha512-w4qhIJ8ZSitgLAkVay6AbcnC7gP3glYM3fYwKV3srj8m494E3xtrCv6E+bWviiK/8hs6e6t1ij1s2Endql7vzQ==}
@@ -6897,6 +6908,10 @@ packages:
     peerDependenciesMeta:
       zod:
         optional: true
+
+  better-sqlite3@12.10.0:
+    resolution: {integrity: sha512-CyzaZRQKyHkB2ZInfTTl2nvT33EbDpjkLEbE8/Zck3Ll6O0qqvuGdrJ45HgtH+HykRg88ITY3AdreBGN70aBSQ==}
+    engines: {node: 20.x || 22.x || 23.x || 24.x || 25.x || 26.x}
 
   better-sqlite3@12.2.0:
     resolution: {integrity: sha512-eGbYq2CT+tos1fBwLQ/tkBt9J5M3JEHjku4hbvQUePCckkvVf14xWj+1m7dGoK81M/fOjFT7yM9UMeKT/+vFLQ==}
@@ -8617,8 +8632,8 @@ packages:
     resolution: {integrity: sha512-7yAQpD2UMJzLi1Dqv7qFYnPbaPx7ZfFK6PiIxQ4PfkGPyNyl2Ugx+a/umUonmKqjhM4DnfbMvdX6otXq83soQQ==}
     engines: {node: ^12.20 || >= 14.13}
 
-  fflate@0.8.2:
-    resolution: {integrity: sha512-cPJU47OaAoCbg0pBvzsgpTPhmhqI5eJjh/JIu8tPj5q+T7iLvW/JAYUqmE7KOB4R1ZyEhzBaIQpQpardBF5z8A==}
+  fflate@0.8.3:
+    resolution: {integrity: sha512-tbZNuJrLwGUp3zshBtdy4W+ORxZuIh8a5ilyIEQDC5rY1f3U20JMry0Ll3WBzU58EZKsEuJFXhb5gwv8CsPvgA==}
 
   figures@6.1.0:
     resolution: {integrity: sha512-d+l3qxjSesT4V7v2fh+QnmFnUWv9lSpjarhShNTgBOfA0ttejbQUAlHLitbjkoRiDulW0OPoQPYIGhIC8ohejg==}
@@ -8674,9 +8689,6 @@ packages:
     resolution: {integrity: sha512-/3FfIa8mbrg3xE7+wAhWeV+bd7L2Mof+xtZb5dRDKZ+wDvYJK4WDYeIOuOhre5Yv5aQObZrlbRmk3RTSiuQBtw==}
     engines: {node: '>=18'}
     hasBin: true
-
-  flatted@3.3.3:
-    resolution: {integrity: sha512-GX+ysw4PBCz0PzosHDepZGANEuFCMLrnRTiEy9McGjmkCQYwRq4A/X786G/fjM/+OjsWSU1ZrY5qyARZmO/uwg==}
 
   flatted@3.4.2:
     resolution: {integrity: sha512-PjDse7RzhcPkIJwy5t7KPWQSZ9cAbzQXcafsetQoD7sOJRQlGikNbx7yZp2OotDnJyrDcbyRq3Ttb18iYOqkxA==}
@@ -10388,8 +10400,8 @@ packages:
   no-case@3.0.4:
     resolution: {integrity: sha512-fgAN3jGAh+RoxUGZHTSOLJIqUc2wmoBwGR4tbpNAKmmovFoWq0OdRkb0VkldReO2a2iBT/OEulG9XSUc10r3zg==}
 
-  node-abi@3.75.0:
-    resolution: {integrity: sha512-OhYaY5sDsIka7H7AtijtI9jwGYLyl29eQn/W623DiN/MIv5sUqc4g7BIDThX+gb7di9f6xK02nkp8sdfFWZLTg==}
+  node-abi@3.92.0:
+    resolution: {integrity: sha512-KdHvFWZjEKDf0cakgFjebl371GPsISX2oZHcuyKqM7DtogIsHrqKeLTo8wBHxaXRAQlY2PsPlZmfo+9ZCxEREQ==}
     engines: {node: '>=10'}
 
   node-addon-api@7.1.1:
@@ -11902,6 +11914,11 @@ packages:
     engines: {node: '>=10'}
     hasBin: true
 
+  semver@7.8.1:
+    resolution: {integrity: sha512-rkVq3IXh+4FDGch+KwzX3aV9W3kO54GyEgpvBzSyctDA6Xtd7RJQV1xmXbeQp5v7+VzLOfVqiutSE6GICgPFvg==}
+    engines: {node: '>=10'}
+    hasBin: true
+
   send@1.2.1:
     resolution: {integrity: sha512-1gnZf7DFcoIcajTjTwjwuDjzuz4PPcY2StKPlsGAQ1+YH20IRVrBaXSWmdjowTJ6u8Rc01PoYOGHXfP1mYcZNQ==}
     engines: {node: '>= 18'}
@@ -12368,8 +12385,8 @@ packages:
     resolution: {integrity: sha512-uxc/zpqFg6x7C8vOE7lh6Lbda8eEL9zmVm/PLeTPBRhh1xCgdWaQ+J1CUieGpIfm2HdtsUpRv+HshiasBMcc6A==}
     engines: {node: '>=6'}
 
-  tar-fs@2.1.3:
-    resolution: {integrity: sha512-090nwYJDmlhwFwEW3QQl+vaNnxsO2yVsd45eTKRBzSzu+hlb1w2K9inVq5b0ngXuLVqQ4ApvsUHHnu/zQNkWAg==}
+  tar-fs@2.1.4:
+    resolution: {integrity: sha512-mDAjwmZdh7LTT6pNleZ05Yt65HC3E+NiQzl672vQG38jIrehtJk/J3mNwIg+vShQPcLF/LV7CMnDW6vjj6sfYQ==}
 
   tar-stream@2.2.0:
     resolution: {integrity: sha512-ujeqbceABgwMZxEJnk2HDY2DlnUZ+9oEcb1KzTVfYHio0UE6dG71n60d8D2I4qNvleWrrXpmjpt7vZeF1LnMZQ==}
@@ -12510,6 +12527,10 @@ packages:
 
   tinyrainbow@3.0.3:
     resolution: {integrity: sha512-PSkbLUoxOFRzJYjjxHJt9xro7D+iilgMX/C9lawzVuYiIdcihh9DXmVibBe8lmcFrRi/VzlPjBxbN7rH24q8/Q==}
+    engines: {node: '>=14.0.0'}
+
+  tinyrainbow@3.1.0:
+    resolution: {integrity: sha512-Bf+ILmBgretUrdJxzXM0SgXLZ3XfiaUuOj/IKQHuTXip+05Xn+uyEYdVg0kYDipTBcLrCVyUzAPz7QmArb0mmw==}
     engines: {node: '>=14.0.0'}
 
   tinyspy@4.0.4:
@@ -13739,15 +13760,15 @@ snapshots:
     transitivePeerDependencies:
       - babel-plugin-macros
 
-  '@adonisjs/auth@10.1.0(@adonisjs/assembler@8.4.0(babel-plugin-macros@3.1.0)(typescript@6.0.3))(@adonisjs/core@7.3.3(@adonisjs/assembler@8.4.0(babel-plugin-macros@3.1.0)(typescript@6.0.3))(@vinejs/vine@4.4.0)(pino-pretty@13.1.1)(youch@4.1.1))(@adonisjs/lucid@22.4.2(@adonisjs/assembler@8.4.0(babel-plugin-macros@3.1.0)(typescript@6.0.3))(@adonisjs/core@7.3.3(@adonisjs/assembler@8.4.0(babel-plugin-macros@3.1.0)(typescript@6.0.3))(@vinejs/vine@4.4.0)(pino-pretty@13.1.1)(youch@4.1.1))(@vinejs/vine@4.4.0)(better-sqlite3@12.2.0)(luxon@3.7.1)(pg@8.16.3))(@adonisjs/session@8.1.0(e562de07ec85dab2d8af1ddf272a5c96))(@japa/api-client@3.2.1(@japa/assert@4.2.0(@japa/runner@5.3.0))(@japa/runner@5.3.0))(@japa/plugin-adonisjs@5.2.0(@adonisjs/core@7.3.3(@adonisjs/assembler@8.4.0(babel-plugin-macros@3.1.0)(typescript@6.0.3))(@vinejs/vine@4.4.0)(pino-pretty@13.1.1)(youch@4.1.1))(@japa/api-client@3.2.1(@japa/assert@4.2.0(@japa/runner@5.3.0))(@japa/runner@5.3.0))(@japa/runner@5.3.0)(playwright@1.56.1))':
+  '@adonisjs/auth@10.1.0(@adonisjs/assembler@8.4.0(babel-plugin-macros@3.1.0)(typescript@6.0.3))(@adonisjs/core@7.3.3(@adonisjs/assembler@8.4.0(babel-plugin-macros@3.1.0)(typescript@6.0.3))(@vinejs/vine@4.4.0)(pino-pretty@13.1.1)(youch@4.1.1))(@adonisjs/lucid@22.4.2(@adonisjs/assembler@8.4.0(babel-plugin-macros@3.1.0)(typescript@6.0.3))(@adonisjs/core@7.3.3(@adonisjs/assembler@8.4.0(babel-plugin-macros@3.1.0)(typescript@6.0.3))(@vinejs/vine@4.4.0)(pino-pretty@13.1.1)(youch@4.1.1))(@vinejs/vine@4.4.0)(better-sqlite3@12.10.0)(luxon@3.7.1)(pg@8.16.3))(@adonisjs/session@8.1.0(34d5bb5dbaf3a9e5f6f1db2460826a93))(@japa/api-client@3.2.1(@japa/assert@4.2.0(@japa/runner@5.3.0))(@japa/runner@5.3.0))(@japa/plugin-adonisjs@5.2.0(@adonisjs/core@7.3.3(@adonisjs/assembler@8.4.0(babel-plugin-macros@3.1.0)(typescript@6.0.3))(@vinejs/vine@4.4.0)(pino-pretty@13.1.1)(youch@4.1.1))(@japa/api-client@3.2.1(@japa/assert@4.2.0(@japa/runner@5.3.0))(@japa/runner@5.3.0))(@japa/runner@5.3.0)(playwright@1.56.1))':
     dependencies:
       '@adonisjs/core': 7.3.3(@adonisjs/assembler@8.4.0(babel-plugin-macros@3.1.0)(typescript@6.0.3))(@vinejs/vine@4.4.0)(pino-pretty@13.1.1)(youch@4.1.1)
       '@adonisjs/presets': 3.0.0(@adonisjs/assembler@8.4.0(babel-plugin-macros@3.1.0)(typescript@6.0.3))(@adonisjs/core@7.3.3(@adonisjs/assembler@8.4.0(babel-plugin-macros@3.1.0)(typescript@6.0.3))(@vinejs/vine@4.4.0)(pino-pretty@13.1.1)(youch@4.1.1))
       basic-auth: 2.0.1
     optionalDependencies:
       '@adonisjs/assembler': 8.4.0(babel-plugin-macros@3.1.0)(typescript@6.0.3)
-      '@adonisjs/lucid': 22.4.2(@adonisjs/assembler@8.4.0(babel-plugin-macros@3.1.0)(typescript@6.0.3))(@adonisjs/core@7.3.3(@adonisjs/assembler@8.4.0(babel-plugin-macros@3.1.0)(typescript@6.0.3))(@vinejs/vine@4.4.0)(pino-pretty@13.1.1)(youch@4.1.1))(@vinejs/vine@4.4.0)(better-sqlite3@12.2.0)(luxon@3.7.1)(pg@8.16.3)
-      '@adonisjs/session': 8.1.0(e562de07ec85dab2d8af1ddf272a5c96)
+      '@adonisjs/lucid': 22.4.2(@adonisjs/assembler@8.4.0(babel-plugin-macros@3.1.0)(typescript@6.0.3))(@adonisjs/core@7.3.3(@adonisjs/assembler@8.4.0(babel-plugin-macros@3.1.0)(typescript@6.0.3))(@vinejs/vine@4.4.0)(pino-pretty@13.1.1)(youch@4.1.1))(@vinejs/vine@4.4.0)(better-sqlite3@12.10.0)(luxon@3.7.1)(pg@8.16.3)
+      '@adonisjs/session': 8.1.0(34d5bb5dbaf3a9e5f6f1db2460826a93)
       '@japa/api-client': 3.2.1(@japa/assert@4.2.0(@japa/runner@5.3.0))(@japa/runner@5.3.0)
       '@japa/plugin-adonisjs': 5.2.0(@adonisjs/core@7.3.3(@adonisjs/assembler@8.4.0(babel-plugin-macros@3.1.0)(typescript@6.0.3))(@vinejs/vine@4.4.0)(pino-pretty@13.1.1)(youch@4.1.1))(@japa/api-client@3.2.1(@japa/assert@4.2.0(@japa/runner@5.3.0))(@japa/runner@5.3.0))(@japa/runner@5.3.0)(playwright@1.56.1)
 
@@ -13888,7 +13909,7 @@ snapshots:
     optionalDependencies:
       pino-pretty: 13.1.1
 
-  '@adonisjs/lucid@22.4.2(@adonisjs/assembler@8.4.0(babel-plugin-macros@3.1.0)(typescript@6.0.3))(@adonisjs/core@7.3.3(@adonisjs/assembler@8.4.0(babel-plugin-macros@3.1.0)(typescript@6.0.3))(@vinejs/vine@4.4.0)(pino-pretty@13.1.1)(youch@4.1.1))(@vinejs/vine@4.4.0)(better-sqlite3@12.2.0)(luxon@3.7.1)(pg@8.16.3)':
+  '@adonisjs/lucid@22.4.2(@adonisjs/assembler@8.4.0(babel-plugin-macros@3.1.0)(typescript@6.0.3))(@adonisjs/core@7.3.3(@adonisjs/assembler@8.4.0(babel-plugin-macros@3.1.0)(typescript@6.0.3))(@vinejs/vine@4.4.0)(pino-pretty@13.1.1)(youch@4.1.1))(@vinejs/vine@4.4.0)(better-sqlite3@12.10.0)(luxon@3.7.1)(pg@8.16.3)':
     dependencies:
       '@adonisjs/core': 7.3.3(@adonisjs/assembler@8.4.0(babel-plugin-macros@3.1.0)(typescript@6.0.3))(@vinejs/vine@4.4.0)(pino-pretty@13.1.1)(youch@4.1.1)
       '@adonisjs/presets': 3.0.0(@adonisjs/assembler@8.4.0(babel-plugin-macros@3.1.0)(typescript@6.0.3))(@adonisjs/core@7.3.3(@adonisjs/assembler@8.4.0(babel-plugin-macros@3.1.0)(typescript@6.0.3))(@vinejs/vine@4.4.0)(pino-pretty@13.1.1)(youch@4.1.1))
@@ -13901,8 +13922,8 @@ snapshots:
       fast-deep-equal: 3.1.3
       igniculus: 1.5.0
       kleur: 4.1.5
-      knex: 3.2.10(better-sqlite3@12.2.0)(pg@8.16.3)
-      knex-dynamic-connection: 5.1.0(better-sqlite3@12.2.0)(pg@8.16.3)
+      knex: 3.2.10(better-sqlite3@12.10.0)(pg@8.16.3)
+      knex-dynamic-connection: 5.1.0(better-sqlite3@12.10.0)(pg@8.16.3)
       pretty-hrtime: 1.0.3
       slash: 5.1.0
       tarn: 3.0.2
@@ -13941,14 +13962,14 @@ snapshots:
       '@poppinss/colors': 4.1.6
       string-width: 8.2.1
 
-  '@adonisjs/session@8.1.0(e562de07ec85dab2d8af1ddf272a5c96)':
+  '@adonisjs/session@8.1.0(34d5bb5dbaf3a9e5f6f1db2460826a93)':
     dependencies:
       '@adonisjs/core': 7.3.3(@adonisjs/assembler@8.4.0(babel-plugin-macros@3.1.0)(typescript@6.0.3))(@vinejs/vine@4.4.0)(pino-pretty@13.1.1)(youch@4.1.1)
       '@poppinss/macroable': 1.1.2
       '@poppinss/utils': 7.0.1
     optionalDependencies:
       '@adonisjs/assembler': 8.4.0(babel-plugin-macros@3.1.0)(typescript@6.0.3)
-      '@adonisjs/lucid': 22.4.2(@adonisjs/assembler@8.4.0(babel-plugin-macros@3.1.0)(typescript@6.0.3))(@adonisjs/core@7.3.3(@adonisjs/assembler@8.4.0(babel-plugin-macros@3.1.0)(typescript@6.0.3))(@vinejs/vine@4.4.0)(pino-pretty@13.1.1)(youch@4.1.1))(@vinejs/vine@4.4.0)(better-sqlite3@12.2.0)(luxon@3.7.1)(pg@8.16.3)
+      '@adonisjs/lucid': 22.4.2(@adonisjs/assembler@8.4.0(babel-plugin-macros@3.1.0)(typescript@6.0.3))(@adonisjs/core@7.3.3(@adonisjs/assembler@8.4.0(babel-plugin-macros@3.1.0)(typescript@6.0.3))(@vinejs/vine@4.4.0)(pino-pretty@13.1.1)(youch@4.1.1))(@vinejs/vine@4.4.0)(better-sqlite3@12.10.0)(luxon@3.7.1)(pg@8.16.3)
       '@adonisjs/redis': 10.0.0(@adonisjs/core@7.3.3(@adonisjs/assembler@8.4.0(babel-plugin-macros@3.1.0)(typescript@6.0.3))(@vinejs/vine@4.4.0)(pino-pretty@13.1.1)(youch@4.1.1))
       '@japa/api-client': 3.2.1(@japa/assert@4.2.0(@japa/runner@5.3.0))(@japa/runner@5.3.0)
       '@japa/plugin-adonisjs': 5.2.0(@adonisjs/core@7.3.3(@adonisjs/assembler@8.4.0(babel-plugin-macros@3.1.0)(typescript@6.0.3))(@vinejs/vine@4.4.0)(pino-pretty@13.1.1)(youch@4.1.1))(@japa/api-client@3.2.1(@japa/assert@4.2.0(@japa/runner@5.3.0))(@japa/runner@5.3.0))(@japa/runner@5.3.0)(playwright@1.56.1)
@@ -14270,12 +14291,12 @@ snapshots:
     optionalDependencies:
       '@opentelemetry/api': 1.9.0
 
-  '@better-auth/drizzle-adapter@1.6.11(@better-auth/core@1.6.11(@better-auth/utils@0.4.0)(@better-fetch/fetch@1.1.21)(@opentelemetry/api@1.9.0)(better-call@1.3.5(zod@4.4.3))(jose@6.2.3)(kysely@0.28.17)(nanostores@1.3.0))(@better-auth/utils@0.4.0)(drizzle-orm@0.45.2(@opentelemetry/api@1.9.0)(@types/better-sqlite3@7.6.13)(@types/pg@8.15.6)(better-sqlite3@12.2.0)(knex@3.2.10(better-sqlite3@12.2.0)(pg@8.16.3))(kysely@0.28.17)(pg@8.16.3))':
+  '@better-auth/drizzle-adapter@1.6.11(@better-auth/core@1.6.11(@better-auth/utils@0.4.0)(@better-fetch/fetch@1.1.21)(@opentelemetry/api@1.9.0)(better-call@1.3.5(zod@4.4.3))(jose@6.2.3)(kysely@0.28.17)(nanostores@1.3.0))(@better-auth/utils@0.4.0)(drizzle-orm@0.45.2(@opentelemetry/api@1.9.0)(@types/better-sqlite3@7.6.13)(@types/pg@8.15.6)(better-sqlite3@12.10.0)(knex@3.2.10(better-sqlite3@12.10.0)(pg@8.16.3))(kysely@0.28.17)(pg@8.16.3))':
     dependencies:
       '@better-auth/core': 1.6.11(@better-auth/utils@0.4.0)(@better-fetch/fetch@1.1.21)(@opentelemetry/api@1.9.0)(better-call@1.0.24)(jose@6.2.3)(kysely@0.28.17)(nanostores@1.3.0)
       '@better-auth/utils': 0.4.0
     optionalDependencies:
-      drizzle-orm: 0.45.2(@opentelemetry/api@1.9.0)(@types/better-sqlite3@7.6.13)(@types/pg@8.15.6)(better-sqlite3@12.2.0)(knex@3.2.10(better-sqlite3@12.2.0)(pg@8.16.3))(kysely@0.28.17)(pg@8.16.3)
+      drizzle-orm: 0.45.2(@opentelemetry/api@1.9.0)(@types/better-sqlite3@7.6.13)(@types/pg@8.15.6)(better-sqlite3@12.10.0)(knex@3.2.10(better-sqlite3@12.10.0)(pg@8.16.3))(kysely@0.28.17)(pg@8.16.3)
 
   '@better-auth/kysely-adapter@1.6.11(@better-auth/core@1.6.11(@better-auth/utils@0.4.0)(@better-fetch/fetch@1.1.21)(@opentelemetry/api@1.9.0)(better-call@1.3.5(zod@4.4.3))(jose@6.2.3)(kysely@0.28.17)(nanostores@1.3.0))(@better-auth/utils@0.4.0)(kysely@0.28.17)':
     dependencies:
@@ -15203,7 +15224,7 @@ snapshots:
     dependencies:
       '@iconify/types': 2.0.0
 
-  '@iconify-json/tabler@1.2.23':
+  '@iconify-json/tabler@1.2.35':
     dependencies:
       '@iconify/types': 2.0.0
 
@@ -16470,7 +16491,7 @@ snapshots:
       rc9: 3.0.1
       std-env: 4.1.0
 
-  '@nuxt/test-utils@4.0.3(@playwright/test@1.56.1)(@vitest/ui@4.0.10)(@vue/test-utils@2.4.6)(crossws@0.4.5(srvx@0.11.15))(happy-dom@20.0.10)(magicast@0.5.3)(playwright-core@1.60.0)(typescript@6.0.3)(vite@7.3.3(@types/node@25.9.1)(jiti@2.7.0)(lightningcss@1.32.0)(sass@1.77.4)(terser@5.47.1)(tsx@4.22.3)(yaml@2.9.0))(vitest@4.0.10)':
+  '@nuxt/test-utils@4.0.3(@playwright/test@1.56.1)(@vitest/ui@4.1.7)(@vue/test-utils@2.4.6)(crossws@0.4.5(srvx@0.11.15))(happy-dom@20.0.10)(magicast@0.5.3)(playwright-core@1.60.0)(typescript@6.0.3)(vite@7.3.3(@types/node@25.9.1)(jiti@2.7.0)(lightningcss@1.32.0)(sass@1.77.4)(terser@5.47.1)(tsx@4.22.3)(yaml@2.9.0))(vitest@4.0.10)':
     dependencies:
       '@clack/prompts': 1.2.0
       '@nuxt/devtools-kit': 2.7.0(magicast@0.5.3)(vite@7.3.3(@types/node@25.9.1)(jiti@2.7.0)(lightningcss@1.32.0)(sass@1.77.4)(terser@5.47.1)(tsx@4.22.3)(yaml@2.9.0))
@@ -16499,15 +16520,15 @@ snapshots:
       tinyexec: 1.1.2
       ufo: 1.6.4
       unplugin: 3.0.0
-      vitest-environment-nuxt: 2.0.0(@playwright/test@1.56.1)(@vitest/ui@4.0.10)(@vue/test-utils@2.4.6)(crossws@0.4.5(srvx@0.11.15))(happy-dom@20.0.10)(magicast@0.5.3)(playwright-core@1.60.0)(typescript@6.0.3)(vite@7.3.3(@types/node@25.9.1)(jiti@2.7.0)(lightningcss@1.32.0)(sass@1.77.4)(terser@5.47.1)(tsx@4.22.3)(yaml@2.9.0))(vitest@4.0.10)
+      vitest-environment-nuxt: 2.0.0(@playwright/test@1.56.1)(@vitest/ui@4.1.7)(@vue/test-utils@2.4.6)(crossws@0.4.5(srvx@0.11.15))(happy-dom@20.0.10)(magicast@0.5.3)(playwright-core@1.60.0)(typescript@6.0.3)(vite@7.3.3(@types/node@25.9.1)(jiti@2.7.0)(lightningcss@1.32.0)(sass@1.77.4)(terser@5.47.1)(tsx@4.22.3)(yaml@2.9.0))(vitest@4.0.10)
       vue: 3.5.34(typescript@6.0.3)
     optionalDependencies:
       '@playwright/test': 1.56.1
-      '@vitest/ui': 4.0.10(vitest@4.0.10)
+      '@vitest/ui': 4.1.7(vitest@4.0.10)
       '@vue/test-utils': 2.4.6
       happy-dom: 20.0.10
       playwright-core: 1.60.0
-      vitest: 4.0.10(@types/debug@4.1.13)(@types/node@25.9.1)(@vitest/ui@4.0.10)(happy-dom@20.0.10)(jiti@2.7.0)(lightningcss@1.32.0)(sass@1.77.4)(terser@5.47.1)(tsx@4.22.3)(yaml@2.9.0)
+      vitest: 4.0.10(@types/debug@4.1.13)(@types/node@25.9.1)(@vitest/ui@4.1.7)(happy-dom@20.0.10)(jiti@2.7.0)(lightningcss@1.32.0)(sass@1.77.4)(terser@5.47.1)(tsx@4.22.3)(yaml@2.9.0)
     transitivePeerDependencies:
       - crossws
       - magicast
@@ -17236,7 +17257,7 @@ snapshots:
   '@oxc-transform/binding-darwin-x64@0.131.0':
     optional: true
 
-  '@oxc-transform/binding-darwin-x64@0.96.0': {}
+  '@oxc-transform/binding-darwin-x64@0.132.0': {}
 
   '@oxc-transform/binding-freebsd-x64@0.131.0':
     optional: true
@@ -17428,13 +17449,13 @@ snapshots:
       '@parcel/watcher-win32-ia32': 2.5.6
       '@parcel/watcher-win32-x64': 2.5.6
 
-  '@payloadcms/db-postgres@3.84.1(@opentelemetry/api@1.9.0)(@types/better-sqlite3@7.6.13)(better-sqlite3@12.2.0)(knex@3.2.10(better-sqlite3@12.2.0)(pg@8.20.0))(kysely@0.28.17)(payload@3.84.1(graphql@16.12.0)(typescript@6.0.3))':
+  '@payloadcms/db-postgres@3.84.1(@opentelemetry/api@1.9.0)(@types/better-sqlite3@7.6.13)(better-sqlite3@12.10.0)(knex@3.2.10(better-sqlite3@12.10.0)(pg@8.20.0))(kysely@0.28.17)(payload@3.84.1(graphql@16.12.0)(typescript@6.0.3))':
     dependencies:
-      '@payloadcms/drizzle': 3.84.1(@opentelemetry/api@1.9.0)(@types/better-sqlite3@7.6.13)(@types/pg@8.20.0)(better-sqlite3@12.2.0)(knex@3.2.10(better-sqlite3@12.2.0)(pg@8.20.0))(kysely@0.28.17)(payload@3.84.1(graphql@16.12.0)(typescript@6.0.3))(pg@8.20.0)
+      '@payloadcms/drizzle': 3.84.1(@opentelemetry/api@1.9.0)(@types/better-sqlite3@7.6.13)(@types/pg@8.20.0)(better-sqlite3@12.10.0)(knex@3.2.10(better-sqlite3@12.10.0)(pg@8.20.0))(kysely@0.28.17)(payload@3.84.1(graphql@16.12.0)(typescript@6.0.3))(pg@8.20.0)
       '@types/pg': 8.20.0
       console-table-printer: 2.12.1
       drizzle-kit: 0.31.7
-      drizzle-orm: 0.45.2(@opentelemetry/api@1.9.0)(@types/better-sqlite3@7.6.13)(@types/pg@8.20.0)(better-sqlite3@12.2.0)(knex@3.2.10(better-sqlite3@12.2.0)(pg@8.20.0))(kysely@0.28.17)(pg@8.20.0)
+      drizzle-orm: 0.45.2(@opentelemetry/api@1.9.0)(@types/better-sqlite3@7.6.13)(@types/pg@8.20.0)(better-sqlite3@12.10.0)(knex@3.2.10(better-sqlite3@12.10.0)(pg@8.20.0))(kysely@0.28.17)(pg@8.20.0)
       payload: 3.84.1(graphql@16.12.0)(typescript@6.0.3)
       pg: 8.20.0
       prompts: 2.4.2
@@ -17471,11 +17492,11 @@ snapshots:
       - sqlite3
       - supports-color
 
-  '@payloadcms/drizzle@3.84.1(@opentelemetry/api@1.9.0)(@types/better-sqlite3@7.6.13)(@types/pg@8.20.0)(better-sqlite3@12.2.0)(knex@3.2.10(better-sqlite3@12.2.0)(pg@8.20.0))(kysely@0.28.17)(payload@3.84.1(graphql@16.12.0)(typescript@6.0.3))(pg@8.20.0)':
+  '@payloadcms/drizzle@3.84.1(@opentelemetry/api@1.9.0)(@types/better-sqlite3@7.6.13)(@types/pg@8.20.0)(better-sqlite3@12.10.0)(knex@3.2.10(better-sqlite3@12.10.0)(pg@8.20.0))(kysely@0.28.17)(payload@3.84.1(graphql@16.12.0)(typescript@6.0.3))(pg@8.20.0)':
     dependencies:
       console-table-printer: 2.12.1
       dequal: 2.0.3
-      drizzle-orm: 0.45.2(@opentelemetry/api@1.9.0)(@types/better-sqlite3@7.6.13)(@types/pg@8.20.0)(better-sqlite3@12.2.0)(knex@3.2.10(better-sqlite3@12.2.0)(pg@8.20.0))(kysely@0.28.17)(pg@8.20.0)
+      drizzle-orm: 0.45.2(@opentelemetry/api@1.9.0)(@types/better-sqlite3@7.6.13)(@types/pg@8.20.0)(better-sqlite3@12.10.0)(knex@3.2.10(better-sqlite3@12.10.0)(pg@8.20.0))(kysely@0.28.17)(pg@8.20.0)
       payload: 3.84.1(graphql@16.12.0)(typescript@6.0.3)
       prompts: 2.4.2
       to-snake-case: 1.0.0
@@ -19853,6 +19874,7 @@ snapshots:
       magic-string: 0.30.21
     optionalDependencies:
       vite: 7.2.2(@types/node@25.9.1)(jiti@2.7.0)(lightningcss@1.32.0)(sass@1.77.4)(terser@5.47.1)(tsx@4.20.6)(yaml@2.9.0)
+    optional: true
 
   '@vitest/mocker@4.0.10(vite@7.2.2(@types/node@25.9.1)(jiti@2.7.0)(lightningcss@1.32.0)(sass@1.77.4)(terser@5.47.1)(tsx@4.22.3)(yaml@2.9.0))':
     dependencies:
@@ -19873,6 +19895,10 @@ snapshots:
   '@vitest/pretty-format@4.0.10':
     dependencies:
       tinyrainbow: 3.0.3
+
+  '@vitest/pretty-format@4.1.7':
+    dependencies:
+      tinyrainbow: 3.1.0
 
   '@vitest/runner@3.2.3':
     dependencies:
@@ -19906,13 +19932,25 @@ snapshots:
   '@vitest/ui@4.0.10(vitest@4.0.10)':
     dependencies:
       '@vitest/utils': 4.0.10
-      fflate: 0.8.2
-      flatted: 3.3.3
+      fflate: 0.8.3
+      flatted: 3.4.2
       pathe: 2.0.3
       sirv: 3.0.2
-      tinyglobby: 0.2.15
-      tinyrainbow: 3.0.3
+      tinyglobby: 0.2.16
+      tinyrainbow: 3.1.0
       vitest: 4.0.10(@types/debug@4.1.13)(@types/node@25.9.1)(@vitest/ui@4.0.10)(happy-dom@20.9.0)(jiti@2.7.0)(jsdom@26.1.0)(lightningcss@1.32.0)(sass@1.77.4)(terser@5.47.1)(tsx@4.20.6)(yaml@2.9.0)
+    optional: true
+
+  '@vitest/ui@4.1.7(vitest@4.0.10)':
+    dependencies:
+      '@vitest/utils': 4.1.7
+      fflate: 0.8.3
+      flatted: 3.4.2
+      pathe: 2.0.3
+      sirv: 3.0.2
+      tinyglobby: 0.2.16
+      tinyrainbow: 3.1.0
+      vitest: 4.0.10(@types/debug@4.1.13)(@types/node@25.9.1)(@vitest/ui@4.1.7)(happy-dom@20.0.10)(jiti@2.7.0)(lightningcss@1.32.0)(sass@1.77.4)(terser@5.47.1)(tsx@4.22.3)(yaml@2.9.0)
 
   '@vitest/utils@3.2.3':
     dependencies:
@@ -19924,6 +19962,12 @@ snapshots:
     dependencies:
       '@vitest/pretty-format': 4.0.10
       tinyrainbow: 3.0.3
+
+  '@vitest/utils@4.1.7':
+    dependencies:
+      '@vitest/pretty-format': 4.1.7
+      convert-source-map: 2.0.0
+      tinyrainbow: 3.1.0
 
   '@volar/language-core@2.4.28':
     dependencies:
@@ -20642,10 +20686,10 @@ snapshots:
       react-dom: 19.2.0(react@19.2.0)
       vue: 3.5.34(typescript@6.0.3)
 
-  better-auth@1.6.11(@opentelemetry/api@1.9.0)(better-sqlite3@12.2.0)(drizzle-kit@0.31.7)(drizzle-orm@0.45.2(@opentelemetry/api@1.9.0)(@types/better-sqlite3@7.6.13)(@types/pg@8.15.6)(better-sqlite3@12.2.0)(knex@3.2.10(better-sqlite3@12.2.0)(pg@8.16.3))(kysely@0.28.17)(pg@8.16.3))(next@15.4.11(@opentelemetry/api@1.9.0)(@playwright/test@1.56.1)(babel-plugin-macros@3.1.0)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)(sass@1.77.4))(pg@8.16.3)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)(vitest@4.0.10)(vue@3.5.34(typescript@6.0.3)):
+  better-auth@1.6.11(@opentelemetry/api@1.9.0)(better-sqlite3@12.10.0)(drizzle-kit@0.31.7)(drizzle-orm@0.45.2(@opentelemetry/api@1.9.0)(@types/better-sqlite3@7.6.13)(@types/pg@8.15.6)(better-sqlite3@12.10.0)(knex@3.2.10(better-sqlite3@12.10.0)(pg@8.16.3))(kysely@0.28.17)(pg@8.16.3))(next@15.4.11(@opentelemetry/api@1.9.0)(@playwright/test@1.56.1)(babel-plugin-macros@3.1.0)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)(sass@1.77.4))(pg@8.16.3)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)(vitest@4.0.10)(vue@3.5.34(typescript@6.0.3)):
     dependencies:
       '@better-auth/core': 1.6.11(@better-auth/utils@0.4.0)(@better-fetch/fetch@1.1.21)(@opentelemetry/api@1.9.0)(better-call@1.0.24)(jose@6.2.3)(kysely@0.28.17)(nanostores@1.3.0)
-      '@better-auth/drizzle-adapter': 1.6.11(@better-auth/core@1.6.11(@better-auth/utils@0.4.0)(@better-fetch/fetch@1.1.21)(@opentelemetry/api@1.9.0)(better-call@1.3.5(zod@4.4.3))(jose@6.2.3)(kysely@0.28.17)(nanostores@1.3.0))(@better-auth/utils@0.4.0)(drizzle-orm@0.45.2(@opentelemetry/api@1.9.0)(@types/better-sqlite3@7.6.13)(@types/pg@8.15.6)(better-sqlite3@12.2.0)(knex@3.2.10(better-sqlite3@12.2.0)(pg@8.16.3))(kysely@0.28.17)(pg@8.16.3))
+      '@better-auth/drizzle-adapter': 1.6.11(@better-auth/core@1.6.11(@better-auth/utils@0.4.0)(@better-fetch/fetch@1.1.21)(@opentelemetry/api@1.9.0)(better-call@1.3.5(zod@4.4.3))(jose@6.2.3)(kysely@0.28.17)(nanostores@1.3.0))(@better-auth/utils@0.4.0)(drizzle-orm@0.45.2(@opentelemetry/api@1.9.0)(@types/better-sqlite3@7.6.13)(@types/pg@8.15.6)(better-sqlite3@12.10.0)(knex@3.2.10(better-sqlite3@12.10.0)(pg@8.16.3))(kysely@0.28.17)(pg@8.16.3))
       '@better-auth/kysely-adapter': 1.6.11(@better-auth/core@1.6.11(@better-auth/utils@0.4.0)(@better-fetch/fetch@1.1.21)(@opentelemetry/api@1.9.0)(better-call@1.3.5(zod@4.4.3))(jose@6.2.3)(kysely@0.28.17)(nanostores@1.3.0))(@better-auth/utils@0.4.0)(kysely@0.28.17)
       '@better-auth/memory-adapter': 1.6.11(@better-auth/core@1.6.11(@better-auth/utils@0.4.0)(@better-fetch/fetch@1.1.21)(@opentelemetry/api@1.9.0)(better-call@1.3.5(zod@4.4.3))(jose@6.2.3)(kysely@0.28.17)(nanostores@1.3.0))(@better-auth/utils@0.4.0)
       '@better-auth/mongo-adapter': 1.6.11(@better-auth/core@1.6.11(@better-auth/utils@0.4.0)(@better-fetch/fetch@1.1.21)(@opentelemetry/api@1.9.0)(better-call@1.3.5(zod@4.4.3))(jose@6.2.3)(kysely@0.28.17)(nanostores@1.3.0))(@better-auth/utils@0.4.0)
@@ -20662,9 +20706,9 @@ snapshots:
       nanostores: 1.3.0
       zod: 4.4.3
     optionalDependencies:
-      better-sqlite3: 12.2.0
+      better-sqlite3: 12.10.0
       drizzle-kit: 0.31.7
-      drizzle-orm: 0.45.2(@opentelemetry/api@1.9.0)(@types/better-sqlite3@7.6.13)(@types/pg@8.15.6)(better-sqlite3@12.2.0)(knex@3.2.10(better-sqlite3@12.2.0)(pg@8.16.3))(kysely@0.28.17)(pg@8.16.3)
+      drizzle-orm: 0.45.2(@opentelemetry/api@1.9.0)(@types/better-sqlite3@7.6.13)(@types/pg@8.15.6)(better-sqlite3@12.10.0)(knex@3.2.10(better-sqlite3@12.10.0)(pg@8.16.3))(kysely@0.28.17)(pg@8.16.3)
       next: 15.4.11(@opentelemetry/api@1.9.0)(@playwright/test@1.56.1)(babel-plugin-macros@3.1.0)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)(sass@1.77.4)
       pg: 8.16.3
       react: 19.2.0
@@ -20699,6 +20743,11 @@ snapshots:
       set-cookie-parser: 3.1.0
     optionalDependencies:
       zod: 4.4.3
+
+  better-sqlite3@12.10.0:
+    dependencies:
+      bindings: 1.5.0
+      prebuild-install: 7.1.3
 
   better-sqlite3@12.2.0:
     dependencies:
@@ -21642,24 +21691,24 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  drizzle-orm@0.45.2(@opentelemetry/api@1.9.0)(@types/better-sqlite3@7.6.13)(@types/pg@8.15.6)(better-sqlite3@12.2.0)(knex@3.2.10(better-sqlite3@12.2.0)(pg@8.16.3))(kysely@0.28.17)(pg@8.16.3):
+  drizzle-orm@0.45.2(@opentelemetry/api@1.9.0)(@types/better-sqlite3@7.6.13)(@types/pg@8.15.6)(better-sqlite3@12.10.0)(knex@3.2.10(better-sqlite3@12.10.0)(pg@8.16.3))(kysely@0.28.17)(pg@8.16.3):
     optionalDependencies:
       '@opentelemetry/api': 1.9.0
       '@types/better-sqlite3': 7.6.13
       '@types/pg': 8.15.6
-      better-sqlite3: 12.2.0
-      knex: 3.2.10(better-sqlite3@12.2.0)(pg@8.16.3)
+      better-sqlite3: 12.10.0
+      knex: 3.2.10(better-sqlite3@12.10.0)(pg@8.16.3)
       kysely: 0.28.17
       pg: 8.16.3
     optional: true
 
-  drizzle-orm@0.45.2(@opentelemetry/api@1.9.0)(@types/better-sqlite3@7.6.13)(@types/pg@8.20.0)(better-sqlite3@12.2.0)(knex@3.2.10(better-sqlite3@12.2.0)(pg@8.20.0))(kysely@0.28.17)(pg@8.20.0):
+  drizzle-orm@0.45.2(@opentelemetry/api@1.9.0)(@types/better-sqlite3@7.6.13)(@types/pg@8.20.0)(better-sqlite3@12.10.0)(knex@3.2.10(better-sqlite3@12.10.0)(pg@8.20.0))(kysely@0.28.17)(pg@8.20.0):
     optionalDependencies:
       '@opentelemetry/api': 1.9.0
       '@types/better-sqlite3': 7.6.13
       '@types/pg': 8.20.0
-      better-sqlite3: 12.2.0
-      knex: 3.2.10(better-sqlite3@12.2.0)(pg@8.20.0)
+      better-sqlite3: 12.10.0
+      knex: 3.2.10(better-sqlite3@12.10.0)(pg@8.20.0)
       kysely: 0.28.17
       pg: 8.20.0
 
@@ -22720,7 +22769,7 @@ snapshots:
       web-streams-polyfill: 3.3.3
     optional: true
 
-  fflate@0.8.2: {}
+  fflate@0.8.3: {}
 
   figures@6.1.0:
     dependencies:
@@ -22786,8 +22835,6 @@ snapshots:
       keyv: 4.5.4
 
   flat@6.0.1: {}
-
-  flatted@3.3.3: {}
 
   flatted@3.4.2: {}
 
@@ -23928,10 +23975,10 @@ snapshots:
 
   klona@2.0.6: {}
 
-  knex-dynamic-connection@5.1.0(better-sqlite3@12.2.0)(pg@8.16.3):
+  knex-dynamic-connection@5.1.0(better-sqlite3@12.10.0)(pg@8.16.3):
     dependencies:
       debug: 4.4.3
-      knex: 3.2.7(better-sqlite3@12.2.0)(pg@8.16.3)
+      knex: 3.2.7(better-sqlite3@12.10.0)(pg@8.16.3)
     transitivePeerDependencies:
       - better-sqlite3
       - mysql
@@ -23943,7 +23990,7 @@ snapshots:
       - supports-color
       - tedious
 
-  knex@3.2.10(better-sqlite3@12.2.0)(pg@8.16.3):
+  knex@3.2.10(better-sqlite3@12.10.0)(pg@8.16.3):
     dependencies:
       colorette: 2.0.19
       commander: 10.0.1
@@ -23960,10 +24007,33 @@ snapshots:
       tarn: 3.0.2
       tildify: 2.0.0
     optionalDependencies:
-      better-sqlite3: 12.2.0
+      better-sqlite3: 12.10.0
       pg: 8.16.3
     transitivePeerDependencies:
       - supports-color
+
+  knex@3.2.10(better-sqlite3@12.10.0)(pg@8.20.0):
+    dependencies:
+      colorette: 2.0.19
+      commander: 10.0.1
+      debug: 4.3.4
+      escalade: 3.2.0
+      esm: 3.2.25
+      get-package-type: 0.1.0
+      getopts: 2.3.0
+      interpret: 2.2.0
+      lodash: 4.18.1
+      pg-connection-string: 2.6.2
+      rechoir: 0.8.0
+      resolve-from: 5.0.0
+      tarn: 3.0.2
+      tildify: 2.0.0
+    optionalDependencies:
+      better-sqlite3: 12.10.0
+      pg: 8.20.0
+    transitivePeerDependencies:
+      - supports-color
+    optional: true
 
   knex@3.2.10(better-sqlite3@12.2.0)(pg@8.20.0):
     dependencies:
@@ -23988,7 +24058,7 @@ snapshots:
       - supports-color
     optional: true
 
-  knex@3.2.7(better-sqlite3@12.2.0)(pg@8.16.3):
+  knex@3.2.7(better-sqlite3@12.10.0)(pg@8.16.3):
     dependencies:
       colorette: 2.0.19
       commander: 10.0.1
@@ -24005,7 +24075,7 @@ snapshots:
       tarn: 3.0.2
       tildify: 2.0.0
     optionalDependencies:
-      better-sqlite3: 12.2.0
+      better-sqlite3: 12.10.0
       pg: 8.16.3
     transitivePeerDependencies:
       - supports-color
@@ -25043,9 +25113,9 @@ snapshots:
       lower-case: 2.0.2
       tslib: 2.8.1
 
-  node-abi@3.75.0:
+  node-abi@3.92.0:
     dependencies:
-      semver: 7.8.0
+      semver: 7.8.1
 
   node-addon-api@7.1.1: {}
 
@@ -26560,11 +26630,11 @@ snapshots:
       minimist: 1.2.8
       mkdirp-classic: 0.5.3
       napi-build-utils: 2.0.0
-      node-abi: 3.75.0
-      pump: 3.0.3
+      node-abi: 3.92.0
+      pump: 3.0.4
       rc: 1.2.8
       simple-get: 4.0.1
-      tar-fs: 2.1.3
+      tar-fs: 2.1.4
       tunnel-agent: 0.6.0
 
   prelude-ls@1.2.1: {}
@@ -27379,6 +27449,8 @@ snapshots:
 
   semver@7.8.0: {}
 
+  semver@7.8.1: {}
+
   send@1.2.1:
     dependencies:
       debug: 4.4.3
@@ -27971,11 +28043,11 @@ snapshots:
 
   tapable@2.3.3: {}
 
-  tar-fs@2.1.3:
+  tar-fs@2.1.4:
     dependencies:
       chownr: 1.1.4
       mkdirp-classic: 0.5.3
-      pump: 3.0.3
+      pump: 3.0.4
       tar-stream: 2.2.0
 
   tar-stream@2.2.0:
@@ -28089,6 +28161,8 @@ snapshots:
   tinyrainbow@2.0.0: {}
 
   tinyrainbow@3.0.3: {}
+
+  tinyrainbow@3.1.0: {}
 
   tinyspy@4.0.4: {}
 
@@ -28842,6 +28916,7 @@ snapshots:
       terser: 5.47.1
       tsx: 4.20.6
       yaml: 2.9.0
+    optional: true
 
   vite@7.2.2(@types/node@25.9.1)(jiti@2.7.0)(lightningcss@1.32.0)(sass@1.77.4)(terser@5.47.1)(tsx@4.22.3)(yaml@2.9.0):
     dependencies:
@@ -28915,9 +28990,9 @@ snapshots:
       tsx: 4.22.3
       yaml: 2.9.0
 
-  vitest-environment-nuxt@2.0.0(@playwright/test@1.56.1)(@vitest/ui@4.0.10)(@vue/test-utils@2.4.6)(crossws@0.4.5(srvx@0.11.15))(happy-dom@20.0.10)(magicast@0.5.3)(playwright-core@1.60.0)(typescript@6.0.3)(vite@7.3.3(@types/node@25.9.1)(jiti@2.7.0)(lightningcss@1.32.0)(sass@1.77.4)(terser@5.47.1)(tsx@4.22.3)(yaml@2.9.0))(vitest@4.0.10):
+  vitest-environment-nuxt@2.0.0(@playwright/test@1.56.1)(@vitest/ui@4.1.7)(@vue/test-utils@2.4.6)(crossws@0.4.5(srvx@0.11.15))(happy-dom@20.0.10)(magicast@0.5.3)(playwright-core@1.60.0)(typescript@6.0.3)(vite@7.3.3(@types/node@25.9.1)(jiti@2.7.0)(lightningcss@1.32.0)(sass@1.77.4)(terser@5.47.1)(tsx@4.22.3)(yaml@2.9.0))(vitest@4.0.10):
     dependencies:
-      '@nuxt/test-utils': 4.0.3(@playwright/test@1.56.1)(@vitest/ui@4.0.10)(@vue/test-utils@2.4.6)(crossws@0.4.5(srvx@0.11.15))(happy-dom@20.0.10)(magicast@0.5.3)(playwright-core@1.60.0)(typescript@6.0.3)(vite@7.3.3(@types/node@25.9.1)(jiti@2.7.0)(lightningcss@1.32.0)(sass@1.77.4)(terser@5.47.1)(tsx@4.22.3)(yaml@2.9.0))(vitest@4.0.10)
+      '@nuxt/test-utils': 4.0.3(@playwright/test@1.56.1)(@vitest/ui@4.1.7)(@vue/test-utils@2.4.6)(crossws@0.4.5(srvx@0.11.15))(happy-dom@20.0.10)(magicast@0.5.3)(playwright-core@1.60.0)(typescript@6.0.3)(vite@7.3.3(@types/node@25.9.1)(jiti@2.7.0)(lightningcss@1.32.0)(sass@1.77.4)(terser@5.47.1)(tsx@4.22.3)(yaml@2.9.0))(vitest@4.0.10)
     transitivePeerDependencies:
       - '@cucumber/cucumber'
       - '@jest/globals'
@@ -28978,47 +29053,6 @@ snapshots:
       - tsx
       - yaml
 
-  vitest@4.0.10(@types/debug@4.1.13)(@types/node@25.9.1)(@vitest/ui@4.0.10)(happy-dom@20.0.10)(jiti@2.7.0)(lightningcss@1.32.0)(sass@1.77.4)(terser@5.47.1)(tsx@4.22.3)(yaml@2.9.0):
-    dependencies:
-      '@vitest/expect': 4.0.10
-      '@vitest/mocker': 4.0.10(vite@7.2.2(@types/node@25.9.1)(jiti@2.7.0)(lightningcss@1.32.0)(sass@1.77.4)(terser@5.47.1)(tsx@4.22.3)(yaml@2.9.0))
-      '@vitest/pretty-format': 4.0.10
-      '@vitest/runner': 4.0.10
-      '@vitest/snapshot': 4.0.10
-      '@vitest/spy': 4.0.10
-      '@vitest/utils': 4.0.10
-      debug: 4.4.3
-      es-module-lexer: 1.7.0
-      expect-type: 1.2.2
-      magic-string: 0.30.21
-      pathe: 2.0.3
-      picomatch: 4.0.3
-      std-env: 3.10.0
-      tinybench: 2.9.0
-      tinyexec: 0.3.2
-      tinyglobby: 0.2.15
-      tinyrainbow: 3.0.3
-      vite: 7.2.2(@types/node@25.9.1)(jiti@2.7.0)(lightningcss@1.32.0)(sass@1.77.4)(terser@5.47.1)(tsx@4.22.3)(yaml@2.9.0)
-      why-is-node-running: 2.3.0
-    optionalDependencies:
-      '@types/debug': 4.1.13
-      '@types/node': 25.9.1
-      '@vitest/ui': 4.0.10(vitest@4.0.10)
-      happy-dom: 20.0.10
-    transitivePeerDependencies:
-      - jiti
-      - less
-      - lightningcss
-      - msw
-      - sass
-      - sass-embedded
-      - stylus
-      - sugarss
-      - supports-color
-      - terser
-      - tsx
-      - yaml
-
   vitest@4.0.10(@types/debug@4.1.13)(@types/node@25.9.1)(@vitest/ui@4.0.10)(happy-dom@20.9.0)(jiti@2.7.0)(jsdom@26.1.0)(lightningcss@1.32.0)(sass@1.77.4)(terser@5.47.1)(tsx@4.20.6)(yaml@2.9.0):
     dependencies:
       '@vitest/expect': 4.0.10
@@ -29047,6 +29081,48 @@ snapshots:
       '@vitest/ui': 4.0.10(vitest@4.0.10)
       happy-dom: 20.9.0
       jsdom: 26.1.0
+    transitivePeerDependencies:
+      - jiti
+      - less
+      - lightningcss
+      - msw
+      - sass
+      - sass-embedded
+      - stylus
+      - sugarss
+      - supports-color
+      - terser
+      - tsx
+      - yaml
+    optional: true
+
+  vitest@4.0.10(@types/debug@4.1.13)(@types/node@25.9.1)(@vitest/ui@4.1.7)(happy-dom@20.0.10)(jiti@2.7.0)(lightningcss@1.32.0)(sass@1.77.4)(terser@5.47.1)(tsx@4.22.3)(yaml@2.9.0):
+    dependencies:
+      '@vitest/expect': 4.0.10
+      '@vitest/mocker': 4.0.10(vite@7.2.2(@types/node@25.9.1)(jiti@2.7.0)(lightningcss@1.32.0)(sass@1.77.4)(terser@5.47.1)(tsx@4.22.3)(yaml@2.9.0))
+      '@vitest/pretty-format': 4.0.10
+      '@vitest/runner': 4.0.10
+      '@vitest/snapshot': 4.0.10
+      '@vitest/spy': 4.0.10
+      '@vitest/utils': 4.0.10
+      debug: 4.4.3
+      es-module-lexer: 1.7.0
+      expect-type: 1.2.2
+      magic-string: 0.30.21
+      pathe: 2.0.3
+      picomatch: 4.0.3
+      std-env: 3.10.0
+      tinybench: 2.9.0
+      tinyexec: 0.3.2
+      tinyglobby: 0.2.15
+      tinyrainbow: 3.0.3
+      vite: 7.2.2(@types/node@25.9.1)(jiti@2.7.0)(lightningcss@1.32.0)(sass@1.77.4)(terser@5.47.1)(tsx@4.22.3)(yaml@2.9.0)
+      why-is-node-running: 2.3.0
+    optionalDependencies:
+      '@types/debug': 4.1.13
+      '@types/node': 25.9.1
+      '@vitest/ui': 4.1.7(vitest@4.0.10)
+      happy-dom: 20.0.10
     transitivePeerDependencies:
       - jiti
       - less

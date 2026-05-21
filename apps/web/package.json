@@ -63,7 +63,7 @@
     "@nuxt/test-utils": "^4.0.3",
     "@oxc-minify/binding-darwin-x64": "0.96.0",
     "@oxc-parser/binding-darwin-x64": "0.96.0",
-    "@oxc-transform/binding-darwin-x64": "0.96.0",
+    "@oxc-transform/binding-darwin-x64": "0.132.0",
     "@stratala/eslint-config": "workspace:*",
     "@vitest/ui": "^4.1.7",
     "@vue/test-utils": "^2.4.6",
