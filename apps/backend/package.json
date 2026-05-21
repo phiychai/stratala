@@ -69,7 +69,7 @@
     "@stratala/shared-types": "workspace:*",
     "@vinejs/vine": "^4.4.0",
     "adonis-autoswagger": "^3.73.0",
-    "better-auth": "^1.4.18",
+    "better-auth": "^1.6.11",
     "better-call": "^1.0.24",
     "better-sqlite3": "^12.2.0",
     "ioredis": "^5.10.1",
