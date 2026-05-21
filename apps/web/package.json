@@ -65,7 +65,7 @@
     "@oxc-parser/binding-darwin-x64": "0.96.0",
     "@oxc-transform/binding-darwin-x64": "0.96.0",
     "@stratala/eslint-config": "workspace:*",
-    "@vitest/ui": "^4.0.10",
+    "@vitest/ui": "^4.1.7",
     "@vue/test-utils": "^2.4.6",
     "eslint": "^10.4.0",
     "happy-dom": "^20.0.10",
