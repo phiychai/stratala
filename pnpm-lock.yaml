@@ -466,8 +466,8 @@ importers:
         specifier: ^10.9.1
         version: 10.9.1(@stylistic/eslint-plugin@4.4.0(eslint@10.4.0(jiti@2.7.0))(typescript@6.0.3))(@typescript-eslint/parser@8.59.4(eslint@10.4.0(jiti@2.7.0))(typescript@6.0.3))(eslint@10.4.0(jiti@2.7.0))(vue-eslint-parser@10.4.0(eslint@10.4.0(jiti@2.7.0)))
       globals:
-        specifier: ^16.2.0
-        version: 16.5.0
+        specifier: ^17.6.0
+        version: 17.6.0
       prettier:
         specifier: ^3.8.1
         version: 3.8.3
