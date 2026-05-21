@@ -8,7 +8,8 @@
     "declarationMap": true,
     "noEmit": false,
     "module": "ESNext",
-    "moduleResolution": "bundler"
+    "moduleResolution": "bundler",
+    "types": ["payload"]
   },
   "include": ["src/**/*"],
   "exclude": ["node_modules", "dist"]
