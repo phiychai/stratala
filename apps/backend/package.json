@@ -46,7 +46,7 @@
     "@stratala/eslint-config": "workspace:*",
     "@types/better-sqlite3": "^7.6.13",
     "@types/luxon": "^3.7.1",
-    "@types/node": "^25.2.0",
+    "@types/node": "^25.9.1",
     "@types/pg": "^8.15.6",
     "@types/zxcvbn": "^4.4.5",
     "eslint": "^10.4.0",
