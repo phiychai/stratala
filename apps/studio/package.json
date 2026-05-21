@@ -26,7 +26,7 @@
     "@payloadcms/next": "3.76.1",
     "@payloadcms/plugin-multi-tenant": "3.76.1",
     "@payloadcms/richtext-lexical": "3.84.1",
-    "@payloadcms/ui": "3.76.1",
+    "@payloadcms/ui": "3.84.1",
     "cross-env": "^7.0.3",
     "dotenv": "16.4.7",
     "graphql": "^16.12.0",
