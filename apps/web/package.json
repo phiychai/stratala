@@ -25,7 +25,7 @@
     "@nuxt/content": "^3.14.0",
     "@nuxt/image": "^2.0.0",
     "@nuxt/scripts": "^1.1.1",
-    "@nuxt/ui": "^4.7.1",
+    "@nuxt/ui": "^4.8.0",
     "@nuxtjs/mdc": "^0.19.2",
     "@nuxtjs/seo": "3.2.2",
     "@payloadcms/richtext-lexical": "3.84.1",
