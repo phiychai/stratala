@@ -24,7 +24,7 @@
     "@iconify-json/tabler": "^1.2.23",
     "@nuxt/content": "^3.1.0",
     "@nuxt/image": "^2.0.0",
-    "@nuxt/scripts": "^0.13.0",
+    "@nuxt/scripts": "^1.1.1",
     "@nuxt/ui": "^4.1.0",
     "@nuxtjs/mdc": "^0.19.2",
     "@nuxtjs/seo": "3.2.2",
