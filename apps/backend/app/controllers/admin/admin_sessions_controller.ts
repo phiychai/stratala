@@ -24,7 +24,11 @@ export default class AdminSessionsController {
    * @response 500 - Server error - Failed to list sessions
    */
   async listUserSessions({ params, request, response, auth }: HttpContext) {
-    await abilities.manageUsers.execute(auth.user!);
+    const currentUser = auth.user;
+    if (!currentUser) {
+      return response.unauthorized({ message: 'Authentication required' });
+    }
+    await abilities.manageUsers.execute(currentUser);
 
     const user = await User.findOrFail(params.id);
 
@@ -89,7 +93,11 @@ export default class AdminSessionsController {
    * @response 500 - Server error - Failed to revoke session
    */
   async revokeSession({ params, request, response, auth }: HttpContext) {
-    await abilities.manageUsers.execute(auth.user!);
+    const currentUser = auth.user;
+    if (!currentUser) {
+      return response.unauthorized({ message: 'Authentication required' });
+    }
+    await abilities.manageUsers.execute(currentUser);
 
     try {
       const webRequest = await toWebRequest(request);
@@ -141,7 +149,11 @@ export default class AdminSessionsController {
    * @response 500 - Server error - Failed to revoke sessions
    */
   async revokeAllSessions({ params, request, response, auth }: HttpContext) {
-    await abilities.manageUsers.execute(auth.user!);
+    const currentUser = auth.user;
+    if (!currentUser) {
+      return response.unauthorized({ message: 'Authentication required' });
+    }
+    await abilities.manageUsers.execute(currentUser);
 
     const user = await User.findOrFail(params.id);
 

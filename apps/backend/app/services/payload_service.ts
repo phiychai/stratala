@@ -191,7 +191,7 @@ class PayloadService {
     const payload = await this.getPayload();
 
     // Build where clause with tenant isolation
-    const where: Record<string, any> = {
+    const where: Record<string, unknown> = {
       ...options.where,
     };
 

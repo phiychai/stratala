@@ -28,9 +28,14 @@ export default class UserController {
    * @response 401 - Unauthorized - Authentication required
    */
   async me({ auth, betterAuthUser, betterAuthSession, response }: HttpContext): Promise<void> {
+    const currentUser = auth.user;
+    if (!currentUser) {
+      response.unauthorized({ message: 'Authentication required' });
+      return;
+    }
     // Build DTO from Adonis User and Better Auth data
     const profile: UserProfileDTO = UserProfileDTOBuilder.build(
-      auth.user!,
+      currentUser,
       betterAuthUser ?? null,
       betterAuthSession ?? null
     );
@@ -63,7 +68,10 @@ export default class UserController {
    */
   async updateProfile({ auth: authContext, request, response }: HttpContext) {
     try {
-      const user = authContext.user!;
+      const user = authContext.user;
+      if (!user) {
+        return response.unauthorized({ message: 'Authentication required' });
+      }
 
       // Pre-process request data: convert empty strings to undefined for optional fields
       const requestData = request.body();
@@ -234,8 +242,12 @@ export default class UserController {
    * @response 403 - Forbidden - Admin access required
    */
   async index({ auth, response }: HttpContext) {
+    const currentUser = auth.user;
+    if (!currentUser) {
+      return response.unauthorized({ message: 'Authentication required' });
+    }
     // Check if user can view user list
-    await abilities.viewUsers.execute(auth.user!);
+    await abilities.viewUsers.execute(currentUser);
 
     const users = await User.query()
       .select('id', 'email', 'firstName', 'lastName', 'username', 'role', 'isActive', 'createdAt')
@@ -259,7 +271,10 @@ export default class UserController {
    */
   async uploadAvatar({ auth: authContext, request, response }: HttpContext) {
     try {
-      const user = authContext.user!;
+      const user = authContext.user;
+      if (!user) {
+        return response.unauthorized({ message: 'Authentication required' });
+      }
       const avatarFile = request.file('avatar', {
         size: '1mb',
         extnames: ['jpg', 'jpeg', 'png', 'gif'],

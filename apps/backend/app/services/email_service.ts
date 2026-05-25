@@ -180,7 +180,11 @@ export class EmailService {
       throw new Error('SendGrid package not installed. Run: npm install @sendgrid/mail');
     }
 
-    sgMail.default.setApiKey(env.get('SENDGRID_API_KEY')!);
+    const apiKey = env.get('SENDGRID_API_KEY');
+    if (!apiKey) {
+      throw new Error('SENDGRID_API_KEY environment variable is not set');
+    }
+    sgMail.default.setApiKey(apiKey);
     await sgMail.default.send({
       from: env.get('EMAIL_FROM', 'noreply@example.com'),
       to,

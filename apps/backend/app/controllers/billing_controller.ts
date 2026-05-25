@@ -6,6 +6,12 @@ import billingService from '#services/billing_service';
 const getErrorMessage = (error: unknown): string =>
   error instanceof Error ? error.message : 'Unknown error';
 
+const isNotFoundError = (error: unknown): boolean =>
+  typeof error === 'object' &&
+  error !== null &&
+  'statusCode' in error &&
+  (error as { statusCode?: unknown }).statusCode === 404;
+
 export default class BillingController {
   /**
    * Helper method to get or create a billing account for a user
@@ -28,8 +34,7 @@ export default class BillingController {
       }
     } catch (error) {
       // Only proceed to creation if the error indicates the account doesn't exist
-      const isNotFound =
-        error instanceof Error && 'statusCode' in error && (error as any).statusCode === 404;
+      const isNotFound = isNotFoundError(error);
       if (!isNotFound) {
         console.error(`Failed to retrieve billing account for user ${userId}:`, error);
         return null;
@@ -62,7 +67,10 @@ export default class BillingController {
    */
   async getOrCreateAccount({ response, auth }: HttpContext) {
     try {
-      const user = auth.user!;
+      const user = auth.user;
+      if (!user) {
+        return response.unauthorized({ message: 'Authentication required' });
+      }
       const userId = user.id.toString();
       const userName = user.fullName || user.email;
 
@@ -98,7 +106,10 @@ export default class BillingController {
    */
   async getSubscriptions({ response, auth }: HttpContext) {
     try {
-      const user = auth.user!;
+      const user = auth.user;
+      if (!user) {
+        return response.unauthorized({ message: 'Authentication required' });
+      }
 
       // Get subscriptions using user ID as external_id
       // If customer doesn't exist, return empty array
@@ -134,7 +145,10 @@ export default class BillingController {
    */
   async createSubscription({ request, response, auth }: HttpContext) {
     try {
-      const user = auth.user!;
+      const user = auth.user;
+      if (!user) {
+        return response.unauthorized({ message: 'Authentication required' });
+      }
       const { planName, externalKey } = request.body();
 
       // Validate required fields
@@ -217,7 +231,10 @@ export default class BillingController {
    */
   async getInvoices({ response, auth }: HttpContext) {
     try {
-      const user = auth.user!;
+      const user = auth.user;
+      if (!user) {
+        return response.unauthorized({ message: 'Authentication required' });
+      }
 
       // Get invoices using user ID as external_id
       // If customer doesn't exist, return empty array
@@ -275,7 +292,10 @@ export default class BillingController {
    */
   async addPaymentMethod({ request, response, auth }: HttpContext) {
     try {
-      const user = auth.user!;
+      const user = auth.user;
+      if (!user) {
+        return response.unauthorized({ message: 'Authentication required' });
+      }
       const { pluginName, pluginInfo } = request.body();
 
       if (!pluginName || !pluginInfo) {
@@ -316,7 +336,10 @@ export default class BillingController {
    */
   async getPaymentMethods({ response, auth }: HttpContext) {
     try {
-      const user = auth.user!;
+      const user = auth.user;
+      if (!user) {
+        return response.unauthorized({ message: 'Authentication required' });
+      }
 
       // Check if customer exists using user ID as external_id
       try {

@@ -33,8 +33,12 @@ export default class AdminController {
    * @response 403 - Forbidden - Admin access required
    */
   async listUsers({ request, response, auth }: HttpContext) {
+    const currentUser = auth.user;
+    if (!currentUser) {
+      return response.unauthorized({ message: 'Authentication required' });
+    }
     // Check authorization via Bouncer
-    await abilities.manageUsers.execute(auth.user!);
+    await abilities.manageUsers.execute(currentUser);
 
     const page = request.input('page', 1);
     const limit = request.input('limit', 25);
@@ -116,7 +120,11 @@ export default class AdminController {
    * @response 500 - Server error - Failed to create user
    */
   async createUser({ request, response, auth: authContext }: HttpContext) {
-    await abilities.manageUsers.execute(authContext.user!);
+    const currentUser = authContext.user;
+    if (!currentUser) {
+      return response.unauthorized({ message: 'Authentication required' });
+    }
+    await abilities.manageUsers.execute(currentUser);
 
     try {
       const rawData = await (
@@ -261,7 +269,11 @@ export default class AdminController {
    * @response 404 - User not found
    */
   async getUser({ params, response, auth }: HttpContext) {
-    await abilities.manageUsers.execute(auth.user!);
+    const currentUser = auth.user;
+    if (!currentUser) {
+      return response.unauthorized({ message: 'Authentication required' });
+    }
+    await abilities.manageUsers.execute(currentUser);
 
     const user = await User.findOrFail(params.id);
 
@@ -348,12 +360,9 @@ export default class AdminController {
         }
       } else if (requiresPayload && oldRequiresPayload) {
         // Role changed between content roles - update Payload role
-        if (targetUser.payloadUserId) {
-          await PayloadUserSyncService.updatePayloadUserRole(targetUser.payloadUserId, role);
-        } else {
-          // Create Payload user if it doesn't exist
-          await PayloadUserSyncService.syncUserToPayload(targetUser, role);
-        }
+        await (targetUser.payloadUserId
+          ? PayloadUserSyncService.updatePayloadUserRole(targetUser.payloadUserId, role)
+          : PayloadUserSyncService.syncUserToPayload(targetUser, role));
       }
     }
 
@@ -439,7 +448,11 @@ export default class AdminController {
    * @response 500 - Server error - Failed to sync users
    */
   async syncAllUsers({ response, auth }: HttpContext) {
-    await abilities.manageUsers.execute(auth.user!);
+    const currentUser = auth.user;
+    if (!currentUser) {
+      return response.unauthorized({ message: 'Authentication required' });
+    }
+    await abilities.manageUsers.execute(currentUser);
 
     try {
       const result = await syncAllMissingUsers();
@@ -472,7 +485,11 @@ export default class AdminController {
    * @response 500 - Server error - Failed to sync user
    */
   async syncUser({ request, response, auth }: HttpContext) {
-    await abilities.manageUsers.execute(auth.user!);
+    const currentUser = auth.user;
+    if (!currentUser) {
+      return response.unauthorized({ message: 'Authentication required' });
+    }
+    await abilities.manageUsers.execute(currentUser);
 
     const { email } = request.only(['email']);
 

@@ -2,6 +2,7 @@ import { Bouncer } from '@adonisjs/bouncer';
 
 import type { HttpContext } from '@adonisjs/core/http';
 import type { NextFn } from '@adonisjs/core/types/http';
+import type { LazyImport } from '@adonisjs/fold/types';
 
 import * as abilities from '#abilities/main';
 import { policies } from '#policies/main';
@@ -22,7 +23,7 @@ export default class InitializeBouncerMiddleware {
     ctx.bouncer = new Bouncer(
       () => ctx.auth.user || null,
       abilities,
-      policies as any
+      policies as Record<string, LazyImport<unknown>>
     ).setContainerResolver(ctx.containerResolver);
 
     /**
@@ -44,7 +45,10 @@ export default class InitializeBouncerMiddleware {
 
 declare module '@adonisjs/core/http' {
   export interface HttpContext {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    bouncer: Bouncer<Exclude<HttpContext['auth']['user'], undefined>, typeof abilities, any>;
+    bouncer: Bouncer<
+      Exclude<HttpContext['auth']['user'], undefined>,
+      typeof abilities,
+      Record<string, LazyImport<unknown>>
+    >;
   }
 }

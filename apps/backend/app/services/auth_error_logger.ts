@@ -145,9 +145,9 @@ export class AuthErrorLogger {
     ]);
 
     const byTypeMap: Record<string, number> = {};
-    byType.forEach((row: { event_type: string; count: string | number }) => {
+    for (const row of byType as Array<{ event_type: string; count: string | number }>) {
       byTypeMap[row.event_type] = Number.parseInt(String(row.count || '0'));
-    });
+    }
 
     return {
       total: Number.parseInt((total?.total as string) || '0'),

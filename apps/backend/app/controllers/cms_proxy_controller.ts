@@ -89,13 +89,17 @@ export default class CmsProxyController {
     try {
       // Only authenticated users can create content
       await auth.check();
+      const user = auth.user;
+      if (!user) {
+        return response.unauthorized({ message: 'Authentication required' });
+      }
 
       const path = params['*'].join('/');
       const collection = path.split('/')[0];
       const body = request.body();
 
       const item = await payloadService.createItem(collection, body, {
-        user: auth.user!,
+        user,
       });
 
       return response.ok({
@@ -127,6 +131,10 @@ export default class CmsProxyController {
     try {
       // Only authenticated users can update content
       await auth.check();
+      const user = auth.user;
+      if (!user) {
+        return response.unauthorized({ message: 'Authentication required' });
+      }
 
       const path = params['*'].join('/');
       const pathParts = path.split('/');
@@ -142,7 +150,7 @@ export default class CmsProxyController {
       const body = request.body();
 
       const item = await payloadService.updateItem(collection, id, body, {
-        user: auth.user!,
+        user,
         depth: request.input('depth', 0),
       });
 
@@ -173,7 +181,10 @@ export default class CmsProxyController {
     try {
       // Only authenticated users can delete content
       await auth.check();
-      const user = auth.user!;
+      const user = auth.user;
+      if (!user) {
+        return response.unauthorized({ message: 'Authentication required' });
+      }
 
       // Only admins can delete content
       if (user.role !== 'admin') {
