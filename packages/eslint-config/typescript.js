@@ -24,9 +24,10 @@ export default tseslint.config(...baseConfig, ...tseslint.configs.strict, {
         caughtErrorsIgnorePattern: '^_',
       },
     ],
-    '@typescript-eslint/no-explicit-any': 'warn',
+    '@typescript-eslint/no-explicit-any': 'error',
     '@typescript-eslint/explicit-module-boundary-types': 'off',
-    '@typescript-eslint/no-non-null-assertion': 'warn',
+    '@typescript-eslint/no-non-null-assertion': 'error',
+    'unicorn/no-array-for-each': 'error',
     '@typescript-eslint/consistent-type-imports': [
       'error',
       {
