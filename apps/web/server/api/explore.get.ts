@@ -84,11 +84,11 @@ export default defineCachedEventHandler(async (event) => {
 
     // Get category and tag counts for filters
     const [categoriesResult, tagsResult] = await Promise.all([
-      getItems('categories', {
+      getItems<NamedRecord>('categories', {
         limit: 1000,
         sort: 'title',
       }),
-      getItems('tags', {
+      getItems<NamedRecord>('tags', {
         limit: 1000,
         sort: 'title',
       }),

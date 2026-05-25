@@ -24,14 +24,14 @@ export default defineCachedEventHandler(
     try {
       // Payload search uses where filters with contains
       const [pagesResult, postsResult] = await Promise.all([
-        getItems('pages', {
+        getItems<PageDoc>('pages', {
           where: {
             or: [{ title: { contains: search } }, { permalink: { contains: search } }],
           },
           limit: 50,
         }),
 
-        getItems('posts', {
+        getItems<PostDoc>('posts', {
           where: {
             and: [
               { status: { equals: 'published' } },

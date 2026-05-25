@@ -9,7 +9,7 @@ type SpaceDoc = {
 export default defineCachedEventHandler(async (_event) => {
   try {
     // Fetch all spaces (tenants collection)
-    const result = await getItems('tenants', {
+    const result = await getItems<SpaceDoc>('tenants', {
       where: {},
       limit: 50,
       sort: '-createdAt',

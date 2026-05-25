@@ -23,6 +23,7 @@
     "@iconify-json/simple-icons": "^1.2.83",
     "@iconify-json/tabler": "^1.2.35",
     "@nuxt/content": "^3.14.0",
+    "@nuxt/fonts": "0.14.0",
     "@nuxt/image": "^2.0.0",
     "@nuxt/scripts": "^1.1.1",
     "@nuxt/ui": "^4.8.0",
@@ -33,6 +34,7 @@
     "@standard-schema/spec": "^1.1.0",
     "@stratala/shared-types": "workspace:*",
     "@stratala/shared-utils": "workspace:*",
+    "@takumi-rs/core": "^1.5.1",
     "@unovis/ts": "^1.6.5",
     "@unovis/vue": "^1.6.5",
     "@vee-validate/zod": "^4.15.1",
@@ -58,13 +60,13 @@
   },
   "devDependencies": {
     "@nuxt/eslint": "^1.15.2",
-    "@types/react": "19.1.8",
-    "@types/react-dom": "19.1.6",
     "@nuxt/test-utils": "^4.0.3",
     "@oxc-minify/binding-darwin-x64": "0.96.0",
     "@oxc-parser/binding-darwin-x64": "0.96.0",
     "@oxc-transform/binding-darwin-x64": "0.132.0",
     "@stratala/eslint-config": "workspace:*",
+    "@types/react": "19.1.8",
+    "@types/react-dom": "19.1.6",
     "@vitest/ui": "^4.1.7",
     "@vue/test-utils": "^2.4.6",
     "eslint": "^10.4.0",
@@ -74,5 +76,4 @@
     "vitest": "^4.0.10",
     "vue-tsc": "^3.3.1"
   }
-
 }

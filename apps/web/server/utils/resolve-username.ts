@@ -39,7 +39,7 @@ export async function resolveUsernameToPayloadUserId(username: string): Promise<
     }
 
     // Step 2: Find Payload user by email (most reliable matching field)
-    const payloadUsersResult = await getItems('users', {
+    const payloadUsersResult = await getItems<{ id?: string | number }>('users', {
       where: {
         email: {
           equals: adonisUser.email,
@@ -49,7 +49,8 @@ export async function resolveUsernameToPayloadUserId(username: string): Promise<
     });
 
     if (payloadUsersResult.docs.length > 0) {
-      return payloadUsersResult.docs[0].id as string;
+      const userId = payloadUsersResult.docs[0]?.id;
+      return userId ? String(userId) : null;
     }
 
     // If not found, user doesn't exist in Payload

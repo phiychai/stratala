@@ -8,7 +8,7 @@ type CategoryDoc = {
 export default defineEventHandler(async (_event) => {
   try {
     // Query categories collection directly
-    const result = await getItems('categories', {
+    const result = await getItems<CategoryDoc>('categories', {
       sort: 'title',
       limit: 1000, // Payload doesn't support -1, use a large number
     });

@@ -11,6 +11,9 @@ interface PublicUserProfile {
   bio: string | null;
   betterAuthUserId: string | null;
 }
+type UserTenantRef = { tenant?: number | { id?: number } };
+type PayloadUserDoc = { tenants?: UserTenantRef[] };
+type PostDoc = Record<string, unknown>;
 
 export default defineEventHandler(async (event) => {
   const username = getRouterParam(event, 'username');
@@ -82,7 +85,7 @@ export default defineEventHandler(async (event) => {
     // Get the Payload user to access their spaces relationship (plugin uses "tenants" field name)
     let spacesResult = { docs: [], totalDocs: 0, limit: 10, totalPages: 0 };
     try {
-      const payloadUser = await getItems('users', {
+      const payloadUser = await getItems<PayloadUserDoc>('users', {
         where: {
           id: {
             equals: payloadUserId,
@@ -94,6 +97,9 @@ export default defineEventHandler(async (event) => {
 
       if (payloadUser.docs.length > 0) {
         const user = payloadUser.docs[0];
+        if (!user) {
+          return;
+        }
         // Extract spaces from user's tenants relationship (plugin uses "tenants" field name internally)
         if (user.tenants && Array.isArray(user.tenants)) {
           const spaceIds = user.tenants
@@ -125,7 +131,7 @@ export default defineEventHandler(async (event) => {
     }
 
     // Step 4: Get recent posts across all spaces (limit to 10 most recent)
-    const recentPostsResult = await getItems('posts', {
+    const recentPostsResult = await getItems<PostDoc>('posts', {
       where: {
         author: {
           equals: payloadUserId,

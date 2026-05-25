@@ -25,7 +25,7 @@ type PostDoc = {
 export default defineEventHandler(async () => {
   try {
     const [pagesResult, postsResult] = await Promise.all([
-      getItems('pages', {
+      getItems<PageDoc>('pages', {
         where: {
           status: {
             equals: 'published',
@@ -35,7 +35,7 @@ export default defineEventHandler(async () => {
       }),
 
       // Get posts with space and author info
-      getItems('posts', {
+      getItems<PostDoc>('posts', {
         where: {
           status: {
             equals: 'published',
@@ -49,7 +49,7 @@ export default defineEventHandler(async () => {
     const pages = pagesResult.docs;
     const posts = postsResult.docs;
 
-    const pageUrls = (pages as PageDoc[]).map((page) => ({
+    const pageUrls = pages.map((page) => ({
       loc: page.permalink,
       lastmod: page.updatedAt || page.createdAt,
     }));
@@ -66,7 +66,7 @@ export default defineEventHandler(async () => {
     // TODO: Resolve username from author/owner - for now using email prefix as placeholder
     const spacePostUrls: Array<{ loc: string; lastmod: string | null }> = [];
 
-    for (const post of posts as PostDoc[]) {
+    for (const post of posts) {
       if (!post.tenant || !post.author) continue; // Plugin uses "tenant" field name
 
       const space = typeof post.tenant === 'object' ? post.tenant : null;
@@ -90,7 +90,7 @@ export default defineEventHandler(async () => {
     const profileUrls: Array<{ loc: string; lastmod: string | null }> = [];
     const processedUsernames = new Set<string>();
 
-    for (const post of posts as PostDoc[]) {
+    for (const post of posts) {
       if (!post.author) continue;
 
       const author = typeof post.author === 'object' ? post.author : null;

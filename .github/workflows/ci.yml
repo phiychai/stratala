@@ -58,6 +58,12 @@ jobs:
       - name: Setup pnpm
         uses: pnpm/action-setup@v6
 
+      - name: Setup native build tools
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y python3 make g++
+          npm install -g node-gyp
+
       - name: Get pnpm store directory
         id: pnpm-cache
         shell: bash
@@ -108,6 +114,12 @@ jobs:
       - name: Setup pnpm
         uses: pnpm/action-setup@v6
 
+      - name: Setup native build tools
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y python3 make g++
+          npm install -g node-gyp
+
       - name: Get pnpm store directory
         id: pnpm-cache
         shell: bash
@@ -154,6 +166,12 @@ jobs:
 
       - name: Setup pnpm
         uses: pnpm/action-setup@v6
+
+      - name: Setup native build tools
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y python3 make g++
+          npm install -g node-gyp
 
       - name: Get pnpm store directory
         id: pnpm-cache
@@ -229,6 +247,12 @@ jobs:
 
       - name: Setup pnpm
         uses: pnpm/action-setup@v6
+
+      - name: Setup native build tools
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y python3 make g++
+          npm install -g node-gyp
 
       - name: Get pnpm store directory
         id: pnpm-cache

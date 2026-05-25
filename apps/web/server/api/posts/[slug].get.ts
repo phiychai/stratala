@@ -1,4 +1,9 @@
 import { getItems, getItem } from '~~/server/utils/payload-server';
+type TenantDoc = { id?: number | string };
+type PostDoc = {
+  slug?: string;
+  tenant?: number | TenantDoc;
+};
 
 export default defineCachedEventHandler(
   async (event) => {
@@ -16,7 +21,7 @@ export default defineCachedEventHandler(
     try {
       // Payload's slug query seems to have issues, so we'll fetch more posts and filter client-side
       // This ensures we get the correct post even if Payload's query is buggy
-      const postsResult = await getItems('posts', {
+      const postsResult = await getItems<PostDoc>('posts', {
         where: {
           status: {
             equals: 'published',
@@ -29,7 +34,7 @@ export default defineCachedEventHandler(
       });
 
       // Filter client-side to find the exact slug match
-      const post = postsResult.docs.find((p: { slug: string }) => p.slug === slug);
+      const post = postsResult.docs.find((p) => p.slug === slug);
 
       if (!post) {
         throw createError({ statusCode: 404, message: `Post not found: ${slug}` });
@@ -44,7 +49,7 @@ export default defineCachedEventHandler(
       // If tenant is just an ID, fetch the full tenant object
       if (post.tenant && typeof post.tenant === 'number') {
         try {
-          const tenant = await getItem('tenants', String(post.tenant), { depth: 0 });
+          const tenant = await getItem<TenantDoc>('tenants', String(post.tenant), { depth: 0 });
           if (tenant) {
             post.tenant = tenant;
           }
@@ -55,7 +60,7 @@ export default defineCachedEventHandler(
       }
 
       // Get related posts (exclude current post)
-      const relatedPostsResult = await getItems('posts', {
+      const relatedPostsResult = await getItems<PostDoc>('posts', {
         where: {
           and: [
             {
