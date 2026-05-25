@@ -1,6 +1,8 @@
 import { test } from '@japa/runner';
-import FeedController from '#controllers/feed_controller';
+
 import { createMockContext } from '../helpers/mock_context.js';
+
+import FeedController from '#controllers/feed_controller';
 
 test.group('FeedController.getPersonalizedFeed', (group) => {
   group.each.setup(async () => {
@@ -20,7 +22,9 @@ test.group('FeedController.getPersonalizedFeed', (group) => {
     assert.deepEqual(ctx.response.responseBody, { message: 'Authentication required' });
   });
 
-  test('should return personalized feed with valid user and default parameters', async ({ assert }) => {
+  test('should return personalized feed with valid user and default parameters', async ({
+    assert,
+  }) => {
     const controller = new FeedController();
     const mockUser = { id: 'user-123' };
     const mockFeed = {
@@ -64,7 +68,7 @@ test.group('FeedController.getPersonalizedFeed', (group) => {
     const ctx = createMockContext({
       auth: { user: mockUser },
       request: {
-        qs: () => ({ limit: '10', page: '2', sortBy: 'popularity' })
+        qs: () => ({ limit: '10', page: '2', sortBy: 'popularity' }),
       },
       response: {
         ok: (data: any) => {
@@ -100,7 +104,7 @@ test.group('FeedController.getPersonalizedFeed', (group) => {
     const ctx = createMockContext({
       auth: { user: mockUser },
       request: {
-        qs: () => ({ limit: 'invalid', page: '-1' })
+        qs: () => ({ limit: 'invalid', page: '-1' }),
       },
       response: {
         badRequest: (data: any) => {

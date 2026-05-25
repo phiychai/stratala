@@ -1,4 +1,5 @@
 import type { HttpContext } from '@adonisjs/core/http';
+
 import TrendingService from '#services/trending_service';
 
 export default class TrendingController {

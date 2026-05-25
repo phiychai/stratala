@@ -1,4 +1,5 @@
 import { BaseCommand } from '@adonisjs/core/ace';
+
 import type { CommandOptions } from '@adonisjs/core/types/ace';
 
 import User from '#models/user';
@@ -46,9 +47,9 @@ export default class CheckPayloadUsers extends BaseCommand {
         const publisherUsers = result.docs.filter((u) => u.role === 'publisher');
         if (publisherUsers.length > 0) {
           this.logger.success(`\n✅ Found ${publisherUsers.length} publisher(s):`);
-          publisherUsers.forEach((u) => {
+          for (const u of publisherUsers) {
             this.logger.info(`   - ${u.email} (${u.id})`);
-          });
+          }
         } else {
           this.logger.warning('\n⚠️  No users with publisher role found');
         }

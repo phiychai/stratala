@@ -8,7 +8,7 @@ export default class extends BaseSchema {
     // Update role enum to include new roles
     // Note: PostgreSQL requires dropping the enum constraint first, then changing to string
     const connection = db.connection();
-    const driverName = connection.driverName;
+    const { driverName } = connection;
 
     if (driverName === 'postgres') {
       // First, drop the check constraint if it exists
