@@ -1,6 +1,8 @@
 ---
 title: 'Security & Infrastructure'
-description: 'Production security hardening, error handling, monitoring, rate limiting, backups, and performance'
+description:
+  'Production security hardening, error handling, monitoring, rate limiting,
+  backups, and performance'
 navigation:
   title: 'Security & Infrastructure'
   order: 5
@@ -8,11 +10,13 @@ navigation:
 
 ## Overview
 
-Harden the application for production with security best practices, error handling, monitoring, rate limiting, backups, and performance optimization.
+Harden the application for production with security best practices, error
+handling, monitoring, rate limiting, backups, and performance optimization.
 
 ## 4.1 Production Security Hardening
 
 ### Environment Variables
+
 - **Ensure all secrets are in environment**:
   - No hardcoded secrets in code
   - Use environment variables for all sensitive data
@@ -30,6 +34,7 @@ Harden the application for production with security best practices, error handli
   - Document rotation procedures
 
 ### HTTPS Enforcement
+
 - **Configure SSL/TLS certificates**:
   - Use Let's Encrypt via Certbot for free certificates
   - Set up auto-renewal for certificates
@@ -44,6 +49,7 @@ Harden the application for production with security best practices, error handli
   - Set appropriate cookie expiration
 
 ### Security Headers
+
 - **Verify `nuxt-security` module configuration**:
   - Check current security headers
   - Update if needed
@@ -59,6 +65,7 @@ Harden the application for production with security best practices, error handli
   - Use browser dev tools to verify
 
 ### Database Security
+
 - **Use parameterized queries**:
   - Already implemented via ORM (Lucid)
   - Never use string concatenation for queries
@@ -73,6 +80,7 @@ Harden the application for production with security best practices, error handli
 ## 4.2 Error Handling & Monitoring
 
 ### Error Tracking Service
+
 - **Choose error tracking service**:
   - Sentry (recommended)
   - LogRocket
@@ -88,6 +96,7 @@ Harden the application for production with security best practices, error handli
   - Alert on critical system failures
 
 ### Structured Logging
+
 - **Enhance logger**: `apps/backend/config/logger.ts`
   - Add structured logging format (JSON)
   - Include request ID, user ID, timestamp
@@ -104,6 +113,7 @@ Harden the application for production with security best practices, error handli
   - Use for debugging production issues
 
 ### Health Checks
+
 - **Enhanced `/health` endpoint**:
   - Basic health check (server is running)
   - Deep health check (dependencies)
@@ -125,6 +135,7 @@ Harden the application for production with security best practices, error handli
 ## 4.3 Rate Limiting & DDoS Protection
 
 ### Application-Level Rate Limiting
+
 - **Implement AdonisJS rate limiter middleware**:
   - Use `@adonisjs/limiter` or Redis-based solution
   - Configure per-endpoint limits
@@ -140,6 +151,7 @@ Harden the application for production with security best practices, error handli
   - Admin endpoints: 50 requests per minute
 
 ### Nginx Rate Limiting (If Using Nginx)
+
 - **Configure rate limits** in `nginx.conf`:
   - Limit requests per IP
   - Limit connections per IP
@@ -149,6 +161,7 @@ Harden the application for production with security best practices, error handli
   - Ban IPs after repeated violations
 
 ### IP Blocking
+
 - **Block malicious IPs**:
   - Maintain blacklist
   - Automatically block after X violations
@@ -160,6 +173,7 @@ Harden the application for production with security best practices, error handli
 ## 4.4 Backup & Disaster Recovery
 
 ### Database Backups
+
 - **Automated daily PostgreSQL backups**:
   - Use `pg_dump` or PostgreSQL backup tools
   - Backup all databases (adonis_db, payload_db, lago_db)
@@ -178,6 +192,7 @@ Harden the application for production with security best practices, error handli
   - Use multiple storage locations (redundancy)
 
 ### File Storage Backups
+
 - **Payload uploads folder backup**:
   - Backup `/payload/media` directory
   - Include file metadata
@@ -191,6 +206,7 @@ Harden the application for production with security best practices, error handli
   - Check backup sizes are reasonable
 
 ### Disaster Recovery Plan
+
 - **Recovery Time Objective (RTO)**: < 1 hour
 - **Recovery Point Objective (RPO)**: < 24 hours
 - **Document recovery procedures**:
@@ -205,6 +221,7 @@ Harden the application for production with security best practices, error handli
 ## 4.5 Performance Optimization
 
 ### Caching Strategy
+
 - **Redis caching** for frequently accessed data:
   - User session data
   - API responses (where appropriate)
@@ -220,6 +237,7 @@ Harden the application for production with security best practices, error handli
   - Cache static assets aggressively
 
 ### Database Optimization
+
 - **Add indexes** on frequently queried columns:
   - Email (for user lookup)
   - Foreign keys
@@ -237,6 +255,7 @@ Harden the application for production with security best practices, error handli
   - Adjust based on load
 
 ### Frontend Optimization
+
 - **Code splitting**:
   - Split routes into separate chunks
   - Lazy load admin dashboard
@@ -279,4 +298,3 @@ Harden the application for production with security best practices, error handli
 ---
 
 **Next**: [Testing & Quality Assurance](./05-testing-qa.md)
-

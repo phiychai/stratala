@@ -1,6 +1,8 @@
 ---
 title: 'Roles and User Management'
-description: 'Complete guide to the role-based user management system with 6 roles, Payload integration, and email synchronization'
+description:
+  'Complete guide to the role-based user management system with 6 roles, Payload
+  integration, and email synchronization'
 navigation:
   title: 'Roles & User Management'
   order: 3
@@ -8,7 +10,9 @@ navigation:
 
 ## Overview
 
-The system implements a comprehensive role-based user management system with 6 distinct roles, automatic Payload synchronization for content roles, and email change synchronization across all systems.
+The system implements a comprehensive role-based user management system with 6
+distinct roles, automatic Payload synchronization for content roles, and email
+change synchronization across all systems.
 
 ## Role System
 
@@ -17,22 +21,26 @@ The system implements a comprehensive role-based user management system with 6 d
 The system supports 6 roles:
 
 1. **`user`** (General User)
+
    - Default role for frontend registrations
    - No Payload user created
    - Basic application access
 
 2. **`admin`** (Administrator)
+
    - Full system access
    - Can manage all users
    - Payload role: Administrator
    - Better Auth role: `admin`
 
 3. **`content_admin`** (Content Admin)
+
    - Full content management rights
    - Payload role: Content Admin
    - Better Auth role: `user`
 
 4. **`editor`** (Editor)
+
    - Can edit and publish all content
    - Payload role: Editor
    - Better Auth role: `user`
@@ -41,7 +49,8 @@ The system supports 6 roles:
    - Can create posts and edit own posts
    - Payload role: Writer
    - Better Auth role: `user`
-   - **Automatic space creation**: A default space is created using the user's first name (Substack-style)
+   - **Automatic space creation**: A default space is created using the user's
+     first name (Substack-style)
 
 ### Role Mapping
 
@@ -52,7 +61,8 @@ Better Auth uses a simplified role system (admin vs non-admin):
 - `admin` → `admin` in Better Auth
 - `user`, `content_admin`, `editor`, `writer` → `user` in Better Auth
 
-**Rationale**: Better Auth Admin plugin is designed for simple admin/non-admin distinction. AdonisJS Bouncer handles complex role-based authorization.
+**Rationale**: Better Auth Admin plugin is designed for simple admin/non-admin
+distinction. AdonisJS Bouncer handles complex role-based authorization.
 
 #### AdonisJS → Payload
 
@@ -113,6 +123,7 @@ When an admin creates a user through the admin panel:
 **Endpoint**: `POST /api/admin/users`
 
 **Request Body**:
+
 ```json
 {
   "email": "user@example.com",
@@ -125,6 +136,7 @@ When an admin creates a user through the admin panel:
 ```
 
 **Response**:
+
 ```json
 {
   "message": "User created successfully",
@@ -147,7 +159,8 @@ When an admin creates a user through the admin panel:
 
 Payload users are automatically created when:
 
-1. Admin creates a user with a content role (`admin`, `content_admin`, `editor`, `writer`)
+1. Admin creates a user with a content role (`admin`, `content_admin`, `editor`,
+   `writer`)
 2. User role is updated to a content role
 
 ### Payload User Fields
@@ -159,7 +172,8 @@ When a Payload user is created, the following fields are synced:
 - `lastName`: From Adonis user
 - `role`: Mapped from Adonis role
 
-**Note**: Payload users created this way don't have passwords. They can only be used for content management, not authentication.
+**Note**: Payload users created this way don't have passwords. They can only be
+used for content management, not authentication.
 
 ### Space Creation for Writers
 
@@ -174,6 +188,7 @@ When a user is created or updated with the `writer` role:
    - `owner`: Payload user ID
 
 **Example**:
+
 - User: John Doe (`firstName: "John"`)
 - Space created: "John's Articles"
 
@@ -199,16 +214,20 @@ Email changes should flow **one-way** from Better Auth to Adonis to Payload:
 ### Implementation
 
 **Better Auth Email Change**:
+
 - Users should use Better Auth's email change flow which includes verification
 - After verification, hook into Better Auth's email change event
-- Call `EmailSyncService.syncEmailFromBetterAuth()` to sync to Adonis and Payload
+- Call `EmailSyncService.syncEmailFromBetterAuth()` to sync to Adonis and
+  Payload
 
 **Admin Email Updates**:
+
 - Admin can update email via `PATCH /api/admin/users/:id`
 - Email is synced to Payload automatically
 - Better Auth email should be updated separately via Better Auth's flow
 
 **User Profile Email Updates**:
+
 - Email updates via `PATCH /api/user/me` sync to Adonis and Payload
 - Better Auth email should be updated separately via Better Auth's flow
 
@@ -219,6 +238,7 @@ Email changes should flow **one-way** from Better Auth to Adonis to Payload:
 **Endpoint**: `PATCH /api/admin/users/:id`
 
 **Request Body**:
+
 ```json
 {
   "role": "editor"
@@ -233,12 +253,14 @@ Email changes should flow **one-way** from Better Auth to Adonis to Payload:
    - Otherwise → Better Auth role set to `'user'`
 3. Payload role handling:
    - If role changed to content role → Create/update Payload user
-   - If role changed from content role to `'user'` → Payload user remains (not deleted)
+   - If role changed from content role to `'user'` → Payload user remains (not
+     deleted)
    - If role changed between content roles → Update Payload role
 
 ### Role Change Examples
 
 **Example 1: User → Writer**
+
 ```
 1. Adonis role: 'user' → 'writer'
 2. Better Auth role: 'user' → 'user' (no change)
@@ -247,6 +269,7 @@ Email changes should flow **one-way** from Better Auth to Adonis to Payload:
 ```
 
 **Example 2: Writer → Editor**
+
 ```
 1. Adonis role: 'writer' → 'editor'
 2. Better Auth role: 'user' → 'user' (no change)
@@ -255,6 +278,7 @@ Email changes should flow **one-way** from Better Auth to Adonis to Payload:
 ```
 
 **Example 3: Editor → User**
+
 ```
 1. Adonis role: 'editor' → 'user'
 2. Better Auth role: 'user' → 'user' (no change)
@@ -266,6 +290,7 @@ Email changes should flow **one-way** from Better Auth to Adonis to Payload:
 ### Admin User Management
 
 #### List Users
+
 ```
 GET /api/admin/users
 Query Parameters:
@@ -277,11 +302,13 @@ Query Parameters:
 ```
 
 #### Get User
+
 ```
 GET /api/admin/users/:id
 ```
 
 #### Create User
+
 ```
 POST /api/admin/users
 Body: {
@@ -295,6 +322,7 @@ Body: {
 ```
 
 #### Update User
+
 ```
 PATCH /api/admin/users/:id
 Body: {
@@ -307,11 +335,13 @@ Body: {
 ```
 
 #### Delete User
+
 ```
 DELETE /api/admin/users/:id
 ```
 
 #### Toggle User Status
+
 ```
 PATCH /api/admin/users/:id/toggle-status
 ```
@@ -325,7 +355,8 @@ PATCH /api/admin/users/:id/toggle-status
 **Key Methods**:
 
 - `syncUserToPayload(user: User, role: string)`: Create/update Payload user
-- `createDefaultSpaceForWriter(payloadUserId, firstName, lastName, email)`: Create default space for Writer
+- `createDefaultSpaceForWriter(payloadUserId, firstName, lastName, email)`:
+  Create default space for Writer
 - `updatePayloadUserEmail(payloadUserId, email)`: Update Payload email
 - `updatePayloadUserRole(payloadUserId, adonisRole)`: Update Payload role
 - `requiresPayloadUser(role)`: Check if role requires Payload user
@@ -336,9 +367,11 @@ PATCH /api/admin/users/:id/toggle-status
 
 **Key Methods**:
 
-- `syncEmailFromBetterAuth(betterAuthUserId, newEmail)`: Sync email from Better Auth to Adonis and Payload
+- `syncEmailFromBetterAuth(betterAuthUserId, newEmail)`: Sync email from Better
+  Auth to Adonis and Payload
 - `syncEmailToPayload(payloadUserId, email)`: Update Payload email
-- `syncEmailToAdonisAndPayload(user, newEmail)`: Sync email to Adonis and Payload (fallback)
+- `syncEmailToAdonisAndPayload(user, newEmail)`: Sync email to Adonis and
+  Payload (fallback)
 
 ### BetterAuthSyncService
 
@@ -346,7 +379,8 @@ PATCH /api/admin/users/:id/toggle-status
 
 **Key Methods**:
 
-- `syncRole(adonisUserId, newRole, request)`: Sync role to Better Auth (maps to admin/user)
+- `syncRole(adonisUserId, newRole, request)`: Sync role to Better Auth (maps to
+  admin/user)
 
 ## Database Schema
 
@@ -378,13 +412,15 @@ CREATE TABLE users (
 ### Email Changes
 
 1. **User-Initiated**: Should go through Better Auth's email change flow
-2. **Admin-Initiated**: Can update directly, but Better Auth email should be updated separately
+2. **Admin-Initiated**: Can update directly, but Better Auth email should be
+   updated separately
 3. **Verification**: Always verify email changes in Better Auth before syncing
 
 ### Payload Users
 
 1. **Creation**: Only create for content roles
-2. **Deletion**: Don't delete Payload users when role changes to `'user'` (preserve data)
+2. **Deletion**: Don't delete Payload users when role changes to `'user'`
+   (preserve data)
 3. **Updates**: Keep Payload users in sync with Adonis users
 
 ### Spaces
@@ -400,6 +436,7 @@ CREATE TABLE users (
 **Symptoms**: User has content role but no Payload user
 
 **Solutions**:
+
 1. Check `payload_user_id` field in users table
 2. Verify Payload service is accessible
 3. Check logs for Payload creation errors
@@ -410,6 +447,7 @@ CREATE TABLE users (
 **Symptoms**: Email updated in one system but not others
 
 **Solutions**:
+
 1. Verify Better Auth email change completed
 2. Check EmailSyncService logs
 3. Manually sync email via admin panel
@@ -420,6 +458,7 @@ CREATE TABLE users (
 **Symptoms**: Writer role assigned but no space created
 
 **Solutions**:
+
 1. Check Payload user was created
 2. Verify space creation logs
 3. Check for existing default space
@@ -434,4 +473,3 @@ When upgrading from the old 2-role system:
 3. Existing `'admin'` roles remain as `'admin'`
 4. New roles can be assigned via admin panel
 5. Payload users will be created on next role update to content role
-

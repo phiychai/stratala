@@ -1,6 +1,7 @@
 ---
 title: 'Architecture & Flow Diagrams'
-description: 'Quick reference with authentication flow diagrams and file structure'
+description:
+  'Quick reference with authentication flow diagrams and file structure'
 navigation:
   title: 'Architecture & Flow Diagrams'
   order: 2
@@ -10,7 +11,8 @@ navigation:
 
 ## Overview
 
-This document provides a quick reference for understanding the Better Auth integration architecture in this monorepo.
+This document provides a quick reference for understanding the Better Auth
+integration architecture in this monorepo.
 
 ## Architecture Diagram
 
@@ -81,80 +83,86 @@ This document provides a quick reference for understanding the Better Auth integ
 
 #### Core Authentication Files
 
-| File | Lines | Purpose | Key Exports |
-|------|-------|---------|-------------|
-| `app/lib/auth-client.ts` | ~19 | Better Auth client initialization | `authClient`, `signIn`, `signUp`, `signOut`, `getSession` |
-| `app/composables/useAuth.ts` | ~140 | Vue composable for auth state management | `useAuth()` with `login()`, `register()`, `logout()`, `fetchUser()` |
-| `server/api/auth/[...].ts` | ~60 | Nuxt server proxy route (same-origin) | `defineEventHandler` - forwards requests to backend |
-| `app/middleware/auth.ts` | ~20 | Route middleware for protected pages | Redirects to `/login` if not authenticated |
+| File                         | Lines | Purpose                                  | Key Exports                                                         |
+| ---------------------------- | ----- | ---------------------------------------- | ------------------------------------------------------------------- |
+| `app/lib/auth-client.ts`     | ~19   | Better Auth client initialization        | `authClient`, `signIn`, `signUp`, `signOut`, `getSession`           |
+| `app/composables/useAuth.ts` | ~140  | Vue composable for auth state management | `useAuth()` with `login()`, `register()`, `logout()`, `fetchUser()` |
+| `server/api/auth/[...].ts`   | ~60   | Nuxt server proxy route (same-origin)    | `defineEventHandler` - forwards requests to backend                 |
+| `app/middleware/auth.ts`     | ~20   | Route middleware for protected pages     | Redirects to `/login` if not authenticated                          |
 
 #### Usage Examples
 
-| File | Purpose | How It Uses Auth |
-|------|---------|-----------------|
-| `app/pages/login.vue` | Login page | Calls `useAuth().login()` |
-| `app/pages/signup.vue` | Registration page | Calls `useAuth().register()` |
-| `app/layouts/dashboard.vue` | Dashboard layout | Uses `useAuth().user` to display user info |
-| `app/pages/dashboard/*.vue` | Protected pages | Uses `definePageMeta({ middleware: 'auth' })` |
+| File                        | Purpose           | How It Uses Auth                              |
+| --------------------------- | ----------------- | --------------------------------------------- |
+| `app/pages/login.vue`       | Login page        | Calls `useAuth().login()`                     |
+| `app/pages/signup.vue`      | Registration page | Calls `useAuth().register()`                  |
+| `app/layouts/dashboard.vue` | Dashboard layout  | Uses `useAuth().user` to display user info    |
+| `app/pages/dashboard/*.vue` | Protected pages   | Uses `definePageMeta({ middleware: 'auth' })` |
 
 #### Configuration Files
 
-| File | Purpose |
-|------|---------|
+| File             | Purpose                                        |
+| ---------------- | ---------------------------------------------- |
 | `nuxt.config.ts` | Nuxt configuration (modules, security headers) |
-| `.env` | Environment variables (not tracked in git) |
-| `env.example` | Environment variable template |
+| `.env`           | Environment variables (not tracked in git)     |
+| `env.example`    | Environment variable template                  |
 
 ### Backend (apps/backend)
 
 #### Core Authentication Files
 
-| File | Lines | Purpose | Key Exports |
-|------|-------|---------|-------------|
-| `config/better_auth.ts` | ~93 | Better Auth server configuration | `auth` instance |
-| `start/routes.ts` | ~120 | Route handler with direct pattern | `router.any("/api/auth/*", handler)` |
-| `app/utils/better_auth_helpers.ts` | ~30 | Request/Response converters | `toWebRequest()`, `fromWebResponse()` |
-| `app/middleware/auth_middleware.ts` | ~30 | Protected route middleware | Validates sessions via `auth.getSessionFromRequest()` |
+| File                                | Lines | Purpose                           | Key Exports                                           |
+| ----------------------------------- | ----- | --------------------------------- | ----------------------------------------------------- |
+| `config/better_auth.ts`             | ~93   | Better Auth server configuration  | `auth` instance                                       |
+| `start/routes.ts`                   | ~120  | Route handler with direct pattern | `router.any("/api/auth/*", handler)`                  |
+| `app/utils/better_auth_helpers.ts`  | ~30   | Request/Response converters       | `toWebRequest()`, `fromWebResponse()`                 |
+| `app/middleware/auth_middleware.ts` | ~30   | Protected route middleware        | Validates sessions via `auth.getSessionFromRequest()` |
 
 #### Database Files
 
-| File | Purpose |
-|------|---------|
+| File                                                 | Purpose                                                     |
+| ---------------------------------------------------- | ----------------------------------------------------------- |
 | `database/migrations/3_create_better_auth_tables.ts` | Creates `user`, `session`, `account`, `verification` tables |
 
 #### Configuration Files
 
-| File | Purpose |
-|------|---------|
+| File           | Purpose                                                   |
+| -------------- | --------------------------------------------------------- |
 | `package.json` | Package imports configuration (includes `#utils/*` alias) |
-| `start/env.ts` | Environment variable schema validation |
-| `.env` | Environment variables (not tracked in git) |
-| `env.example` | Environment variable template |
+| `start/env.ts` | Environment variable schema validation                    |
+| `.env`         | Environment variables (not tracked in git)                |
+| `env.example`  | Environment variable template                             |
 
 ### Quick File Lookup by Feature
 
 #### Need to modify login/signup behavior?
+
 - **Frontend:** `app/composables/useAuth.ts`
 - **Backend:** `config/better_auth.ts`
 
 #### Need to add a protected route?
+
 - **Frontend:** Add `middleware: 'auth'` to page meta
 - **Backend:** Add `.use(middleware.auth())` to route
 
 #### Need to customize session duration?
+
 - **File:** `apps/backend/config/better_auth.ts`
 - **Property:** `session.expiresIn`
 
 #### Need to add OAuth provider?
+
 - **File:** `apps/backend/config/better_auth.ts`
 - **Section:** `socialProviders`
 - **Env:** Add `PROVIDER_CLIENT_ID` and `PROVIDER_CLIENT_SECRET`
 
 #### Need to change authentication endpoints?
+
 - **File:** `apps/backend/start/routes.ts`
 - **Line:** Route handler pattern (`router.any("/api/auth/*")`)
 
 #### Need to debug authentication issues?
+
 - **Proxy:** `apps/web/server/api/auth/[...].ts`
 - **Handler:** `apps/backend/start/routes.ts`
 - **Helpers:** `apps/backend/app/utils/better_auth_helpers.ts`
@@ -195,11 +203,13 @@ This document provides a quick reference for understanding the Better Auth integ
 **Purpose:** Convert AdonisJS Request to Web Standard Request
 
 **Input:**
+
 ```typescript
-HttpContext["request"] // AdonisJS request object
+HttpContext['request']; // AdonisJS request object
 ```
 
 **Process:**
+
 1. Build URL from request path and host
 2. Extract HTTP method (GET, POST, etc.)
 3. Copy all headers
@@ -207,8 +217,9 @@ HttpContext["request"] // AdonisJS request object
 5. Create `new Request(url, { method, headers, body })`
 
 **Output:**
+
 ```typescript
-Request // Web API Request object
+Request; // Web API Request object
 ```
 
 ### fromWebResponse()
@@ -216,36 +227,39 @@ Request // Web API Request object
 **Purpose:** Convert Web Standard Response to AdonisJS Response
 
 **Input:**
+
 ```typescript
-Response // Web API Response (from Better Auth)
-HttpContext["response"] // AdonisJS response object
+Response; // Web API Response (from Better Auth)
+HttpContext['response']; // AdonisJS response object
 ```
 
 **Process:**
+
 1. Copy status code
 2. Forward all headers (including Set-Cookie)
 3. Read response body as text
 4. Send via AdonisJS response
 
 **Output:**
+
 ```typescript
-HttpContext["response"] // Configured AdonisJS response
+HttpContext['response']; // Configured AdonisJS response
 ```
 
 ## API Endpoints
 
 All authentication endpoints are handled by Better Auth:
 
-| Endpoint | Method | Purpose |
-|----------|--------|---------|
-| `/api/auth/sign-in/email` | POST | Email/password login |
-| `/api/auth/sign-up/email` | POST | Email/password registration |
-| `/api/auth/sign-out` | POST | Logout (clear session) |
-| `/api/auth/get-session` | GET | Check authentication status |
-| `/api/auth/google` | GET | Google OAuth redirect |
-| `/api/auth/callback/google` | GET | Google OAuth callback |
-| `/api/auth/github` | GET | GitHub OAuth redirect |
-| `/api/auth/callback/github` | GET | GitHub OAuth callback |
+| Endpoint                    | Method | Purpose                     |
+| --------------------------- | ------ | --------------------------- |
+| `/api/auth/sign-in/email`   | POST   | Email/password login        |
+| `/api/auth/sign-up/email`   | POST   | Email/password registration |
+| `/api/auth/sign-out`        | POST   | Logout (clear session)      |
+| `/api/auth/get-session`     | GET    | Check authentication status |
+| `/api/auth/google`          | GET    | Google OAuth redirect       |
+| `/api/auth/callback/google` | GET    | Google OAuth callback       |
+| `/api/auth/github`          | GET    | GitHub OAuth redirect       |
+| `/api/auth/callback/github` | GET    | GitHub OAuth callback       |
 
 ## Development vs Production
 
@@ -270,6 +284,7 @@ All authentication endpoints are handled by Better Auth:
 **Cookie Name:** `better_auth.session_token`
 
 **Attributes:**
+
 - `HttpOnly: true` - Not accessible via JavaScript (XSS protection)
 - `SameSite: Lax` - Sent with same-site requests and top-level navigation
 - `Secure: true` - Only sent over HTTPS (production only)
@@ -278,14 +293,15 @@ All authentication endpoints are handled by Better Auth:
 
 ## Session Management
 
-| Property | Value | Description |
-|----------|-------|-------------|
-| **Duration** | 7 days | Session expires after this period |
-| **Update Age** | 24 hours | Session refreshed if older than this |
-| **Storage** | PostgreSQL | Sessions stored in `session` table |
-| **Token** | Random hash | Unique session identifier |
+| Property       | Value       | Description                          |
+| -------------- | ----------- | ------------------------------------ |
+| **Duration**   | 7 days      | Session expires after this period    |
+| **Update Age** | 24 hours    | Session refreshed if older than this |
+| **Storage**    | PostgreSQL  | Sessions stored in `session` table   |
+| **Token**      | Random hash | Unique session identifier            |
 
 **Session Refresh Logic:**
+
 ```
 if (session.updatedAt < NOW() - 24 hours) {
   UPDATE session
@@ -343,7 +359,7 @@ if (user.value) {
 <!-- pages/dashboard/index.vue -->
 <script setup>
 definePageMeta({
-  middleware: 'auth'
+  middleware: 'auth',
 });
 </script>
 ```
@@ -352,24 +368,24 @@ definePageMeta({
 
 ```typescript
 // start/routes.ts
-router.get('/api/user/me', [UserController, 'me'])
-  .use(middleware.auth());
+router.get('/api/user/me', [UserController, 'me']).use(middleware.auth());
 ```
 
 ## Troubleshooting
 
-| Issue | Solution |
-|-------|----------|
-| Cookie not set | Check proxy is forwarding Set-Cookie headers |
-| Session not persisting | Ensure `cookieCache.enabled: false` in config |
-| 401 Unauthorized | Session expired or invalid, user needs to login |
-| CORS errors | Use proxy in development, configure CORS in production |
-| Database errors | Check table names are correct (camelCase columns) |
+| Issue                  | Solution                                               |
+| ---------------------- | ------------------------------------------------------ |
+| Cookie not set         | Check proxy is forwarding Set-Cookie headers           |
+| Session not persisting | Ensure `cookieCache.enabled: false` in config          |
+| 401 Unauthorized       | Session expired or invalid, user needs to login        |
+| CORS errors            | Use proxy in development, configure CORS in production |
+| Database errors        | Check table names are correct (camelCase columns)      |
 
 ## Further Reading
 
 - [Authentication Guide](./1.authentication) - Complete authentication guide
-- [BETTER_AUTH_INTEGRATION.md](./BETTER_AUTH_INTEGRATION.md) - Implementation details
-- [BETTER_AUTH_FIXES.md](./BETTER_AUTH_FIXES.md) - Issues resolved during integration
+- [BETTER_AUTH_INTEGRATION.md](./BETTER_AUTH_INTEGRATION.md) - Implementation
+  details
+- [BETTER_AUTH_FIXES.md](./BETTER_AUTH_FIXES.md) - Issues resolved during
+  integration
 - [Better Auth Docs](https://www.better-auth.com/docs)
-

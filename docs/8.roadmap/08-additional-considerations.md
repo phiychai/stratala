@@ -1,6 +1,7 @@
 ---
 title: 'Additional Production Considerations'
-description: 'Email deliverability, compliance, monitoring, alerts, and scalability'
+description:
+  'Email deliverability, compliance, monitoring, alerts, and scalability'
 navigation:
   title: 'Additional Considerations'
   order: 9
@@ -8,11 +9,13 @@ navigation:
 
 ## Overview
 
-Additional considerations for production readiness including email deliverability, compliance, monitoring, alerts, and scalability preparation.
+Additional considerations for production readiness including email
+deliverability, compliance, monitoring, alerts, and scalability preparation.
 
 ## 7.1 Email Deliverability
 
 ### SPF, DKIM, DMARC Records
+
 - **SPF (Sender Policy Framework)**:
   - Configure DNS TXT record
   - Authorize email servers
@@ -31,6 +34,7 @@ Additional considerations for production readiness including email deliverabilit
   - Test email authentication
 
 ### Email Templates
+
 - **Professional email templates**:
   - Consistent design
   - Mobile-responsive
@@ -52,6 +56,7 @@ Additional considerations for production readiness including email deliverabilit
   - Transactional emails
 
 ### Email Monitoring
+
 - **Monitor email deliverability**:
   - Track bounce rates
   - Monitor spam complaints
@@ -65,6 +70,7 @@ Additional considerations for production readiness including email deliverabilit
 ## 7.2 Compliance & Legal
 
 ### GDPR Compliance (If EU Users)
+
 - **Data processing agreements**:
   - Contracts with third-party processors
   - Ensure compliance down the chain
@@ -84,6 +90,7 @@ Additional considerations for production readiness including email deliverabilit
   - Notify users when appropriate
 
 ### PCI DSS Compliance (For Payment Handling)
+
 - **Ensure no card data stored**:
   - Verify codebase doesn't log card data
   - Use tokenization only
@@ -98,6 +105,7 @@ Additional considerations for production readiness including email deliverabilit
   - Validate all inputs
 
 ### Legal Requirements
+
 - **Terms of Service**: Already covered in section 6.1
 - **Privacy Policy**: Already covered in section 6.1
 - **Data retention policy**:
@@ -108,6 +116,7 @@ Additional considerations for production readiness including email deliverabilit
 ## 7.3 Monitoring & Alerts
 
 ### Application Monitoring
+
 - **Uptime monitoring**:
   - Use service like UptimeRobot or Pingdom
   - Monitor main application URL
@@ -125,6 +134,7 @@ Additional considerations for production readiness including email deliverabilit
   - Alert on error rate spikes
 
 ### Infrastructure Monitoring
+
 - **Server resource usage**:
   - CPU usage
   - Memory usage
@@ -142,6 +152,7 @@ Additional considerations for production readiness including email deliverabilit
   - Email service health
 
 ### Alerting
+
 - **Alert on downtime**:
   - Immediate notification
   - Escalation if not resolved
@@ -167,6 +178,7 @@ Additional considerations for production readiness including email deliverabilit
 ## 7.4 Scalability Preparation
 
 ### Horizontal Scaling
+
 - **Stateless application design**:
   - No server-side session storage
   - Use Redis for shared state
@@ -182,6 +194,7 @@ Additional considerations for production readiness including email deliverabilit
   - SSL termination
 
 ### Database Scaling
+
 - **Read replicas for PostgreSQL**:
   - Set up read replicas
   - Route read queries to replicas
@@ -199,6 +212,7 @@ Additional considerations for production readiness including email deliverabilit
   - Design for horizontal partitioning
 
 ### Caching Layer
+
 - **Redis cluster for high availability**:
   - Set up Redis cluster
   - Automatic failover
@@ -214,6 +228,7 @@ Additional considerations for production readiness including email deliverabilit
   - Cache frequently accessed data
 
 ### CDN and Static Assets
+
 - **CDN for static assets**:
   - Images, CSS, JavaScript
   - Fonts, videos
@@ -226,6 +241,7 @@ Additional considerations for production readiness including email deliverabilit
 ## 7.5 Performance Monitoring
 
 ### Application Performance Monitoring (APM)
+
 - **Use APM tool**:
   - New Relic
   - Datadog APM
@@ -239,6 +255,7 @@ Additional considerations for production readiness including email deliverabilit
   - Memory leaks
 
 ### Real User Monitoring (RUM)
+
 - **Track real user experience**:
   - Page load times
   - Time to interactive
@@ -275,4 +292,3 @@ Additional considerations for production readiness including email deliverabilit
 ---
 
 **Next**: [Frontend UI/UX Polish](./08-frontend-ui-ux.md)
-

@@ -1,6 +1,8 @@
 ---
 title: 'Billing - Full Lago Integration'
-description: 'Webhook integration, payment methods UI, subscription management, and lifecycle handling'
+description:
+  'Webhook integration, payment methods UI, subscription management, and
+  lifecycle handling'
 navigation:
   title: 'Billing'
   order: 3
@@ -8,19 +10,22 @@ navigation:
 
 ## Overview
 
-Complete the Lago billing integration with webhook handling, payment methods UI, subscription management, and full lifecycle support.
+Complete the Lago billing integration with webhook handling, payment methods UI,
+subscription management, and full lifecycle support.
 
 ## Implementation Status
 
 - [ ] Webhook Integration
 - [ ] Payment Methods UI
-- [~] Subscription Management UI ⚠️ (Backend service exists, UI may be incomplete)
+- [~] Subscription Management UI ⚠️ (Backend service exists, UI may be
+  incomplete)
 - [ ] Subscription Lifecycle
 - [x] Lago Customer Sync ✅ (BillingService implemented)
 
 ## 2.1 Webhook Integration
 
 ### Lago Webhook Handler
+
 - **Location**: `apps/backend/app/controllers/billing_controller.ts`
 - **Create endpoint**: `POST /api/billing/webhooks`
   - Verify webhook signatures using Lago webhook secret
@@ -41,6 +46,7 @@ Complete the Lago billing integration with webhook handling, payment methods UI,
   - Log webhook events for debugging
 
 ### Webhook Testing
+
 - **Test webhook delivery** from Lago:
   - Use ngrok or similar for local testing
   - Verify webhook signature validation
@@ -53,6 +59,7 @@ Complete the Lago billing integration with webhook handling, payment methods UI,
 ## 2.2 Payment Methods UI
 
 ### Frontend Payment Method Management
+
 - **Create page**: `apps/web/app/pages/dashboard/billing/payment-methods.vue`
 - **List saved payment methods**:
   - Display card type, last 4 digits, expiry date
@@ -72,6 +79,7 @@ Complete the Lago billing integration with webhook handling, payment methods UI,
   - Cannot remove if it's the default and others exist
 
 ### Stripe Integration
+
 - **Integrate Stripe.js** in frontend:
   - Load Stripe.js SDK
   - Initialize Stripe with publishable key
@@ -90,9 +98,11 @@ Complete the Lago billing integration with webhook handling, payment methods UI,
 ## 2.3 Subscription Management UI
 
 ### Current State
+
 - Basic billing service exists but needs UI
 
 ### Subscription Dashboard
+
 - **Location**: `apps/web/app/pages/dashboard/billing/index.vue`
 - **Display current subscription status**:
   - Current plan name and pricing
@@ -121,6 +131,7 @@ Complete the Lago billing integration with webhook handling, payment methods UI,
   - Display next billing amount
 
 ### Invoice Management
+
 - **Create page**: `apps/web/app/pages/dashboard/billing/invoices.vue`
 - **List invoices for user**:
   - Display invoice number, date, amount, status
@@ -136,6 +147,7 @@ Complete the Lago billing integration with webhook handling, payment methods UI,
   - Show payment status after retry
 
 ### Usage Tracking (If Using Metered Billing)
+
 - **Display usage metrics**:
   - Current period usage
   - Usage limits/billing thresholds
@@ -148,6 +160,7 @@ Complete the Lago billing integration with webhook handling, payment methods UI,
 ## 2.4 Subscription Lifecycle
 
 ### Trial Periods
+
 - **Configure trial periods** in Lago plans:
   - Set trial duration (7, 14, 30 days, etc.)
   - Trial pricing (free or discounted)
@@ -161,6 +174,7 @@ Complete the Lago billing integration with webhook handling, payment methods UI,
   - Trial expiration warning
 
 ### Grace Periods and Dunning
+
 - **Handle failed payments gracefully**:
   - Show clear error messages
   - Provide payment update flow
@@ -175,6 +189,7 @@ Complete the Lago billing integration with webhook handling, payment methods UI,
   - Preserve account data during suspension
 
 ### Plan Change Handling
+
 - **Immediate vs. end-of-period changes**:
   - Allow users to choose timing
   - Explain proration for immediate changes
@@ -190,6 +205,7 @@ Complete the Lago billing integration with webhook handling, payment methods UI,
 **Status**: ✅ Partially Completed
 
 ### Ensure Customer Sync on User Creation
+
 - **Verify**: `apps/backend/app/controllers/auth_controller.ts`
   - ✅ BillingService exists with customer creation methods
   - ⚠️ Check for error handling (needs verification)
@@ -201,6 +217,7 @@ Complete the Lago billing integration with webhook handling, payment methods UI,
   - [ ] Retry mechanism (exponential backoff)
 
 ### Customer Update Sync
+
 - **Sync user profile changes** to Lago customer:
   - Update name, email in Lago when changed in app
   - Keep customer data in sync
@@ -219,7 +236,8 @@ Complete the Lago billing integration with webhook handling, payment methods UI,
 - [ ] Create payment methods UI page
 - [ ] Integrate Stripe.js and Stripe Elements
 - [ ] Implement 3D Secure support
-- [~] Create subscription dashboard UI ⚠️ (Billing store exists, UI may be incomplete)
+- [~] Create subscription dashboard UI ⚠️ (Billing store exists, UI may be
+  incomplete)
 - [ ] Build plan comparison and upgrade flow
 - [ ] Implement invoice management page
 - [ ] Add usage tracking UI (if applicable)
@@ -232,4 +250,3 @@ Complete the Lago billing integration with webhook handling, payment methods UI,
 ---
 
 **Next**: [Admin Dashboard](./03-admin-dashboard.md)
-

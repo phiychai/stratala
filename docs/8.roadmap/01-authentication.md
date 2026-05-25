@@ -1,6 +1,8 @@
 ---
 title: 'Authentication & Signup'
-description: 'Complete authentication roadmap: core auth, email verification, password security, OAuth, and security enhancements'
+description:
+  'Complete authentication roadmap: core auth, email verification, password
+  security, OAuth, and security enhancements'
 navigation:
   title: 'Authentication'
   order: 2
@@ -8,7 +10,9 @@ navigation:
 
 ## Overview
 
-This document **tracks progress** on all authentication features, from core authentication to advanced security features. For detailed implementation, see the [Authentication Plan](../2.authentication/1.authentication-plan.md).
+This document **tracks progress** on all authentication features, from core
+authentication to advanced security features. For detailed implementation, see
+the [Authentication Plan](../2.authentication/1.authentication-plan.md).
 
 ## Core Authentication Status
 
@@ -29,7 +33,8 @@ This document **tracks progress** on all authentication features, from core auth
 - [x] Password reset and account recovery ✅
 - [ ] Session management UI
 - [ ] Two-factor authentication (2FA)
-- [~] Security enhancements (rate limiting, audit logs) ⚠️ (Account lockout implemented, rate limiting needs verification)
+- [~] Security enhancements (rate limiting, audit logs) ⚠️ (Account lockout
+  implemented, rate limiting needs verification)
 
 ---
 
@@ -40,6 +45,7 @@ This document **tracks progress** on all authentication features, from core auth
 **Status**: ✅ Completed
 
 #### Registration
+
 - ✅ Email/password registration
 - ✅ Username generation from email
 - ✅ Username uniqueness validation
@@ -49,6 +55,7 @@ This document **tracks progress** on all authentication features, from core auth
 - ✅ User sync to Payload (for content roles)
 
 #### Login
+
 - ✅ Email/password login
 - ✅ Username login (via Better Auth)
 - ✅ Session creation
@@ -56,6 +63,7 @@ This document **tracks progress** on all authentication features, from core auth
 - ✅ Failed attempt tracking
 
 #### Logout
+
 - ✅ Session termination
 - ✅ Cookie cleanup
 
@@ -64,6 +72,7 @@ This document **tracks progress** on all authentication features, from core auth
 **Status**: ✅ Backend Complete, ⚠️ UI Needed
 
 #### Backend
+
 - ✅ Better Auth session handling
 - ✅ Session validation middleware
 - ✅ Session metadata (AdonisJS user ID)
@@ -71,6 +80,7 @@ This document **tracks progress** on all authentication features, from core auth
 - ✅ Session refresh
 
 #### Frontend
+
 - ✅ Auth store with session state
 - ✅ Auto-refresh on page load
 - [ ] Session management UI (view/revoke sessions)
@@ -100,20 +110,22 @@ This document **tracks progress** on all authentication features, from core auth
 
 ## 1. Email Verification System
 
-**Status**: ✅ Completed
-**Priority**: High
+**Status**: ✅ Completed **Priority**: High
 
 ### Goals
+
 - Enable email verification in Better Auth
 - Integrate email service (SendGrid/Mailgun/AWS SES/Resend)
 - Create email templates in Payload
 - Build verification UI pages
 
 ### Key Tasks
+
 - [x] Enable `requireEmailVerification: true` in Better Auth config ✅
 - [x] Create email service (`apps/backend/app/services/email_service.ts`) ✅
 - [ ] Create `email_templates` collection in Payload
-- [x] Implement Better Auth email callbacks (`sendVerificationEmail`, `sendResetPassword`) ✅ (via emailOTP plugin)
+- [x] Implement Better Auth email callbacks (`sendVerificationEmail`,
+      `sendResetPassword`) ✅ (via emailOTP plugin)
 - [ ] Create verification page (`apps/web/app/pages/verify-email.vue`)
 - [ ] Update signup page with verification status
 - [ ] Add resend verification email functionality
@@ -122,34 +134,37 @@ This document **tracks progress** on all authentication features, from core auth
 
 ## 2. Password Security
 
-**Status**: ✅ Completed
-**Priority**: High
+**Status**: ✅ Completed **Priority**: High
 
 ### Goals
+
 - Reject common passwords
 - Password strength meter in UI
 - Account lockout after failed attempts
 
 ### Key Tasks
+
 - [x] Integrate password strength library (`zxcvbn`) ✅
 - [x] Add common password validation ✅ (via Have I Been Pwned plugin)
 - [x] Create password strength meter component ✅ (PasswordStrengthMeter.vue)
-- [x] Implement account lockout (rate limiting per user/IP) ✅ (5 failed attempts = 15 min lockout)
+- [x] Implement account lockout (rate limiting per user/IP) ✅ (5 failed
+      attempts = 15 min lockout)
 - [ ] Add password requirements UI checklist
 
 ---
 
 ## 3. OAuth Providers
 
-**Status**: ⚠️ Partially Configured (Needs Testing)
-**Priority**: Medium
+**Status**: ⚠️ Partially Configured (Needs Testing) **Priority**: Medium
 
 ### Goals
+
 - Complete Google OAuth flow
 - Complete GitHub OAuth flow
 - Handle OAuth user profile sync
 
 ### Key Tasks
+
 - [ ] Fix OAuth callback handling
 - [ ] Update frontend OAuth buttons (currently show "Coming soon")
 - [ ] Test Google OAuth end-to-end
@@ -161,14 +176,15 @@ This document **tracks progress** on all authentication features, from core auth
 
 ## 4. Password Reset & Account Recovery
 
-**Status**: ✅ Completed
-**Priority**: Medium
+**Status**: ✅ Completed **Priority**: Medium
 
 ### Goals
+
 - Password reset flow via email
 - Account recovery options
 
 ### Key Tasks
+
 - [x] Implement `sendResetPassword` callback ✅ (via emailOTP plugin)
 - [x] Create reset password page (`apps/web/app/pages/reset-password.vue`) ✅
 - [x] Handle reset token validation and expiration ✅ (OTP-based)
@@ -178,14 +194,15 @@ This document **tracks progress** on all authentication features, from core auth
 
 ## 5. Session Management UI
 
-**Status**: Not Started
-**Priority**: Low
+**Status**: Not Started **Priority**: Low
 
 ### Goals
+
 - Display active sessions
 - Allow session revocation
 
 ### Key Tasks
+
 - [ ] Create sessions list in user settings
 - [ ] Show device, location, last activity
 - [ ] Add "Revoke session" functionality
@@ -195,15 +212,16 @@ This document **tracks progress** on all authentication features, from core auth
 
 ## 6. Two-Factor Authentication (2FA)
 
-**Status**: Not Started
-**Priority**: Low
+**Status**: Not Started **Priority**: Low
 
 ### Goals
+
 - TOTP support via Better Auth
 - Backup codes generation
 - 2FA setup wizard
 
 ### Key Tasks
+
 - [ ] Enable 2FA in Better Auth config
 - [ ] Create 2FA setup UI (QR code generation)
 - [ ] Implement backup codes generation
@@ -214,15 +232,16 @@ This document **tracks progress** on all authentication features, from core auth
 
 ## 7. Security Enhancements
 
-**Status**: ⚠️ Partially Completed
-**Priority**: High
+**Status**: ⚠️ Partially Completed **Priority**: High
 
 ### Goals
+
 - Rate limiting on sensitive endpoints
 - CSRF protection verification
 - Security audit log
 
 ### Key Tasks
+
 - [x] Implement account lockout (5 failed attempts = 15 min lockout) ✅
 - [ ] Implement rate limiting middleware (IP-based)
   - Login: 5 attempts per 15 minutes
@@ -230,16 +249,20 @@ This document **tracks progress** on all authentication features, from core auth
   - Password reset: 3 attempts per hour
 - [ ] Verify CSRF protection is enabled
 - [x] Create security audit log table ✅ (auth_sync_errors table exists)
-- [x] Track security events (logins, password changes, etc.) ✅ (via Better Auth hooks)
+- [x] Track security events (logins, password changes, etc.) ✅ (via Better Auth
+      hooks)
 - [ ] Create admin dashboard for security logs
 
 ---
 
 ## Implementation Notes
 
-- **Detailed Implementation**: When implementing any feature, create detailed documentation in `docs/2.authentication/` with step-by-step guides
-- **Testing**: Each feature should have unit tests, integration tests, and E2E tests
-- **Security Review**: All security-related features should be reviewed before production deployment
+- **Detailed Implementation**: When implementing any feature, create detailed
+  documentation in `docs/2.authentication/` with step-by-step guides
+- **Testing**: Each feature should have unit tests, integration tests, and E2E
+  tests
+- **Security Review**: All security-related features should be reviewed before
+  production deployment
 
 ---
 

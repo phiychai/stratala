@@ -8,7 +8,9 @@ navigation:
 
 ## Overview
 
-Payload CMS is the content management system used in this project. It runs as a separate Next.js application on port 3002 and provides both a REST API for public content and a Local API for backend operations.
+Payload CMS is the content management system used in this project. It runs as a
+separate Next.js application on port 3002 and provides both a REST API for
+public content and a Local API for backend operations.
 
 ## Quick Start
 
@@ -55,12 +57,14 @@ PORT=3002
 ## First-Time Setup
 
 1. **Start Payload CMS**:
+
    ```bash
    cd apps/studio
    pnpm dev
    ```
 
 2. **Create First Admin User**:
+
    - Navigate to http://localhost:3002/admin
    - You'll be prompted to create the first admin user
    - Enter email and password
@@ -114,6 +118,7 @@ http://localhost:3002/api/*
 ```
 
 **Example:**
+
 ```bash
 # Get all posts
 curl http://localhost:3002/api/posts
@@ -127,23 +132,25 @@ curl http://localhost:3002/api/posts/[id]
 The backend uses Payload Local API for direct database access:
 
 ```typescript
-import { getPayload } from 'payload'
-import config from './payload.config'
+import { getPayload } from 'payload';
+import config from './payload.config';
 
-const payload = await getPayload({ config })
+const payload = await getPayload({ config });
 
 // Query with user context
 const posts = await payload.find({
   collection: 'posts',
-  where: { createdBy: { equals: userId } }
-})
+  where: { createdBy: { equals: userId } },
+});
 ```
 
 ## User Synchronization
 
-Users with content roles (`admin`, `content_admin`, `editor`, `writer`) are automatically synced from Better Auth/AdonisJS to Payload CMS.
+Users with content roles (`admin`, `content_admin`, `editor`, `writer`) are
+automatically synced from Better Auth/AdonisJS to Payload CMS.
 
-See [Payload Authentication](/docs/authentication/payload-authentication) for details.
+See [Payload Authentication](/docs/authentication/payload-authentication) for
+details.
 
 ## Troubleshooting
 
@@ -161,11 +168,13 @@ lsof -i :3002
 ### Database Connection Errors
 
 1. Verify PostgreSQL is running:
+
    ```bash
    docker-compose ps postgres
    ```
 
 2. Check database exists:
+
    ```bash
    docker-compose exec postgres psql -U postgres -l | grep payload_db
    ```
@@ -175,6 +184,7 @@ lsof -i :3002
 ### Admin Panel Not Loading
 
 1. Check Payload is running:
+
    ```bash
    curl http://localhost:3002/admin
    ```
@@ -190,6 +200,7 @@ lsof -i :3002
 1. Verify collections are imported in `payload.config.ts`
 
 2. Check for TypeScript errors:
+
    ```bash
    cd apps/studio
    pnpm type-check
@@ -199,9 +210,11 @@ lsof -i :3002
 
 ## Production
 
-For production deployment, see [Production Deployment](/docs/deployment/production).
+For production deployment, see
+[Production Deployment](/docs/deployment/production).
 
 Key considerations:
+
 - Set secure `PAYLOAD_SECRET`
 - Use production database connection string
 - Configure file storage (local or S3)
@@ -212,4 +225,3 @@ Key considerations:
 
 - [Payload Authentication](/docs/authentication/payload-authentication)
 - [Architecture Overview](/docs/architecture/architecture)
-
