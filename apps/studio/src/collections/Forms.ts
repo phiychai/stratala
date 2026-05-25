@@ -1,4 +1,4 @@
-import type { CollectionConfig } from 'payload';
+import type { CollectionConfig } from 'payload'
 
 const Forms: CollectionConfig = {
   slug: 'forms',
@@ -105,7 +105,6 @@ const Forms: CollectionConfig = {
     },
   ],
   timestamps: true,
-};
+}
 
-export default Forms;
-
+export default Forms

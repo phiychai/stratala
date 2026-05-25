@@ -18,7 +18,11 @@ const selectedTag = computed(() => (route.query.tag as string) || '');
 const contentType = computed(() => (route.query.type as 'post' | 'video' | 'all') || 'all');
 
 // Fetch explore content
-const { data, error, refresh } = useFetch<{
+const {
+  data,
+  error,
+  refresh: _refresh,
+} = useFetch<{
   content: UnifiedContent[];
   count: number;
   categories: Array<{ id: string; name: string; slug: string }>;
@@ -37,7 +41,7 @@ const { data, error, refresh } = useFetch<{
 
 const content = computed(() => data.value?.content || []);
 const categories = computed(() => data.value?.categories || []);
-const tags = computed(() => data.value?.tags || []);
+const _tags = computed(() => data.value?.tags || []);
 
 // View mode (grid/list)
 const viewMode = ref<'grid' | 'list'>('grid');
@@ -234,7 +238,7 @@ useSeoMeta({
                 <UButton
                   :icon="isFollowingMap[space.id] ? 'i-heroicons-check' : 'i-heroicons-plus'"
                   :variant="isFollowingMap[space.id] ? 'solid' : 'outline'"
-                  :color="isFollowingMap[space.id] ? 'primary' : 'gray'"
+                  :color="isFollowingMap[space.id] ? 'primary' : 'neutral'"
                   size="sm"
                   :loading="followLoading[space.id]"
                   @click="toggleFollow(space.id)"

@@ -1,4 +1,4 @@
-import type { CollectionConfig } from 'payload';
+import type { CollectionConfig } from 'payload'
 
 /**
  * Videos Collection
@@ -26,11 +26,11 @@ const Videos: CollectionConfig = {
     // Admins and content admins can read all videos
     read: ({ req: { user } }) => {
       if (user && ['admin', 'content_admin'].includes(user.role)) {
-        return true;
+        return true
       }
       // Editors can read all videos (or restrict to own if preferred)
       if (user?.role === 'editor') {
-        return true; // Or restrict to own: { author: { equals: user.id } }
+        return true // Or restrict to own: { author: { equals: user.id } }
       }
       // Publishers can only read their own videos
       if (user?.role === 'publisher') {
@@ -38,25 +38,25 @@ const Videos: CollectionConfig = {
           author: {
             equals: user.id,
           },
-        };
+        }
       }
       // Public read access for published videos (for frontend)
       return {
         status: {
           equals: 'published',
         },
-      };
+      }
     },
     // Only authenticated users can create videos
     create: ({ req: { user } }) => !!user,
     // Users can update their own videos, admins/content admins can update any
     update: ({ req: { user } }) => {
       if (user && ['admin', 'content_admin'].includes(user.role)) {
-        return true;
+        return true
       }
       // Editors can update all videos (or restrict to own if preferred)
       if (user?.role === 'editor') {
-        return true; // Or restrict to own: { author: { equals: user.id } }
+        return true // Or restrict to own: { author: { equals: user.id } }
       }
       // Publishers can only update their own videos
       if (user?.role === 'publisher') {
@@ -64,23 +64,23 @@ const Videos: CollectionConfig = {
           author: {
             equals: user.id,
           },
-        };
+        }
       }
-      return false;
+      return false
     },
     // Users can delete their own videos, admins can delete any
     delete: ({ req: { user } }) => {
       if (user && ['admin', 'content_admin'].includes(user.role)) {
-        return true;
+        return true
       }
       if (user?.role === 'writer') {
         return {
           author: {
             equals: user.id,
           },
-        };
+        }
       }
-      return false;
+      return false
     },
   },
   fields: [
@@ -107,13 +107,13 @@ const Videos: CollectionConfig = {
             if (!value && data?.title) {
               return data.title
                 .toLowerCase()
-                .replace(/[^a-z0-9]+/g, '-')
-                .replace(/(^-|-$)/g, '');
+                .replace(/[^\da-z]+/g, '-')
+                .replace(/(^-|-$)/g, '')
             }
             if (typeof value === 'string') {
-              return value.toLowerCase().replace(/[^a-z0-9-]/g, '-');
+              return value.toLowerCase().replace(/[^\da-z-]/g, '-')
             }
-            return value;
+            return value
           },
         ],
       },
@@ -202,9 +202,9 @@ const Videos: CollectionConfig = {
           ({ req, value }) => {
             // If no value provided, use current user
             if (!value && req.user) {
-              return req.user.id;
+              return req.user.id
             }
-            return value;
+            return value
           },
         ],
       },
@@ -299,7 +299,6 @@ const Videos: CollectionConfig = {
     },
   ],
   timestamps: true,
-};
+}
 
-export default Videos;
-
+export default Videos

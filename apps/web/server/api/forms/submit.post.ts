@@ -1,4 +1,3 @@
-import { createItem } from '../utils/payload-server';
 import { $fetch } from 'ofetch';
 
 interface SubmissionValue {
@@ -49,7 +48,7 @@ export default defineEventHandler(async (event) => {
 
       if (field.filename) {
         // Upload file to Payload
-        const blob = new Blob([field.data], { type: field.type });
+        const blob = new Blob([field.data as BlobPart], { type: field.type });
 
         const uploadFormData = new FormData();
         uploadFormData.append('file', blob, field.filename);
@@ -92,7 +91,7 @@ export default defineEventHandler(async (event) => {
     // await createItem('form-submissions', payload);
 
     // For now, just log the submission
-    console.log('Form submission:', payload);
+    console.warn('Form submission:', payload);
 
     return { success: true };
   } catch {

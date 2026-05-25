@@ -1,4 +1,13 @@
 import type { DashboardUser } from '~/types';
+type BackendUser = {
+  id: string | number;
+  firstName?: string;
+  lastName?: string;
+  name?: string;
+  email?: string;
+  emailVerified?: boolean;
+  image?: string;
+};
 
 /**
  * Get all customers (users) from backend
@@ -46,10 +55,10 @@ export default defineEventHandler(async (event) => {
     }
 
     const data = await response.json();
-    const users = data.users || [];
+    const users = ((data as { users?: BackendUser[] }).users || []) as BackendUser[];
 
     // Map Better Auth user data to DashboardUser format expected by the table
-    const customers: DashboardUser[] = users.map((user: any) => {
+    const customers: DashboardUser[] = users.map((user: BackendUser) => {
       // Generate display name from firstName/lastName or name or email
       const displayName =
         user.firstName && user.lastName

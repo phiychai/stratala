@@ -3,6 +3,8 @@
  * Extracted from composable files for better organization
  */
 
+type PrimaryKey = string | number;
+
 // useVisualEditing
 export interface ApplyOptions {
   payloadUrl: string;

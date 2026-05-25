@@ -81,9 +81,9 @@ const validBlocks = computed(() =>
           | 'block_posts'
           | 'block_form';
         item: object;
-        id?: string | null;
+        id: string;
         background?: string | null;
-      } => block !== null
+      } => block !== null && typeof block.id === 'string'
     )
 );
 </script>
@@ -94,6 +94,6 @@ const validBlocks = computed(() =>
     :data-background="block.background"
     class="flex flex-col"
   >
-    <BaseBlock :block="block" />
+    <BaseBlock :block="block as any" />
   </div>
 </template>

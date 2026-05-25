@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { NavigationMenuItem } from '@nuxt/ui';
-import type { Navigation } from '@stratalapayload-types';
+import type { Navigation } from '@stratala/shared-types';
 
 const route = useRoute();
 const { isAuthenticated } = useAuth();

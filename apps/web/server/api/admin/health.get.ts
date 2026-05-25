@@ -22,7 +22,7 @@ interface HealthCheckResult {
   timestamp: string;
 }
 
-export default defineEventHandler(async (event): Promise<HealthCheckResult> => {
+export default defineEventHandler(async (): Promise<HealthCheckResult> => {
   const config = useRuntimeConfig();
   const apiUrl = config.public.apiUrl || 'http://localhost:3333';
   const payloadUrl = config.public.payloadUrl || 'http://localhost:3002';
@@ -45,12 +45,10 @@ export default defineEventHandler(async (event): Promise<HealthCheckResult> => {
 
   // Check Adonis API Backend
   try {
-    const { result, time } = await measureTime(
-      async () =>
-        await $fetch<{ status: string; timestamp: string }>(`${apiUrl}/health`, {
-          timeout: 5000,
-        })
-    );
+    const { result, time } = await measureTime(async () => {
+      const response = await fetch(`${apiUrl}/health`, { signal: AbortSignal.timeout(5000) });
+      return (await response.json()) as { status?: string; timestamp?: string };
+    });
 
     results.adonisApi =
       result.status === 'ok'
@@ -73,17 +71,10 @@ export default defineEventHandler(async (event): Promise<HealthCheckResult> => {
 
   // Check Database via Adonis backend (we'll use a simple endpoint that requires DB)
   try {
-    const { result, time } = await measureTime(
-      async () =>
-        // Try to fetch a simple endpoint that requires database access
-        // Using /api/user/me which requires auth, but if DB is down, it will fail differently
-        // Better: use a health endpoint that checks DB, but for now we'll check if API is responding
-        // Since we already checked /health, if that works, DB is likely working
-        // For a more accurate check, we could add a /health/db endpoint to Adonis
-        await $fetch(`${apiUrl}/`, {
-          timeout: 5000,
-        })
-    );
+    const { time } = await measureTime(async () => {
+      await fetch(`${apiUrl}/`, { signal: AbortSignal.timeout(5000) });
+      return true;
+    });
 
     // If we can reach the API root, database is likely accessible
     // This is a basic check - for production, add a dedicated DB health endpoint
@@ -101,13 +92,10 @@ export default defineEventHandler(async (event): Promise<HealthCheckResult> => {
 
   // Check Payload CMS
   try {
-    const { result, time } = await measureTime(
-      async () =>
-        // Try to access Payload API - use a lightweight endpoint
-        await $fetch(`${payloadUrl}`, {
-          timeout: 5000,
-        })
-    );
+    const { time } = await measureTime(async () => {
+      await fetch(`${payloadUrl}`, { signal: AbortSignal.timeout(5000) });
+      return true;
+    });
 
     results.payloadCms = {
       status: 'healthy',
@@ -123,13 +111,15 @@ export default defineEventHandler(async (event): Promise<HealthCheckResult> => {
 
   // Check Lago Billing Service (via Adonis backend billing endpoint)
   try {
-    const { result, time } = await measureTime(
-      async () =>
-        // Try to access billing plans endpoint (public, doesn't require auth)
-        await $fetch(`${apiUrl}/api/billing/plans`, {
-          timeout: 5000,
-        })
-    );
+    const { time } = await measureTime(async () => {
+      const response = await fetch(`${apiUrl}/api/billing/plans`, {
+        signal: AbortSignal.timeout(5000),
+      });
+      if (!response.ok && response.status !== 401 && response.status !== 403) {
+        throw new Error(`Request failed with status ${response.status}`);
+      }
+      return response.status;
+    });
 
     // If we get a response (even if it's an auth error), Lago is reachable
     results.lago = {

@@ -11,9 +11,9 @@ const postUrl = useRequestURL();
 const loading = ref(false);
 
 const slug = route.params.slug as string;
-const { isAuthenticated } = useAuth();
+const { isAuthenticated: _isAuthenticated } = useAuth();
 
-const wrapperRef = ref<HTMLElement | null>(null);
+const _wrapperRef = ref<HTMLElement | null>(null);
 
 const { data, error, refresh } = await useFetch<{
   post: Post;
@@ -95,9 +95,18 @@ const normalizedCategories = computed(() => {
       return { id: cat, label: String(cat) };
     }
     if (typeof cat === 'object' && cat !== null) {
+      const category = cat as { id?: unknown; title?: unknown; name?: unknown };
       return {
-        id: 'id' in cat ? cat.id : String(cat),
-        label: 'title' in cat ? cat.title : 'name' in cat ? cat.name : String(cat),
+        id:
+          typeof category.id === 'string' || typeof category.id === 'number'
+            ? category.id
+            : String(cat),
+        label:
+          typeof category.title === 'string'
+            ? category.title
+            : typeof category.name === 'string'
+              ? category.name
+              : String(cat),
       };
     }
     return { id: String(cat), label: String(cat) };
@@ -107,9 +116,7 @@ const normalizedCategories = computed(() => {
 // Extract space/tenant name
 const spaceName = computed(() => {
   if (!post.value) return null;
-
-  // TypeScript may not recognize tenant field if types are outdated
-  const tenant = (post.value as Post & { tenant?: (number | null) | { name: string } })?.tenant;
+  const { tenant } = post.value as Post & { tenant?: unknown };
 
   if (!tenant) return null;
 
@@ -121,7 +128,8 @@ const spaceName = computed(() => {
 
   // If tenant is an object, extract the name
   if (typeof tenant === 'object' && tenant !== null && 'name' in tenant) {
-    return tenant.name;
+    const { name } = tenant as { name?: unknown };
+    return typeof name === 'string' ? name : null;
   }
 
   return null;
@@ -134,23 +142,23 @@ const author = computed(() => post.value?.author as Partial<PayloadUser>);
 const articleContentRef = ref<HTMLElement | null>(null);
 const navbarRef = ref<HTMLElement | null>(null);
 
-const { y: scrollY } = useWindowScroll();
+const { y: _scrollY } = useWindowScroll();
 const windowHeight = useWindowSize().height;
 
 // Get bounding boxes for article and navbar
 const articleBounding = useElementBounding(articleContentRef);
-const navbarBounding = useElementBounding(navbarRef);
+const _navbarBounding = useElementBounding(navbarRef);
 
 // Fixed header height (from layout: margin-top: 64px)
 const fixedHeaderHeight = 64;
 const navbarHeight = 64;
-const readingProgress = computed(() => {
+const _readingProgress = computed(() => {
   if (!articleContentRef.value || !articleBounding.height.value) return 0;
 
   const articleTop = articleBounding.top.value;
   const articleHeight = articleBounding.height.value;
 
-  const viewportHeight = windowHeight.value;
+  const _viewportHeight = windowHeight.value;
 
   // Total fixed height (header + navbar)
   const totalFixedHeight = fixedHeaderHeight + navbarHeight;
@@ -276,9 +284,9 @@ onMounted(() => {
 
 useSeoMeta({
   title: post.value?.seo?.title || post.value?.title,
-  description: post.value?.seo?.meta_description || post.value?.description,
+  description: post.value?.seo?.metaDescription || post.value?.description,
   ogTitle: post.value?.seo?.title || post.value?.title,
-  ogDescription: post.value?.seo?.meta_description || post.value?.description,
+  ogDescription: post.value?.seo?.metaDescription || post.value?.description,
   ogUrl: postUrl.toString(),
 });
 </script>
@@ -363,7 +371,7 @@ useSeoMeta({
             />
             <UButton
               :icon="liked ? 'i-heroicons-heart-solid' : 'i-heroicons-heart'"
-              :color="liked ? 'red' : 'neutral'"
+              :color="liked ? 'error' : 'neutral'"
               size="sm"
               variant="ghost"
               :loading="likeLoading"
@@ -476,7 +484,7 @@ useSeoMeta({
                     class="relative shrink-0 w-[150px] h-[100px] overflow-hidden rounded-lg"
                   >
                     <PayloadImage
-                      :uuid="relatedPost.image as string"
+                      :uuid="relatedPost.image"
                       :alt="relatedPost.title || 'related post image'"
                       class="object-cover transition-transform duration-300 group-hover:scale-110"
                       fill

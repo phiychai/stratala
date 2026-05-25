@@ -3,6 +3,16 @@ const route = useRoute();
 const username = route.params.username as string;
 
 const { user, spaces, recentPosts, displayName } = useUserProfile(username);
+const tenantSlug = (tenant: unknown): string | null => {
+  if (!tenant || typeof tenant !== 'object') return null;
+  const value = (tenant as { slug?: unknown }).slug;
+  return typeof value === 'string' ? value : null;
+};
+const tenantName = (tenant: unknown): string | null => {
+  if (!tenant || typeof tenant !== 'object') return null;
+  const value = (tenant as { name?: unknown }).name;
+  return typeof value === 'string' ? value : null;
+};
 </script>
 
 <template>
@@ -90,8 +100,8 @@ const { user, spaces, recentPosts, displayName } = useUserProfile(username);
             >
               <NuxtLink
                 :to="
-                  post.tenant && typeof post.tenant !== 'string'
-                    ? `/@${username}/${post.tenant.slug}/${post.slug}`
+                  tenantSlug(post.tenant)
+                    ? `/@${username}/${tenantSlug(post.tenant)}/${post.slug}`
                     : `/@${username}/article/${post.slug}`
                 "
                 class="block hover:text-accent group"
@@ -99,7 +109,7 @@ const { user, spaces, recentPosts, displayName } = useUserProfile(username);
                 <div class="flex gap-4">
                   <div v-if="post.image" class="flex-shrink-0 w-32 h-24 rounded-lg overflow-hidden">
                     <PayloadImage
-                      :uuid="post.image as string"
+                      :uuid="post.image"
                       :alt="post.title || 'Post image'"
                       class="object-cover w-full h-full"
                       width="128"
@@ -108,11 +118,8 @@ const { user, spaces, recentPosts, displayName } = useUserProfile(username);
                   </div>
                   <div class="flex-1 min-w-0">
                     <div class="flex items-center gap-2 mb-1">
-                      <span
-                        v-if="post.tenant && typeof post.tenant !== 'string'"
-                        class="text-xs text-muted"
-                      >
-                        {{ post.tenant.name }}
+                      <span v-if="tenantName(post.tenant)" class="text-xs text-muted">
+                        {{ tenantName(post.tenant) }}
                       </span>
                     </div>
                     <h3 class="text-xl font-bold mb-2 group-hover:underline line-clamp-2">
@@ -122,9 +129,9 @@ const { user, spaces, recentPosts, displayName } = useUserProfile(username);
                       {{ post.description }}
                     </p>
                     <div class="flex items-center gap-2 text-sm text-muted">
-                      <time v-if="post.published_at">
+                      <time v-if="post.publishedAt">
                         {{
-                          new Date(post.published_at).toLocaleDateString('en', {
+                          new Date(post.publishedAt).toLocaleDateString('en', {
                             year: 'numeric',
                             month: 'short',
                             day: 'numeric',

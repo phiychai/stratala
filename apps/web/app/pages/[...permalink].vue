@@ -84,9 +84,9 @@ if (page.value && !hasPageContent.value) {
 
 useSeoMeta({
   title: page.value?.seo?.title || page.value?.title || '',
-  description: page.value?.seo?.meta_description || '',
+  description: page.value?.seo?.metaDescription || '',
   ogTitle: page.value?.seo?.title || page.value?.title || '',
-  ogDescription: page.value?.seo?.meta_description || '',
+  ogDescription: page.value?.seo?.metaDescription || '',
   ogUrl: pageUrl.toString(),
 });
 

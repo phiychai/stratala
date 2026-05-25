@@ -16,14 +16,6 @@ export const updateProfileValidator = vine.compile(
       // Note: normalizeEmail() removed to preserve dots in email addresses
       // Gmail treats user.name@gmail.com and username@gmail.com as the same,
       // but we preserve the exact format the user provides
-      .unique(async (db, value, field) => {
-        const user = await db
-          .from('users')
-          .where('email', value)
-          .whereNot('id', field.meta.userId)
-          .first();
-        return !user;
-      })
       .optional(),
     // Username validation is handled by Better Auth Username Plugin
     // We just accept it here and pass it to Better Auth for validation

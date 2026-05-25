@@ -222,7 +222,7 @@ export const useAuthStore = defineStore('auth', {
         const requestFetch = useRequestFetch();
 
         // Prepare profile data - backend will handle name splitting
-        const profileData: any = {};
+        const profileData: Record<string, unknown> = {};
 
         // Include name field (will be split on backend)
         if (data.name !== undefined) {
@@ -436,5 +436,5 @@ export const useAuthStore = defineStore('auth', {
   persist: {
     storage: typeof window !== 'undefined' ? localStorage : undefined,
     paths: ['user'], // Only persist user data, not loading states
-  } as any,
+  },
 });

@@ -1,4 +1,4 @@
-import type { CollectionConfig } from 'payload';
+import type { CollectionConfig } from 'payload'
 
 /**
  * Posts Collection
@@ -25,11 +25,11 @@ const Posts: CollectionConfig = {
     // Admins and content admins can read all posts
     read: ({ req: { user } }) => {
       if (user && ['admin', 'content_admin'].includes(user.role)) {
-        return true;
+        return true
       }
       // Editors can read all posts (or restrict to own if preferred)
       if (user?.role === 'editor') {
-        return true; // Or restrict to own: { author: { equals: user.id } }
+        return true // Or restrict to own: { author: { equals: user.id } }
       }
       // Publishers can only read their own posts
       if (user?.role === 'publisher') {
@@ -37,25 +37,25 @@ const Posts: CollectionConfig = {
           author: {
             equals: user.id,
           },
-        };
+        }
       }
       // Public read access for published posts (for frontend)
       return {
         status: {
           equals: 'published',
         },
-      };
+      }
     },
     // Only authenticated users can create posts
     create: ({ req: { user } }) => !!user,
     // Users can update their own posts, admins/content admins can update any
     update: ({ req: { user } }) => {
       if (user && ['admin', 'content_admin'].includes(user.role)) {
-        return true;
+        return true
       }
       // Editors can update all posts (or restrict to own if preferred)
       if (user?.role === 'editor') {
-        return true; // Or restrict to own: { author: { equals: user.id } }
+        return true // Or restrict to own: { author: { equals: user.id } }
       }
       // Publishers can only update their own posts
       if (user?.role === 'publisher') {
@@ -63,23 +63,23 @@ const Posts: CollectionConfig = {
           author: {
             equals: user.id,
           },
-        };
+        }
       }
-      return false;
+      return false
     },
     // Users can delete their own posts, admins can delete any
     delete: ({ req: { user } }) => {
       if (user && ['admin', 'content_admin'].includes(user.role)) {
-        return true;
+        return true
       }
       if (user?.role === 'writer') {
         return {
           author: {
             equals: user.id,
           },
-        };
+        }
       }
-      return false;
+      return false
     },
   },
   fields: [
@@ -106,13 +106,13 @@ const Posts: CollectionConfig = {
             if (!value && data?.title) {
               return data.title
                 .toLowerCase()
-                .replace(/[^a-z0-9]+/g, '-')
-                .replace(/(^-|-$)/g, '');
+                .replace(/[^\da-z]+/g, '-')
+                .replace(/(^-|-$)/g, '')
             }
             if (typeof value === 'string') {
-              return value.toLowerCase().replace(/[^a-z0-9-]/g, '-');
+              return value.toLowerCase().replace(/[^\da-z-]/g, '-')
             }
-            return value;
+            return value
           },
         ],
       },
@@ -153,9 +153,9 @@ const Posts: CollectionConfig = {
           ({ req, value }) => {
             // If no value provided, use current user
             if (!value && req.user) {
-              return req.user.id;
+              return req.user.id
             }
-            return value;
+            return value
           },
         ],
       },
@@ -263,7 +263,6 @@ const Posts: CollectionConfig = {
     },
   ],
   timestamps: true,
-};
+}
 
-export default Posts;
-
+export default Posts

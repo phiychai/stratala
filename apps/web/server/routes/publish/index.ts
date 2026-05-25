@@ -4,6 +4,6 @@
  */
 export default defineEventHandler(async (event) => {
   // Import and use the catch-all handler
-  const catchAll = await import('./[...].ts');
+  const catchAll = await import('./[...]');
   return catchAll.default(event);
 });

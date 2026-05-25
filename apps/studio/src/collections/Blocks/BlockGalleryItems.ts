@@ -1,4 +1,4 @@
-import { CollectionConfig } from 'payload/types';
+import type { CollectionConfig } from 'payload/types'
 
 const BlockGalleryItems: CollectionConfig = {
   slug: 'block-gallery-items',
@@ -37,7 +37,6 @@ const BlockGalleryItems: CollectionConfig = {
     },
   ],
   timestamps: true,
-};
+}
 
-export default BlockGalleryItems;
-
+export default BlockGalleryItems

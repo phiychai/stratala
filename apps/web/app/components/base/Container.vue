@@ -5,7 +5,7 @@
  */
 import type { ContainerProps } from '~/types/components';
 
-const { as = 'div', className = '', role } = defineProps<ContainerProps>();
+const { as = 'div', className: _className = '', role: _role } = defineProps<ContainerProps>();
 </script>
 
 <template>

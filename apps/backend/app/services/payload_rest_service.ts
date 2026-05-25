@@ -10,11 +10,9 @@ import env from '#start/env';
  */
 class PayloadRestService {
   private baseUrl: string;
-  private secret: string;
 
   constructor() {
     this.baseUrl = env.get('PAYLOAD_PUBLIC_SERVER_URL', 'http://localhost:3002');
-    this.secret = env.get('PAYLOAD_SECRET', '');
   }
 
   /**

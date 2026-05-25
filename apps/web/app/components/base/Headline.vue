@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { HeadlineProps } from '~/types/components';
 
-const props = withDefaults(defineProps<HeadlineProps>(), {
+const _props = withDefaults(defineProps<HeadlineProps>(), {
   as: 'h2',
 });
 </script>

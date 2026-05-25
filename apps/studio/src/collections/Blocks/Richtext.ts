@@ -1,4 +1,4 @@
-import type { Block } from 'payload';
+import type { Block } from 'payload'
 
 /**
  * Rich Text Block Collection
@@ -28,7 +28,6 @@ const BlockRichtext: CollectionConfig = {
     },
   ],
   timestamps: true,
-};
+}
 
-export default BlockRichtext;
-
+export default BlockRichtext

@@ -1,6 +1,17 @@
 import { getItems } from '~~/server/utils/payload-server';
 import { resolveUsernameToPayloadUserId } from '~~/server/utils/resolve-username';
 
+interface PublicUserProfile {
+  id: number;
+  username: string;
+  email: string;
+  firstName: string | null;
+  lastName: string | null;
+  avatarUrl: string | null;
+  bio: string | null;
+  betterAuthUserId: string | null;
+}
+
 export default defineEventHandler(async (event) => {
   const username = getRouterParam(event, 'username');
 
@@ -14,22 +25,19 @@ export default defineEventHandler(async (event) => {
     } = useRuntimeConfig();
 
     // Step 1: Get user info from AdonisJS
-    let adonisUser: {
-      id: number;
-      username: string;
-      email: string;
-      firstName: string | null;
-      lastName: string | null;
-      avatarUrl: string | null;
-      bio: string | null;
-      betterAuthUserId: string | null;
-    } | null = null;
+    let adonisUser: PublicUserProfile | null = null;
 
     try {
-      adonisUser = await $fetch<typeof adonisUser>(`${apiUrl}/api/public/users/${username}`);
-    } catch (error: any) {
+      adonisUser = await $fetch<PublicUserProfile>(`${apiUrl}/api/public/users/${username}`);
+    } catch (error: unknown) {
+      const statusCode =
+        typeof error === 'object' && error !== null && 'statusCode' in error
+          ? Number((error as { statusCode?: unknown }).statusCode)
+          : typeof error === 'object' && error !== null && 'status' in error
+            ? Number((error as { status?: unknown }).status)
+            : undefined;
       console.error(`Error fetching user from AdonisJS for username "${username}":`, error);
-      if (error.statusCode === 404 || error.status === 404) {
+      if (statusCode === 404) {
         throw createError({ statusCode: 404, message: `User "${username}" not found` });
       }
       throw createError({
@@ -89,7 +97,9 @@ export default defineEventHandler(async (event) => {
         // Extract spaces from user's tenants relationship (plugin uses "tenants" field name internally)
         if (user.tenants && Array.isArray(user.tenants)) {
           const spaceIds = user.tenants
-            .map((t: any) => (typeof t.tenant === 'object' ? t.tenant.id : t.tenant))
+            .map((t: { tenant?: number | { id?: number } }) =>
+              typeof t.tenant === 'object' ? t.tenant?.id : t.tenant
+            )
             .filter(Boolean);
 
           if (spaceIds.length > 0) {
@@ -146,8 +156,8 @@ export default defineEventHandler(async (event) => {
       spaces: spacesResult.docs,
       recentPosts: recentPostsResult.docs,
     };
-  } catch (error: any) {
-    if (error.statusCode) {
+  } catch (error: unknown) {
+    if (typeof error === 'object' && error !== null && 'statusCode' in error) {
       throw error;
     }
     throw createError({

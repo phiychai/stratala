@@ -3,6 +3,9 @@ import type { HttpContext } from '@adonisjs/core/http';
 
 import billingService from '#services/billing_service';
 
+const getErrorMessage = (error: unknown): string =>
+  error instanceof Error ? error.message : 'Unknown error';
+
 export default class BillingController {
   /**
    * Helper method to get or create a billing account for a user
@@ -111,7 +114,7 @@ export default class BillingController {
     } catch (error) {
       return response.internalServerError({
         message: 'Failed to fetch subscriptions',
-        error: error.message,
+        error: getErrorMessage(error),
       });
     }
   }
@@ -198,7 +201,7 @@ export default class BillingController {
     } catch (error) {
       return response.internalServerError({
         message: 'Failed to cancel subscription',
-        error: error.message,
+        error: getErrorMessage(error),
       });
     }
   }
@@ -230,7 +233,7 @@ export default class BillingController {
     } catch (error) {
       return response.internalServerError({
         message: 'Failed to fetch invoices',
-        error: error.message,
+        error: getErrorMessage(error),
       });
     }
   }
@@ -253,7 +256,7 @@ export default class BillingController {
     } catch (error) {
       return response.internalServerError({
         message: 'Failed to fetch plans',
-        error: error.message,
+        error: getErrorMessage(error),
       });
     }
   }
@@ -297,7 +300,7 @@ export default class BillingController {
     } catch (error) {
       return response.internalServerError({
         message: 'Failed to add payment method',
-        error: error.message,
+        error: getErrorMessage(error),
       });
     }
   }
@@ -331,7 +334,7 @@ export default class BillingController {
     } catch (error) {
       return response.internalServerError({
         message: 'Failed to fetch payment methods',
-        error: error.message,
+        error: getErrorMessage(error),
       });
     }
   }

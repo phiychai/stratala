@@ -1,4 +1,4 @@
-import type { Block } from 'payload';
+import type { Block } from 'payload'
 
 /**
  * Form Block
@@ -16,7 +16,8 @@ const FormBlock: Block = {
       name: 'tagline',
       type: 'text',
       admin: {
-        description: 'Smaller copy shown above the headline to label a section or add extra context',
+        description:
+          'Smaller copy shown above the headline to label a section or add extra context',
       },
     },
     {
@@ -35,7 +36,6 @@ const FormBlock: Block = {
       },
     },
   ],
-};
+}
 
-export default FormBlock;
-
+export default FormBlock

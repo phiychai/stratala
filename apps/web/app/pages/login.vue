@@ -63,7 +63,10 @@ const schema = z.object({
 type Schema = z.output<typeof schema>;
 
 const { submit: submitForm } = useFormSubmission({
-  onSubmit: async (data) => await login(data.email, data.password),
+  onSubmit: async (data) => {
+    const values = data as Schema;
+    return await login(values.email, values.password);
+  },
   onSuccess: () => {
     // Redirect to / - it will show dashboard for authenticated users
     // or /admin for admin users

@@ -6,7 +6,7 @@ import logger from '@adonisjs/core/services/logger';
 import { getPayload } from 'payload';
 
 import type User from '#models/user';
-import type { Payload } from 'payload';
+import type { Payload, CollectionSlug } from 'payload';
 
 // Payload config will be imported dynamically to handle monorepo path resolution
 // The config path is relative to the backend app: ../../studio/src/payload.config
@@ -177,11 +177,11 @@ class PayloadService {
    * @param collection - Collection slug (e.g., 'posts', 'pages', 'spaces')
    * @param options - Query options including user context for multi-tenant filtering
    */
-  async getItems<T = any>(
-    collection: string,
+  async getItems<T = unknown>(
+    collection: CollectionSlug,
     options: {
       user?: User;
-      where?: Record<string, any>;
+      where?: Record<string, unknown>;
       limit?: number;
       page?: number;
       sort?: string;
@@ -234,7 +234,13 @@ class PayloadService {
           : undefined,
       });
 
-      return result;
+      return result as unknown as {
+        docs: T[];
+        totalDocs: number;
+        limit: number;
+        totalPages: number;
+        page?: number;
+      };
     } catch (error) {
       logger.error(`Failed to get items from collection "${collection}":`, error);
       throw error;
@@ -244,8 +250,8 @@ class PayloadService {
   /**
    * Get a single item from a collection
    */
-  async getItem<T = any>(
-    collection: string,
+  async getItem<T = unknown>(
+    collection: CollectionSlug,
     id: string,
     options: {
       user?: User;
@@ -278,9 +284,9 @@ class PayloadService {
   /**
    * Create an item in a collection
    */
-  async createItem<T = any>(
-    collection: string,
-    data: Record<string, any>,
+  async createItem<T = unknown>(
+    collection: CollectionSlug,
+    data: Record<string, unknown>,
     options: {
       user?: User;
     } = {}
@@ -318,10 +324,10 @@ class PayloadService {
   /**
    * Update an item in a collection
    */
-  async updateItem<T = any>(
-    collection: string,
+  async updateItem<T = unknown>(
+    collection: CollectionSlug,
     id: string,
-    data: Record<string, any>,
+    data: Record<string, unknown>,
     options: {
       user?: User;
       depth?: number;
@@ -355,7 +361,7 @@ class PayloadService {
    * Delete an item from a collection
    */
   async deleteItem(
-    collection: string,
+    collection: CollectionSlug,
     id: string,
     options: {
       user?: User;

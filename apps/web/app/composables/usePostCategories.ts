@@ -50,7 +50,7 @@ export function usePostCategories(posts?: Ref<Post[]>) {
     for (const post of posts.value) {
       if (post.categories) {
         const postCategories = Array.isArray(post.categories) ? post.categories : [];
-        postCategories.forEach((cat: unknown) => {
+        for (const cat of postCategories) {
           if (typeof cat === 'string' && cat) {
             // If it's a string, create a category from it
             const slug = cat.toLowerCase().replace(/\s+/g, '-');
@@ -76,7 +76,7 @@ export function usePostCategories(posts?: Ref<Post[]>) {
               categoryMap.set(category.id, category);
             }
           }
-        });
+        }
       }
     }
 
@@ -84,7 +84,7 @@ export function usePostCategories(posts?: Ref<Post[]>) {
   });
 
   // Function to handle category filter clicks
-  function handleCategoryClick(categorySlug: string | undefined) {
+  function handleCategoryClick(categorySlug?: string) {
     router.push({
       path: route.path,
       query: {

@@ -38,10 +38,10 @@ export default defineEventHandler(async (event) => {
 
   // Debug logging in development
   if (process.env.NODE_ENV === 'development') {
-    console.info('[Feed API] Proxying to:', fullUrl);
-    console.info('[Feed API] Has cookie header:', !!headers.cookie);
+    console.warn('[Feed API] Proxying to:', fullUrl);
+    console.warn('[Feed API] Has cookie header:', !!headers.cookie);
     if (headers.cookie) {
-      console.info('[Feed API] Cookie preview:', headers.cookie.substring(0, 100));
+      console.warn('[Feed API] Cookie preview:', headers.cookie.substring(0, 100));
     }
   }
 

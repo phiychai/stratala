@@ -10,9 +10,9 @@ const loading = ref(false);
 
 const username = route.params.username as string;
 const slug = route.params.slug as string;
-const { isAuthenticated } = useAuth();
+const { isAuthenticated: _isAuthenticated } = useAuth();
 
-const wrapperRef = ref<HTMLElement | null>(null);
+const _wrapperRef = ref<HTMLElement | null>(null);
 
 const { data, error, refresh } = await useFetch<{
   post: Post;
@@ -32,28 +32,45 @@ if (!data.value || error.value) {
 const post = computed(() => data.value?.post);
 const relatedPosts = computed(() => data.value?.relatedPosts);
 const author = computed(() => post.value?.author as Partial<PayloadUser>);
+const categoryLabel = (category: unknown): string => {
+  if (typeof category === 'string') return category;
+  if (typeof category === 'number') return String(category);
+  if (category && typeof category === 'object') {
+    const record = category as { title?: string; name?: string };
+    return record.title || record.name || '';
+  }
+  return '';
+};
+const categoryKey = (category: unknown, index: number): string | number => {
+  if (typeof category === 'number' || typeof category === 'string') return category;
+  if (category && typeof category === 'object') {
+    const { id } = category as { id?: unknown };
+    if (typeof id === 'number' || typeof id === 'string') return id;
+  }
+  return index;
+};
 
 // Reading progress tracking with VueUse
 const articleContentRef = ref<HTMLElement | null>(null);
 const navbarRef = ref<HTMLElement | null>(null);
 
-const { y: scrollY } = useWindowScroll();
+const { y: _scrollY } = useWindowScroll();
 const windowHeight = useWindowSize().height;
 
 // Get bounding boxes for article and navbar
 const articleBounding = useElementBounding(articleContentRef);
-const navbarBounding = useElementBounding(navbarRef);
+const _navbarBounding = useElementBounding(navbarRef);
 
 // Fixed header height (from layout: margin-top: 64px)
 const fixedHeaderHeight = 64;
 const navbarHeight = 64;
-const readingProgress = computed(() => {
+const _readingProgress = computed(() => {
   if (!articleContentRef.value || !articleBounding.height.value) return 0;
 
   const articleTop = articleBounding.top.value;
   const articleHeight = articleBounding.height.value;
 
-  const viewportHeight = windowHeight.value;
+  const _viewportHeight = windowHeight.value;
 
   // Total fixed height (header + navbar)
   const totalFixedHeight = fixedHeaderHeight + navbarHeight;
@@ -85,9 +102,9 @@ onMounted(() => {
 
 useSeoMeta({
   title: post.value?.seo?.title || post.value?.title,
-  description: post.value?.seo?.meta_description || post.value?.description,
+  description: post.value?.seo?.metaDescription || post.value?.description,
   ogTitle: post.value?.seo?.title || post.value?.title,
-  ogDescription: post.value?.seo?.meta_description || post.value?.description,
+  ogDescription: post.value?.seo?.metaDescription || post.value?.description,
   ogUrl: postUrl.toString(),
 });
 </script>
@@ -123,19 +140,15 @@ useSeoMeta({
           <template #headline>
             <UBadge
               v-for="(category, index) in post.categories || []"
-              :key="typeof category === 'string' ? category : category.id || index"
+              :key="categoryKey(category, index)"
               variant="subtle"
             >
-              {{
-                typeof category === 'string'
-                  ? category
-                  : (category as any).title || category.name || category
-              }}
+              {{ categoryLabel(category) }}
             </UBadge>
-            <span v-if="post.published_at" class="text-muted">&middot;</span>
-            <time v-if="post.published_at" class="text-muted">
+            <span v-if="post.publishedAt" class="text-muted">&middot;</span>
+            <time v-if="post.publishedAt" class="text-muted">
               {{
-                new Date(post.published_at).toLocaleDateString('en', {
+                new Date(post.publishedAt).toLocaleDateString('en', {
                   year: 'numeric',
                   month: 'short',
                   day: 'numeric',
@@ -193,7 +206,7 @@ useSeoMeta({
                     class="relative shrink-0 w-[150px] h-[100px] overflow-hidden rounded-lg"
                   >
                     <PayloadImage
-                      :uuid="relatedPost.image as string"
+                      :uuid="relatedPost.image"
                       :alt="relatedPost.title || 'related post image'"
                       class="object-cover transition-transform duration-300 group-hover:scale-110"
                       fill

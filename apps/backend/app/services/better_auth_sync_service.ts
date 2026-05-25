@@ -103,9 +103,10 @@ export class BetterAuthSyncService {
       logger.info(`Deleting Better Auth user: ${user.betterAuthUserId}`);
 
       // Use Better Auth Admin plugin's removeUser API
-      if (auth.api?.removeUser && request) {
+      const removeUserApi = (auth.api as Record<string, unknown> | undefined)?.removeUser;
+      if (typeof removeUserApi === 'function' && request) {
         const webRequest = await toWebRequest(request);
-        await auth.api.removeUser({
+        await removeUserApi({
           body: {
             userId: user.betterAuthUserId,
           },

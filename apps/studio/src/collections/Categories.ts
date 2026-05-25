@@ -1,4 +1,4 @@
-import type { CollectionConfig } from 'payload';
+import type { CollectionConfig } from 'payload'
 
 /**
  * Categories Collection
@@ -17,13 +17,9 @@ const Categories: CollectionConfig = {
     // Everyone can read categories (for frontend)
     read: () => true,
     // Only admins and content admins can create categories
-    create: ({ req: { user } }) => {
-      return user && ['admin', 'content_admin'].includes(user.role);
-    },
+    create: ({ req: { user } }) => user && ['admin', 'content_admin'].includes(user.role),
     // Only admins and content admins can update categories
-    update: ({ req: { user } }) => {
-      return user && ['admin', 'content_admin'].includes(user.role);
-    },
+    update: ({ req: { user } }) => user && ['admin', 'content_admin'].includes(user.role),
     // Only admins can delete categories
     delete: ({ req: { user } }) => user?.role === 'admin',
   },
@@ -51,13 +47,13 @@ const Categories: CollectionConfig = {
             if (!value && data?.title) {
               return data.title
                 .toLowerCase()
-                .replace(/[^a-z0-9]+/g, '-')
-                .replace(/(^-|-$)/g, '');
+                .replace(/[^\da-z]+/g, '-')
+                .replace(/(^-|-$)/g, '')
             }
             if (typeof value === 'string') {
-              return value.toLowerCase().replace(/[^a-z0-9-]/g, '-');
+              return value.toLowerCase().replace(/[^\da-z-]/g, '-')
             }
-            return value;
+            return value
           },
         ],
       },
@@ -71,7 +67,6 @@ const Categories: CollectionConfig = {
     },
   ],
   timestamps: true,
-};
+}
 
-export default Categories;
-
+export default Categories

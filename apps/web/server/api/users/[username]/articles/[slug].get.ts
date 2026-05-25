@@ -9,11 +9,6 @@ export default defineEventHandler(async (event) => {
     throw createError({ statusCode: 400, message: 'Username and slug are required' });
   }
 
-  // Handle live preview
-  const query = getQuery(event);
-  const { preview, token: rawToken } = query;
-  const token = preview === 'true' && rawToken ? String(rawToken) : undefined;
-
   try {
     // Resolve username to Payload user ID
     const ownerId = await resolveUsernameToPayloadUserId(username);
@@ -64,8 +59,8 @@ export default defineEventHandler(async (event) => {
       post,
       relatedPosts: relatedPostsResult.docs,
     };
-  } catch (error: any) {
-    if (error.statusCode) {
+  } catch (error: unknown) {
+    if (error && typeof error === 'object' && 'statusCode' in error) {
       throw error;
     }
     throw createError({

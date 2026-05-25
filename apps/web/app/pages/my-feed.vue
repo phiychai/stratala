@@ -54,13 +54,14 @@ const timelineItems = computed(() =>
 
     // Get thumbnail URL for posts/videos using proper image resolver
     const imageField = item.type === 'post' ? postOrVideo.image : postOrVideo.thumbnail;
-    const thumbnailUrl = getImageUrl(
-      typeof imageField === 'object' && imageField !== null
-        ? (imageField as any)
-        : typeof imageField === 'number'
-          ? imageField
-          : null
-    );
+    const mediaObject =
+      typeof imageField === 'object' &&
+      imageField !== null &&
+      'id' in imageField &&
+      typeof (imageField as { id?: unknown }).id === 'number'
+        ? (imageField as { id: number; url?: string | null; filename?: string | null })
+        : null;
+    const thumbnailUrl = getImageUrl(typeof imageField === 'number' ? imageField : mediaObject);
 
     // Get content type info
     const isVideo = item.type === 'video';
@@ -76,7 +77,7 @@ const timelineItems = computed(() =>
       description: (postOrVideo.title as string) || 'Untitled',
       // Add custom data for navigation and images
       contentId: itemContent.id as number,
-      contentSlug: postOrVideo.slug as string,
+      contentSlug: typeof postOrVideo.slug === 'string' ? postOrVideo.slug : '',
       contentType: item.type,
       thumbnailUrl,
     };
@@ -326,7 +327,7 @@ useSeoMeta({
 
                 <!-- Share dropdown -->
                 <UDropdownMenu
-                  :items="getShareItems(item.contentType, item.contentSlug, item.description)"
+                  :items="getShareItems(item.contentType, item.contentSlug, item.description || '')"
                   :content="{ align: 'start' }"
                 >
                   <UButton color="neutral" variant="ghost" size="xs" @click.prevent>

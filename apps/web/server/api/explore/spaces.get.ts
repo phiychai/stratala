@@ -1,6 +1,12 @@
 import { getItems } from '~~/server/utils/payload-server';
+type SpaceDoc = {
+  id?: string | number;
+  name?: string;
+  slug?: string;
+  description?: string | null;
+};
 
-export default defineCachedEventHandler(async (event) => {
+export default defineCachedEventHandler(async (_event) => {
   try {
     // Fetch all spaces (tenants collection)
     const result = await getItems('tenants', {
@@ -10,10 +16,10 @@ export default defineCachedEventHandler(async (event) => {
       depth: 1,
     });
 
-    const spaces = result.docs.map((space: any) => ({
+    const spaces = result.docs.map((space: SpaceDoc) => ({
       id: String(space.id),
-      name: space.name,
-      slug: space.slug,
+      name: space.name || '',
+      slug: space.slug || '',
       description: space.description || null,
     }));
 

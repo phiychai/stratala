@@ -1,4 +1,4 @@
-import { CollectionConfig } from 'payload/types';
+import type { CollectionConfig } from 'payload/types'
 
 const BlockPricingCards: CollectionConfig = {
   slug: 'block-pricing-cards',
@@ -37,7 +37,8 @@ const BlockPricingCards: CollectionConfig = {
       name: 'badge',
       type: 'text',
       admin: {
-        description: 'Badge that displays at the top of the pricing plan card to add helpful context.',
+        description:
+          'Badge that displays at the top of the pricing plan card to add helpful context.',
       },
     },
     {
@@ -50,7 +51,8 @@ const BlockPricingCards: CollectionConfig = {
         },
       ],
       admin: {
-        description: 'Short list of features included in this plan. Press `Enter` to add another item to the list.',
+        description:
+          'Short list of features included in this plan. Press `Enter` to add another item to the list.',
       },
     },
     {
@@ -86,7 +88,6 @@ const BlockPricingCards: CollectionConfig = {
     },
   ],
   timestamps: true,
-};
+}
 
-export default BlockPricingCards;
-
+export default BlockPricingCards

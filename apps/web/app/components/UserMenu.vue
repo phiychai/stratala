@@ -4,7 +4,7 @@ import type { DropdownMenuItem } from '@nuxt/ui';
 defineProps<{
   collapsed?: boolean;
 }>();
-const router = useRouter();
+const _router = useRouter();
 const colorMode = useColorMode();
 const { user: authUser, logout } = useAuth();
 

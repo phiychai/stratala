@@ -9,7 +9,7 @@ const props = defineProps({
 });
 
 const { isAuthenticated } = useAuth();
-const route = useRoute();
+const _route = useRoute();
 
 // Determine error type and appropriate messaging
 const statusCode = computed(() => props.error.statusCode || 500);
@@ -99,8 +99,8 @@ const links = [
 
 // Try to load navigation data, but don't fail if it doesn't work
 // Only load if authenticated (for search functionality)
-const navigation = ref([]);
-const files = ref([]);
+const navigation = ref<unknown[]>([]);
+const files = ref<unknown[]>([]);
 
 if (isAuthenticated.value) {
   try {
@@ -139,6 +139,12 @@ if (isAuthenticated.value) {
 // Handle error clearing
 const handleError = () => {
   clearError({ redirect: isAuthenticated.value ? '/home' : '/' });
+};
+
+const reloadPage = () => {
+  if (typeof window !== 'undefined') {
+    window.location.reload();
+  }
 };
 </script>
 
@@ -185,13 +191,7 @@ const handleError = () => {
                   <UButton v-if="is404" to="/explore" color="neutral" variant="outline" size="lg">
                     Browse Content
                   </UButton>
-                  <UButton
-                    v-else
-                    color="neutral"
-                    variant="outline"
-                    size="lg"
-                    @click="() => window.location.reload()"
-                  >
+                  <UButton v-else color="neutral" variant="outline" size="lg" @click="reloadPage">
                     Try Again
                   </UButton>
                 </div>
@@ -235,13 +235,7 @@ const handleError = () => {
                 <UButton v-if="is404" to="/explore" color="neutral" variant="outline" size="lg">
                   Browse Content
                 </UButton>
-                <UButton
-                  v-else
-                  color="neutral"
-                  variant="outline"
-                  size="lg"
-                  @click="() => window.location.reload()"
-                >
+                <UButton v-else color="neutral" variant="outline" size="lg" @click="reloadPage">
                   Try Again
                 </UButton>
               </div>

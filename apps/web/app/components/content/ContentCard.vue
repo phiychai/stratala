@@ -132,7 +132,11 @@ const authorName = computed(() => {
 // Get author avatar/image
 const authorAvatar = computed(() => {
   if (!author.value) return null;
-  const authorObj = author.value as any;
+  const authorObj = author.value as {
+    avatar?: string | null;
+    image?: string | null;
+    profileImage?: string | null;
+  };
   // Check for various possible avatar/image fields
   return authorObj.avatar || authorObj.image || authorObj.profileImage || null;
 });
@@ -156,7 +160,7 @@ const publishedDate = computed(() => {
   if (content.publishedAt) {
     return formatDistanceToNow(new Date(content.publishedAt), { addSuffix: true });
   }
-  return;
+  return null;
 });
 </script>
 

@@ -1,4 +1,4 @@
-import type { GlobalConfig } from 'payload';
+import type { GlobalConfig } from 'payload'
 
 /**
  * Site Settings Global
@@ -49,7 +49,6 @@ const SiteSettings: GlobalConfig = {
       },
     },
   ],
-};
+}
 
-export default SiteSettings;
-
+export default SiteSettings

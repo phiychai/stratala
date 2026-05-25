@@ -9,12 +9,12 @@ defineProps<{
 const items = [
   {
     label: 'Edit member',
-    onSelect: () => console.log('Edit member'),
+    onSelect: () => console.warn('Edit member'),
   },
   {
     label: 'Remove member',
     color: 'error' as const,
-    onSelect: () => console.log('Remove member'),
+    onSelect: () => console.warn('Remove member'),
   },
 ] satisfies DropdownMenuItem[];
 </script>

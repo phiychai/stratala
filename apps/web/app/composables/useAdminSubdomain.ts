@@ -16,11 +16,12 @@ export const useAdminSubdomain = () => {
         // Fall back to checking headers
         const headers = useRequestHeaders();
         const host = headers.host || '';
-        const hostname = host.split(':')[0];
+        const hostname = host.split(':')[0] || '';
         const parts = hostname.split('.');
+        const subdomain = parts[0];
 
-        if (parts.length >= 2) {
-          return parts[0].toLowerCase() === 'admin';
+        if (parts.length >= 2 && subdomain) {
+          return subdomain.toLowerCase() === 'admin';
         }
       }
       return false;
@@ -30,11 +31,12 @@ export const useAdminSubdomain = () => {
 
       const { hostname } = window.location;
       const parts = hostname.split('.');
+      const subdomain = parts[0];
 
       // Check if first part is 'admin'
       // admin.localhost or admin.example.com
-      if (parts.length >= 2) {
-        return parts[0].toLowerCase() === 'admin';
+      if (parts.length >= 2 && subdomain) {
+        return subdomain.toLowerCase() === 'admin';
       }
 
       return false;
@@ -50,7 +52,7 @@ export const useAdminSubdomain = () => {
     const parts = currentHost.split('.');
 
     // If already on admin subdomain, just navigate
-    if (parts[0].toLowerCase() === 'admin') {
+    if (parts[0]?.toLowerCase() === 'admin') {
       navigateTo(path || '/admin');
       return;
     }

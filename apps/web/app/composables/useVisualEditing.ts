@@ -21,7 +21,7 @@ export default function useVisualEditing() {
     isVisualEditingEnabled.value = false;
   }
 
-  const apply = (options: Pick<ApplyOptions, 'elements' | 'onSaved' | 'customClass'>) => {
+  const apply = (_options: Pick<ApplyOptions, 'elements' | 'onSaved' | 'customClass'>) => {
     if (!isVisualEditingEnabled.value) return;
     // TODO: Implement visual editing for Payload
     // Payload doesn't have built-in visual editing, so this would need custom implementation

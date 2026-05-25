@@ -53,15 +53,15 @@ const feedOrientation = computed(() => props.data?.orientation || 'horizontal');
     <!-- Show posts -->
     <UBlogPosts v-else :orientation="feedOrientation">
       <UBlogPost
-        v-for="(post, index) in postsWithImageUrls"
+        v-for="post in postsWithImageUrls"
         :key="post.id"
         :to="`/blog/${post.slug}`"
         :title="post.title"
         :description="post.description || undefined"
         v-bind="post.imageUrl ? { image: post.imageUrl } : {}"
         :date="
-          post.published_at
-            ? formatDistanceToNow(new Date(post.published_at), { addSuffix: true })
+          post.publishedAt
+            ? formatDistanceToNow(new Date(post.publishedAt), { addSuffix: true })
             : undefined
         "
         :authors="
@@ -69,7 +69,12 @@ const feedOrientation = computed(() => props.data?.orientation || 'horizontal');
             ? [
                 {
                   name: `${post.author.firstName || ''} ${post.author.lastName || ''}`.trim(),
-                  avatar: post.author.avatar, // Use the already-transformed value
+                  avatar: (post.author as { avatarUrl?: string }).avatarUrl
+                    ? {
+                        src: (post.author as { avatarUrl?: string }).avatarUrl as string,
+                        alt: `${post.author.firstName || ''} ${post.author.lastName || ''}`.trim(),
+                      }
+                    : undefined,
                 },
               ]
             : undefined

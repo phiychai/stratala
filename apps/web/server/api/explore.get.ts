@@ -1,5 +1,15 @@
 import { z } from 'zod';
 import { getItems } from '~~/server/utils/payload-server';
+interface ContentRecord {
+  id?: string | number;
+  title?: string;
+  slug?: string;
+}
+interface NamedRecord {
+  id?: string | number;
+  title?: string;
+  slug?: string;
+}
 
 const querySchema = z.object({
   limit: z.coerce.number().min(1).max(100).default(20),
@@ -20,7 +30,7 @@ export default defineCachedEventHandler(async (event) => {
   const { limit, page, category, tag, search, type } = query.data;
 
   // Build where clause
-  const where: Record<string, any> = {
+  const where: Record<string, unknown> = {
     status: {
       equals: 'published',
     },
@@ -53,10 +63,10 @@ export default defineCachedEventHandler(async (event) => {
   try {
     const collections =
       type === 'all' ? ['posts', 'videos'] : [type === 'post' ? 'posts' : 'videos'];
-    const allContent: Array<{ type: 'post' | 'video'; content: any }> = [];
+    const allContent: Array<{ type: 'post' | 'video'; content: ContentRecord }> = [];
 
     for (const collection of collections) {
-      const result = await getItems(collection, {
+      const result = await getItems<ContentRecord>(collection, {
         where,
         limit,
         page,
@@ -87,12 +97,12 @@ export default defineCachedEventHandler(async (event) => {
     return {
       content: allContent,
       count: allContent.length,
-      categories: categoriesResult.docs.map((cat: any) => ({
+      categories: categoriesResult.docs.map((cat: NamedRecord) => ({
         id: String(cat.id),
         name: cat.title,
         slug: cat.slug,
       })),
-      tags: tagsResult.docs.map((tag: any) => ({
+      tags: tagsResult.docs.map((tag: NamedRecord) => ({
         id: String(tag.id),
         name: tag.title,
         slug: tag.slug,

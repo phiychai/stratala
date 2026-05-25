@@ -136,7 +136,10 @@ async function onFileChange(e: Event) {
     return;
   }
 
-  const file = input.files[0]!;
+  const file = input.files[0];
+  if (!file) {
+    return;
+  }
 
   // Validate file type
   const validTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif'];

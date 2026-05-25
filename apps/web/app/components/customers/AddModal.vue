@@ -2,6 +2,7 @@
 import * as z from 'zod';
 import type { FormSubmitEvent } from '@nuxt/ui';
 import { UserRole, USER_ROLES, getRoleOptions } from '~/types/enums';
+import type { UserRoleType } from '@stratala/shared-types';
 
 const emit = defineEmits<{
   created: [];
@@ -29,6 +30,13 @@ const state = reactive<Partial<Schema>>({
   role: UserRole.USER,
 });
 
+const roleModel = computed({
+  get: (): UserRoleType => (state.role as UserRoleType | undefined) ?? UserRole.USER,
+  set: (value: UserRoleType) => {
+    state.role = value as Schema['role'];
+  },
+});
+
 async function onSubmit(event: FormSubmitEvent<Schema>) {
   loading.value = true;
   try {
@@ -39,7 +47,7 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
         lastName: event.data.lastName,
         email: event.data.email,
         password: event.data.password,
-        role: event.data.role,
+        role: event.data.role as UserRoleType,
       },
       credentials: 'include',
     });
@@ -81,7 +89,7 @@ function reset() {
   state.lastName = undefined;
   state.email = undefined;
   state.password = undefined;
-  state.role = 'user';
+  state.role = UserRole.USER;
 }
 
 watch(open, (isOpen) => {
@@ -129,7 +137,7 @@ watch(open, (isOpen) => {
 
           <UFormField label="Role" name="role">
             <USelect
-              v-model="state.role"
+              v-model="roleModel"
               :items="getRoleOptions(true)"
               value-key="value"
               class="w-full"

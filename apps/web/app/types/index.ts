@@ -1,6 +1,7 @@
 import type { ParsedContentv2 } from '@nuxt/content';
 import type { BadgeProps, LinkProps, AvatarProps } from '#ui/types';
 import type { UserProfile } from '@stratala/shared-types';
+import type { UserStatusType } from './enums';
 
 // Re-export types from organized type files
 export type * from './components';
@@ -23,7 +24,7 @@ export interface BlogPost extends ParsedContentv2 {
 
 /**
  * Legacy User type (for backward compatibility)
- * @deprecated Use UserProfile from @stratalainstead
+ * @deprecated Use UserProfile from @stratala/shared-types instead
  */
 // eslint-disable-next-line @typescript-eslint/no-empty-object-type
 export interface User extends UserProfile {}
@@ -38,7 +39,7 @@ export interface DashboardUser {
   name: string;
   email: string;
   avatar?: AvatarProps;
-  status: UserStatus;
+  status: UserStatusType;
   location: string;
   role?: 'user' | 'admin';
   isActive?: boolean;

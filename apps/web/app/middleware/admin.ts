@@ -6,7 +6,7 @@ import { UserRole } from '~/types/enums';
  * Protects admin routes - only accessible to users with admin role
  * and only via admin subdomain
  */
-export default defineNuxtRouteMiddleware((to, from) => {
+export default defineNuxtRouteMiddleware((to, _from) => {
   const authStore = useAuthStore();
   const { isAdminSubdomain, redirectToAdminSubdomain } = useAdminSubdomain();
 

@@ -231,12 +231,12 @@ export interface PayloadImageProps {
   className?: string;
   loading?: 'lazy' | 'eager';
   objectFit?: 'contain' | 'cover' | 'fill' | 'none' | 'scale-down';
-  [key: string]: string | number | boolean | object | undefined;
+  [key: string]: string | number | boolean | object | null | undefined;
 }
 
 // Text (Prose)
 export interface ProseProps {
-  content: string | object | null | undefined; // Can be markdown string or Lexical JSON object
+  content: string | Record<string, unknown> | null | undefined; // Can be markdown string or Lexical JSON object
   size?: 'sm' | 'md' | 'lg';
   itemId?: string;
   collection?: string;

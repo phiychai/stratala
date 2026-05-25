@@ -3,6 +3,11 @@ import type { HttpContext } from '@adonisjs/core/http';
 import { auth } from '#config/better_auth';
 import { toWebRequest, fromWebResponse } from '#utils/better_auth_helpers';
 
+type AuthErrorResponse = {
+  code?: string;
+  message?: string;
+};
+
 export default class AuthController {
   /**
    * Base handler for all Better Auth endpoints
@@ -23,7 +28,7 @@ export default class AuthController {
         // Clone response to read body without consuming the original
         const responseClone = authResponse.clone();
         try {
-          const responseBody = await responseClone.json();
+          const responseBody = (await responseClone.json()) as AuthErrorResponse;
 
           if (
             responseBody?.code === 'PASSWORD_COMPROMISED' ||

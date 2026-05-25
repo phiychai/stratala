@@ -63,14 +63,15 @@ type Schema = z.output<typeof schema>;
 
 const { submit: submitForm } = useFormSubmission({
   onSubmit: async (data) => {
+    const values = data as Schema;
     // Validate password strength before submitting
-    validatePassword(data.password);
-    passwordValue.value = data.password;
+    validatePassword(values.password);
+    passwordValue.value = values.password;
 
     const result = await register({
-      email: data.email,
-      password: data.password,
-      fullName: data.name,
+      email: values.email,
+      password: values.password,
+      fullName: values.name,
       username: username.value.trim() || undefined,
     });
 
@@ -86,7 +87,7 @@ const { submit: submitForm } = useFormSubmission({
       // Redirect to verification page
       router.push({
         path: '/verify-email',
-        query: { email: data.email },
+        query: { email: values.email },
       });
     }
 

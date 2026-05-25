@@ -54,7 +54,7 @@ const sections: Array<{
 
 async function onChange() {
   // Do something with data
-  console.log(state);
+  console.warn(state);
 }
 </script>
 

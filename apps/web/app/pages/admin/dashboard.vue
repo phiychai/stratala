@@ -1,5 +1,5 @@
 <script setup lang="ts">
-const authStore = useAuthStore();
+const _authStore = useAuthStore();
 
 // Protect admin route - only admin users can access
 definePageMeta({
@@ -208,35 +208,33 @@ const getStatusIndicatorColor = (status: 'healthy' | 'degraded' | 'unhealthy'): 
               </UButton>
             </NuxtLink>
 
-            <NuxtLink to="/admin/billing">
+            <NuxtLink to="/settings">
               <UButton variant="outline" block>
                 <Icon name="lucide:credit-card" class="mr-2" />
                 Billing Management
               </UButton>
             </NuxtLink>
 
-            <NuxtLink to="/publish">
-              <UButton variant="outline" block>
-                <Icon name="lucide:file-text" class="mr-2" />
-                Content Management (Payload CMS)
-              </UButton>
-            </NuxtLink>
+            <UButton variant="outline" block @click="navigateTo('/publish')">
+              <Icon name="lucide:file-text" class="mr-2" />
+              Content Management (Payload CMS)
+            </UButton>
 
-            <NuxtLink to="/admin/analytics">
+            <NuxtLink to="/admin/dashboard">
               <UButton variant="outline" block>
                 <Icon name="lucide:bar-chart" class="mr-2" />
                 Analytics
               </UButton>
             </NuxtLink>
 
-            <NuxtLink to="/admin/settings">
+            <NuxtLink to="/settings/members">
               <UButton variant="outline" block>
                 <Icon name="lucide:settings" class="mr-2" />
                 System Settings
               </UButton>
             </NuxtLink>
 
-            <NuxtLink to="/admin/logs">
+            <NuxtLink to="/admin/customers">
               <UButton variant="outline" block>
                 <Icon name="lucide:terminal" class="mr-2" />
                 System Logs

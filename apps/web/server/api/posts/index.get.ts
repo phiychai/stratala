@@ -17,7 +17,7 @@ export default defineCachedEventHandler(async (event) => {
   const { limit, page, category } = query.data;
 
   // Build Payload where filter
-  const where: Record<string, any> = {
+  const where: Record<string, unknown> = {
     status: {
       equals: 'published',
     },

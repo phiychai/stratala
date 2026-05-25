@@ -308,7 +308,7 @@ async function handleDelete(userId: number) {
   }
 }
 
-function handleUserUpdated(updatedUser: DashboardUser) {
+function handleUserUpdated(_updatedUser: DashboardUser) {
   // Refresh the data after update
   refresh();
   selectedUser.value = null;

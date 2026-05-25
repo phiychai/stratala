@@ -15,7 +15,7 @@ useSeoMeta({
 
 const route = useRoute();
 const router = useRouter();
-const toast = useToast();
+const _toast = useToast();
 const { resetPassword } = useAuth();
 
 // Redirect if already authenticated
@@ -23,7 +23,7 @@ useAuthRedirect('/');
 
 const email = (route.query.email as string) || '';
 const passwordValue = ref('');
-const confirmPassword = ref('');
+const _confirmPassword = ref('');
 const { score, feedback, validatePassword } = usePasswordValidation();
 
 // Watch password changes for real-time validation

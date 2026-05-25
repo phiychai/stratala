@@ -3,6 +3,8 @@ import { usePayloadImage } from './usePayloadImage';
 
 export interface TransformedVideo extends Video {
   thumbnailUrl?: string;
+  slug?: string;
+  categories?: Array<string | { id?: number | string; title?: string; slug?: string }>;
   author?: {
     firstName?: string;
     lastName?: string;
@@ -24,6 +26,7 @@ export function useVideoTransform() {
    */
   function transformVideos(videos: Video[]): TransformedVideo[] {
     return videos.map((video) => {
+      const videoRecord = video as Video & { author?: unknown };
       // Handle Payload thumbnail format (number ID or Media object)
       const thumbnailUrl = getImageUrl(
         typeof video.thumbnail === 'object' && video.thumbnail !== null
@@ -33,10 +36,18 @@ export function useVideoTransform() {
             : null
       );
 
-      const author = video.author && typeof video.author === 'object' ? video.author : null;
+      const author =
+        videoRecord.author && typeof videoRecord.author === 'object' ? videoRecord.author : null;
       // Author avatar might be in a different format, handle accordingly
       const authorAvatarUrl =
-        author && 'avatar' in author ? getImageUrl(author.avatar as any) : undefined;
+        author && 'avatar' in author
+          ? getImageUrl(
+              ((author as { avatar?: unknown }).avatar ?? null) as
+                | number
+                | { id: number; url?: string | null; filename?: string | null }
+                | null
+            )
+          : undefined;
 
       return {
         ...video,
@@ -48,7 +59,9 @@ export function useVideoTransform() {
               avatar: authorAvatarUrl
                 ? {
                     src: authorAvatarUrl,
-                    alt: `${author.firstName || ''} ${author.lastName || ''}`.trim() || 'Author',
+                    alt:
+                      `${(author as { firstName?: string }).firstName || ''} ${(author as { lastName?: string }).lastName || ''}`.trim() ||
+                      'Author',
                   }
                 : undefined,
             }

@@ -86,28 +86,32 @@ export default defineEventHandler(async (event) => {
     console.error(`   Backend URL: ${backendUrl}`);
     console.error(`   Target URL: ${fullUrl}`);
 
-    // Provide more helpful error messages
-    let errorMessage = 'Authentication service unavailable';
-    let statusCode = 503; // Service Unavailable
-
     const errorName =
       error && typeof error === 'object' && 'name' in error
         ? (error as { name?: string }).name
         : undefined;
     const errorMsg = error instanceof Error ? error.message : String(error);
-
-    if (errorName === 'AbortError' || errorMsg.includes('timeout')) {
-      errorMessage =
-        'Authentication service timeout. Please check if the backend server is running.';
-    } else if (errorMsg.includes('ECONNREFUSED') || errorMsg.includes('connect')) {
-      errorMessage = `Cannot connect to backend server at ${backendUrl}. Please ensure the backend is running on port 3333.`;
-      statusCode = 503;
-    } else if (errorMsg.includes('ENOTFOUND')) {
-      errorMessage = `Backend server not found at ${backendUrl}. Please check your configuration.`;
-      statusCode = 503;
-    } else {
-      errorMessage = errorMsg || 'Authentication proxy error';
-    }
+    const { statusCode, errorMessage } =
+      errorName === 'AbortError' || errorMsg.includes('timeout')
+        ? {
+            statusCode: 503,
+            errorMessage:
+              'Authentication service timeout. Please check if the backend server is running.',
+          }
+        : errorMsg.includes('ECONNREFUSED') || errorMsg.includes('connect')
+          ? {
+              statusCode: 503,
+              errorMessage: `Cannot connect to backend server at ${backendUrl}. Please ensure the backend is running on port 3333.`,
+            }
+          : errorMsg.includes('ENOTFOUND')
+            ? {
+                statusCode: 503,
+                errorMessage: `Backend server not found at ${backendUrl}. Please check your configuration.`,
+              }
+            : {
+                statusCode: 503,
+                errorMessage: errorMsg || 'Authentication proxy error',
+              };
 
     throw createError({
       statusCode,
