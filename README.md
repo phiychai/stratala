@@ -91,7 +91,7 @@ Stratala is a next-generation content platform that blends the best of Substack,
 ## 📁 Project Structure
 
 ```
-turborepo-saas-starter/
+stratala/
 ├── apps/
 │   ├── web/                    # Nuxt 4 frontend application
 │   │   ├── app/               # Nuxt app directory
@@ -599,9 +599,9 @@ Runs on every push and PR:
 
 ### Status Badges
 
-[![CI](https://github.com/yourusername/turborepo-saas-starter/actions/workflows/ci.yml/badge.svg)](https://github.com/yourusername/turborepo-saas-starter/actions/workflows/ci.yml)
-[![Deploy Production](https://github.com/yourusername/turborepo-saas-starter/actions/workflows/deploy-production.yml/badge.svg)](https://github.com/yourusername/turborepo-saas-starter/actions/workflows/deploy-production.yml)
-[![CodeQL](https://github.com/yourusername/turborepo-saas-starter/actions/workflows/codeql.yml/badge.svg)](https://github.com/yourusername/turborepo-saas-starter/actions/workflows/codeql.yml)
+[![CI](https://github.com/yourusername/stratala/actions/workflows/ci.yml/badge.svg)](https://github.com/yourusername/stratala/actions/workflows/ci.yml)
+[![Deploy Production](https://github.com/yourusername/stratala/actions/workflows/deploy-production.yml/badge.svg)](https://github.com/yourusername/stratala/actions/workflows/deploy-production.yml)
+[![CodeQL](https://github.com/yourusername/stratala/actions/workflows/codeql.yml/badge.svg)](https://github.com/yourusername/stratala/actions/workflows/codeql.yml)
 
 ### Setup CI/CD
 

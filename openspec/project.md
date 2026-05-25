@@ -2,7 +2,7 @@
 
 ## Purpose
 
-Turborepo SaaS Starter is a monorepo template for building modern SaaS
+Stratala is a monorepo template for building modern SaaS
 applications. It provides a fully-featured, enterprise-grade foundation with a
 frontend application, backend API, headless CMS, and shared packages—all managed
 with Turborepo and pnpm workspaces.

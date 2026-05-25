@@ -6,13 +6,13 @@ import url from 'node:url';
 export default {
   // path: __dirname + "/../", for AdonisJS v5
   path: `${path.dirname(url.fileURLToPath(import.meta.url))}/../`, // for AdonisJS v6
-  title: 'Turborepo SaaS Starter API', // use info instead
+  title: 'Stratala API', // use info instead
   version: '1.0.0', // use info instead
-  description: 'RESTful API for the Turborepo SaaS Starter application', // use info instead
+  description: 'RESTful API for the Stratala application', // use info instead
   tagIndex: 2,
   productionEnv: 'production', // optional
   info: {
-    title: 'Turborepo SaaS Starter API',
+    title: 'Stratala API',
     version: '1.0.0',
     description:
       'A comprehensive RESTful API for managing users, authentication, content, billing, and administrative tasks. Built with AdonisJS and Better Auth.',
