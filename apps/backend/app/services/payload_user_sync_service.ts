@@ -316,7 +316,7 @@ export class PayloadUserSyncService {
         return;
       }
 
-      const spaceSlug = username.toLowerCase().replace(/[^a-z0-9-]/g, '-');
+      const spaceSlug = username.toLowerCase().replace(/[^\da-z-]/g, '-');
 
       // Check if space with this slug already exists (collection slug is 'tenants' for plugin compatibility)
       const existingSpacesBySlug = await payload.find({
@@ -405,7 +405,7 @@ export class PayloadUserSyncService {
         return;
       }
 
-      const spaceSlug = username.toLowerCase().replace(/[^a-z0-9-]/g, '-');
+      const spaceSlug = username.toLowerCase().replace(/[^\da-z-]/g, '-');
 
       // Find space by slug (collection slug is 'tenants' for plugin compatibility)
       const spaceResult = await payload.find({

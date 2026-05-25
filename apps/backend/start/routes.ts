@@ -56,7 +56,7 @@ router.get('/health', async () => ({ status: 'ok', timestamp: new Date().toISOSt
  * @response 200 - API information
  */
 router.get('/', async () => ({
-  name: 'Turborepo SaaS Starter API',
+  name: 'Stratala API',
   version: '1.0.0',
   status: 'running',
 }));

@@ -1,7 +1,9 @@
-import type { HttpContext } from '@adonisjs/core/http';
 import { DateTime } from 'luxon';
-import ContentView from '#models/content_view';
+
+import type { HttpContext } from '@adonisjs/core/http';
+
 import ContentLike from '#models/content_like';
+import ContentView from '#models/content_view';
 
 export default class EngagementController {
   /**
@@ -42,7 +44,7 @@ export default class EngagementController {
    * Like content
    */
   async likeContent({ auth, params, response }: HttpContext) {
-    const user = auth.user;
+    const { user } = auth;
     if (!user) {
       return response.unauthorized({ message: 'Authentication required' });
     }
@@ -57,8 +59,7 @@ export default class EngagementController {
       return response.badRequest({ message: 'Content type must be "post" or "video"' });
     }
 
-
-  try {
+    try {
       // Check if already liked
       const existing = await ContentLike.query()
         .where('content_type', contentType)
@@ -90,7 +91,7 @@ export default class EngagementController {
    * Unlike content
    */
   async unlikeContent({ auth, params, response }: HttpContext) {
-    const user = auth.user;
+    const { user } = auth;
     if (!user) {
       return response.unauthorized({ message: 'Authentication required' });
     }
@@ -135,7 +136,7 @@ export default class EngagementController {
       return response.badRequest({ message: 'Content type must be "post" or "video"' });
     }
 
-    const user = auth.user;
+    const { user } = auth;
 
     try {
       // Get like count

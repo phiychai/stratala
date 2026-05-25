@@ -1,6 +1,6 @@
-import { PayloadUserSyncService } from '#services/payload_user_sync_service';
-import payloadService from '#services/payload_service';
 import User from '#models/user';
+import payloadService from '#services/payload_service';
+import { PayloadUserSyncService } from '#services/payload_user_sync_service';
 
 /**
  * Script to check Payload users and verify connectivity
@@ -39,9 +39,9 @@ async function checkPayloadUsers() {
     const writerUsers = result.docs.filter((u) => u.role === 'writer');
     if (writerUsers.length > 0) {
       console.log(`\n✅ Found ${writerUsers.length} writer(s):`);
-      writerUsers.forEach((u) => {
+      for (const u of writerUsers) {
         console.log(`   - ${u.email} (${u.id})`);
-      });
+      }
     } else {
       console.log('\n⚠️  No users with writer role found');
     }

@@ -1,12 +1,12 @@
-import { getPayload } from 'payload';
-import type { Payload } from 'payload';
-import type User from '#models/user';
-import { fileURLToPath } from 'url';
-import { dirname, join } from 'path';
-import { pathToFileURL } from 'url';
-import { lookup } from 'dns/promises';
+import { lookup } from 'node:dns/promises';
+import { dirname, join } from 'node:path';
+import { pathToFileURL, fileURLToPath } from 'node:url';
 
 import logger from '@adonisjs/core/services/logger';
+import { getPayload } from 'payload';
+
+import type User from '#models/user';
+import type { Payload } from 'payload';
 
 // Payload config will be imported dynamically to handle monorepo path resolution
 // The config path is relative to the backend app: ../../studio/src/payload.config
@@ -31,10 +31,7 @@ class PayloadService {
    * rewrite it to localhost so Local API can connect in local CLI runs.
    */
   private async normalizePayloadDbHostForLocalRuntime(): Promise<void> {
-    const uri =
-      process.env.PAYLOAD_DATABASE_URI ||
-      process.env.DATABASE_URI ||
-      '';
+    const uri = process.env.PAYLOAD_DATABASE_URI || process.env.DATABASE_URI || '';
 
     if (!uri) {
       return;
@@ -125,7 +122,8 @@ class PayloadService {
             try {
               configModule = await import(configUrl);
             } catch (nativeError) {
-              const jitiMessage = jitiError instanceof Error ? jitiError.message : String(jitiError);
+              const jitiMessage =
+                jitiError instanceof Error ? jitiError.message : String(jitiError);
               const tsxMessage = tsxError instanceof Error ? tsxError.message : String(tsxError);
               const nativeMessage =
                 nativeError instanceof Error ? nativeError.message : String(nativeError);
@@ -152,7 +150,7 @@ class PayloadService {
           errorMessage.includes('Unknown file extension') ||
           errorMessage.includes('ERR_UNKNOWN_FILE_EXTENSION') ||
           errorMessage.includes('Cannot use import statement outside a module') ||
-          errorMessage.includes('Cannot find module') && errorMessage.includes('payload.config');
+          (errorMessage.includes('Cannot find module') && errorMessage.includes('payload.config'));
 
         if (likelyLoaderIssue) {
           logger.error('Note: TypeScript config files require a loader such as tsx or ts-node');
@@ -203,7 +201,7 @@ class PayloadService {
       const collectionsWithCreatedBy = ['posts', 'pages'];
       if (collectionsWithCreatedBy.includes(collection)) {
         // Get Payload user ID from Adonis user
-        const payloadUserId = options.user.payloadUserId;
+        const { payloadUserId } = options.user;
         if (payloadUserId) {
           where.createdBy = {
             equals: payloadUserId,

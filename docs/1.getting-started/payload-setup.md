@@ -1,6 +1,6 @@
 ---
 title: 'Payload CMS Setup'
-description: 'How to set up and run Payload CMS in the Turborepo SaaS Starter'
+description: 'How to set up and run Payload CMS in the Stratala'
 navigation:
   title: 'Payload CMS Setup'
   order: 2

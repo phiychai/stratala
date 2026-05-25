@@ -492,7 +492,7 @@ class BillingService {
       typeof customerResponse !== 'object' ||
       !('customer' in customerResponse)
     ) {
-      return undefined;
+      return;
     }
     const customer = customerResponse as { customer?: { billing_configuration?: unknown } };
     return customer.customer?.billing_configuration;

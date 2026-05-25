@@ -77,7 +77,7 @@ async function generateUsernameFromEmail(email: string, db: Pool): Promise<strin
   // Sanitize: lowercase, keep only alphanumeric and underscores
   baseUsername = baseUsername
     .toLowerCase()
-    .replace(/[^a-z0-9_]/g, '')
+    .replace(/[^\d_a-z]/g, '')
     .replace(/^_+|_+$/g, '') // Remove leading/trailing underscores
     .replace(/_+/g, '_'); // Replace multiple underscores with single
 
@@ -187,7 +187,7 @@ export const auth = betterAuth({
 
         // Must match your validation rules
         const valid =
-          /^[a-z0-9_]+$/.test(username) &&
+          /^[\d_a-z]+$/.test(username) &&
           !username.startsWith('_') &&
           !username.endsWith('_') &&
           !username.includes('__');

@@ -146,14 +146,14 @@ export class AuthErrorLogger {
 
     const byTypeMap: Record<string, number> = {};
     byType.forEach((row: { event_type: string; count: string | number }) => {
-      byTypeMap[row.event_type] = parseInt(String(row.count || '0'));
+      byTypeMap[row.event_type] = Number.parseInt(String(row.count || '0'));
     });
 
     return {
-      total: parseInt((total?.total as string) || '0'),
-      unhandled: parseInt((unhandled?.total as string) || '0'),
+      total: Number.parseInt((total?.total as string) || '0'),
+      unhandled: Number.parseInt((unhandled?.total as string) || '0'),
       byType: byTypeMap,
-      recentErrors: parseInt((recent?.total as string) || '0'),
+      recentErrors: Number.parseInt((recent?.total as string) || '0'),
     };
   }
 }

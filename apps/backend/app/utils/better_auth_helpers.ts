@@ -33,9 +33,9 @@ export async function fromWebResponse(
   adonisResponse.status(webResponse.status);
 
   // Forward all headers
-  webResponse.headers.forEach((value, key) => {
+  for (const [key, value] of webResponse.headers.entries()) {
     adonisResponse.header(key, value);
-  });
+  }
 
   // Read and return response body
   const responseBody = await webResponse.text();

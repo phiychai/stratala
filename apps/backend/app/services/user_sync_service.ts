@@ -38,7 +38,7 @@ export class UserSyncService {
       throw new Error('Invalid email address');
     }
     // Validate email format
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    const emailRegex = /^[^\s@]+@[^\s@][^\s.@]*\.[^\s@]+$/;
     if (!emailRegex.test(user.email)) {
       throw new Error('Invalid email format');
     }
