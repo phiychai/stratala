@@ -13,18 +13,19 @@ export default tseslint.config(
   nextPlugin.configs['core-web-vitals'],
   ...typescriptConfig,
   {
-  files: ['**/*.ts', '**/*.tsx', '**/*.js', '**/*.jsx'],
-  languageOptions: {
-    globals: {
-      ...globals.browser,
-      ...globals.node,
+    files: ['**/*.ts', '**/*.tsx', '**/*.js', '**/*.jsx'],
+    languageOptions: {
+      globals: {
+        ...globals.browser,
+        ...globals.node,
+      },
     },
-  },
-  rules: {
-    // Next.js apps may use console during development
-    'no-console': ['warn', { allow: ['warn', 'error'] }],
+    rules: {
+      // Next.js apps may use console during development
+      'no-console': ['warn', { allow: ['warn', 'error'] }],
 
-    // Relax top-level-await for Next.js (not always applicable in components)
-    'unicorn/prefer-top-level-await': 'off',
-  },
-})
+      // Relax top-level-await for Next.js (not always applicable in components)
+      'unicorn/prefer-top-level-await': 'off',
+    },
+  }
+);
