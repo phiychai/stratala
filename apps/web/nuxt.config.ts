@@ -18,11 +18,13 @@ export default defineNuxtConfig({
     '@vueuse/nuxt',
     '@pinia/nuxt',
     'pinia-plugin-persistedstate/nuxt',
-    ['nuxt-og-image', { enabled: process.env.NODE_ENV !== 'test' }], // Disable in test environment
+    // Disable in test environment
+    ['nuxt-og-image', { enabled: process.env.NODE_ENV !== 'test' }],
     'nuxt-security',
     '@nuxt/scripts',
     '@nuxtjs/mdc',
     '@nuxtjs/seo',
+    '@nuxt/fonts',
   ],
 
   devtools: {

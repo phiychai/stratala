@@ -436,5 +436,5 @@ export const useAuthStore = defineStore('auth', {
   persist: {
     storage: typeof window !== 'undefined' ? localStorage : undefined,
     paths: ['user'], // Only persist user data, not loading states
-  },
+  } as unknown as never,
 });

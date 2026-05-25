@@ -23,7 +23,7 @@ export default defineCachedEventHandler(
 
     try {
       // Fetch editor's picks
-      const editorsPicksResult = await getItems('editors-picks', {
+      const editorsPicksResult = await getItems<EditorsPick>('editors-picks', {
         where: {},
         limit: 5,
         sort: 'featuredOrder',
@@ -47,7 +47,7 @@ export default defineCachedEventHandler(
           const postContent =
             typeof pick.post === 'object'
               ? pick.post
-              : await getItems('posts', {
+              : await getItems<ContentRecord>('posts', {
                   where: { id: { equals: pick.post } },
                   depth: 2,
                 }).then((r) => r.docs[0]);
@@ -62,7 +62,7 @@ export default defineCachedEventHandler(
           const videoContent =
             typeof pick.video === 'object'
               ? pick.video
-              : await getItems('videos', {
+              : await getItems<ContentRecord>('videos', {
                   where: { id: { equals: pick.video } },
                   depth: 2,
                 }).then((r) => r.docs[0]);
@@ -104,7 +104,7 @@ export default defineCachedEventHandler(
           const data = await trendingPostsResponse.json();
           trendingPosts = ((data as { content?: TrendingItem[] }).content || []).map((item) => ({
             type: 'post' as const,
-            content: item.content,
+            content: item.content || {},
             score: item.trendingScore ?? 0,
           }));
         }
@@ -116,7 +116,7 @@ export default defineCachedEventHandler(
           const data = await trendingVideosResponse.json();
           trendingVideos = ((data as { content?: TrendingItem[] }).content || []).map((item) => ({
             type: 'video' as const,
-            content: item.content,
+            content: item.content || {},
             score: item.trendingScore ?? 0,
           }));
         }
@@ -124,7 +124,7 @@ export default defineCachedEventHandler(
 
       // Fallback to recent content if trending API fails
       if (shouldFetchPosts && trendingPosts.length === 0) {
-        const recentPosts = await getItems('posts', {
+        const recentPosts = await getItems<ContentRecord>('posts', {
           where: {
             status: {
               equals: 'published',
@@ -143,7 +143,7 @@ export default defineCachedEventHandler(
       }
 
       if (shouldFetchVideos && trendingVideos.length === 0) {
-        const recentVideos = await getItems('videos', {
+        const recentVideos = await getItems<ContentRecord>('videos', {
           where: {
             status: {
               equals: 'published',

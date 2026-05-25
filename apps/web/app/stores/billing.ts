@@ -226,5 +226,5 @@ export const useBillingStore = defineStore('billing', {
   persist: {
     storage: typeof window !== 'undefined' ? localStorage : undefined,
     paths: ['currentSubscription'],
-  },
+  } as unknown as never,
 });

@@ -49,7 +49,9 @@ export function usePostCategories(posts?: Ref<Post[]>) {
 
     for (const post of posts.value) {
       if (post.categories) {
-        const postCategories = Array.isArray(post.categories) ? post.categories : [];
+        const postCategories: unknown[] = Array.isArray(post.categories)
+          ? (post.categories as unknown[])
+          : [];
         for (const cat of postCategories) {
           if (typeof cat === 'string' && cat) {
             // If it's a string, create a category from it

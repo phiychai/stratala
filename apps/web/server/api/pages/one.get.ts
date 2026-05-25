@@ -1,5 +1,14 @@
 import { withoutTrailingSlash, withLeadingSlash } from 'ufo';
 import { getItems } from '~~/server/utils/payload-server';
+type PageBlock = {
+  blockType?: string;
+  limit?: number;
+  posts?: unknown[];
+};
+type PageDoc = {
+  permalink?: string;
+  blocks?: PageBlock[];
+};
 
 export default defineCachedEventHandler(
   async (event) => {
@@ -13,7 +22,7 @@ export default defineCachedEventHandler(
 
     try {
       // Find page by permalink
-      const pagesResult = await getItems('pages', {
+      const pagesResult = await getItems<PageDoc>('pages', {
         where: {
           permalink: {
             equals: permalink,
@@ -31,7 +40,7 @@ export default defineCachedEventHandler(
       }
 
       // Filter client-side to find exact permalink match (Payload query might return wrong results)
-      const page = pagesResult.docs.find((p: { permalink?: string }) => p.permalink === permalink);
+      const page = pagesResult.docs.find((p) => p.permalink === permalink);
 
       if (!page) {
         throw createError({ statusCode: 404, statusMessage: 'Page not found' });
@@ -46,8 +55,8 @@ export default defineCachedEventHandler(
       // Fetch posts for block_posts blocks
       if (Array.isArray(page?.blocks)) {
         const postBlockPromises = page.blocks
-          .filter((block: { blockType?: string }) => block.blockType === 'posts')
-          .map(async (block: { blockType?: string; limit?: number }) => {
+          .filter((block) => block.blockType === 'posts')
+          .map(async (block) => {
             const limit = block.limit ?? 12;
 
             const postsResult = await getItems('posts', {

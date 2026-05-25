@@ -135,4 +135,4 @@ export default defineAppConfig({
       },
     },
   },
-});
+} as unknown as { ui: { icons: object } });
