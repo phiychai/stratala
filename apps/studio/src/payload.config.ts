@@ -1,33 +1,32 @@
 // storage-adapter-import-placeholder
-import { postgresAdapter } from '@payloadcms/db-postgres'
-import { lexicalEditor } from '@payloadcms/richtext-lexical'
-import { multiTenantPlugin } from '@payloadcms/plugin-multi-tenant'
 
-import { getUserTenantIDs } from './utilities/getUserTenantIDs'
-import path from 'path'
+import path from 'node:path'
+import { fileURLToPath } from 'node:url'
+
+import { postgresAdapter } from '@payloadcms/db-postgres'
+import { multiTenantPlugin } from '@payloadcms/plugin-multi-tenant'
+import { lexicalEditor } from '@payloadcms/richtext-lexical'
 import { buildConfig } from 'payload'
-import { fileURLToPath } from 'url'
 import sharp from 'sharp'
 
 // Collections
-import { Users } from './collections/Users'
-import { Media } from './collections/Media'
-import Spaces from './collections/Spaces'
-import Posts from './collections/Posts'
-import Videos from './collections/Videos'
-import EditorsPicks from './collections/EditorsPicks'
-import Pages from './collections/Pages'
 import Categories from './collections/Categories'
-import Tags from './collections/Tags'
-import Redirects from './collections/Redirects'
-import Forms from './collections/Forms'
+import EditorsPicks from './collections/EditorsPicks'
 import FormFields from './collections/FormFields'
+import Forms from './collections/Forms'
 import FormSubmissions from './collections/FormSubmissions'
 import FormSubmissionValues from './collections/FormSubmissionValues'
-
-// Globals
-import SiteSettings from './globals/SiteSettings'
+import { Media } from './collections/Media'
+import Pages from './collections/Pages'
+import Posts from './collections/Posts'
+import Redirects from './collections/Redirects'
+import Spaces from './collections/Spaces'
+import Tags from './collections/Tags'
+import { Users } from './collections/Users'
+import Videos from './collections/Videos'
 import Navigation from './globals/Navigation'
+import SiteSettings from './globals/SiteSettings'
+import { getUserTenantIDs } from './utilities/getUserTenantIDs'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
@@ -92,12 +91,12 @@ export default buildConfig({
       // The 'tenants' collection (Spaces) is global and all authenticated users can read all spaces
       // According to the official docs, only collections in this list get the tenant field and filtering
       collections: {
-        'posts': {},
-        'videos': {},
-        'pages': {},
-        'categories': {},
-        'tags': {},
-        'forms': {},
+        posts: {},
+        videos: {},
+        pages: {},
+        categories: {},
+        tags: {},
+        forms: {},
         'form-fields': {},
         'form-submissions': {},
         'form-submission-values': {},
@@ -106,9 +105,8 @@ export default buildConfig({
       // The tenants collection is NOT in the tenant-scoped collections list,
       // so it should NOT be filtered, but the plugin might still check userHasAccessToAllTenants
       // By returning true for all authenticated users, we ensure all spaces are visible
-      userHasAccessToAllTenants: (user: User) => {
-        return user?.role === 'admin' || user?.role === 'content_admin' || user?.role === 'publisher';
-      },
+      userHasAccessToAllTenants: (user: User) =>
+        user?.role === 'admin' || user?.role === 'content_admin' || user?.role === 'publisher',
       tenantsArrayField: {
         includeDefaultField: true,
       },

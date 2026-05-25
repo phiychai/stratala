@@ -1,4 +1,4 @@
-import type { CollectionConfig } from 'payload';
+import type { CollectionConfig } from 'payload'
 
 /**
  * Tags Collection
@@ -17,13 +17,9 @@ const Tags: CollectionConfig = {
     // Everyone can read tags (for frontend)
     read: () => true,
     // Only admins and content admins can create tags
-    create: ({ req: { user } }) => {
-      return user && ['admin', 'content_admin'].includes(user.role);
-    },
+    create: ({ req: { user } }) => user && ['admin', 'content_admin'].includes(user.role),
     // Only admins and content admins can update tags
-    update: ({ req: { user } }) => {
-      return user && ['admin', 'content_admin'].includes(user.role);
-    },
+    update: ({ req: { user } }) => user && ['admin', 'content_admin'].includes(user.role),
     // Only admins can delete tags
     delete: ({ req: { user } }) => user?.role === 'admin',
   },
@@ -52,13 +48,13 @@ const Tags: CollectionConfig = {
             if (!value && data?.name) {
               return data.name
                 .toLowerCase()
-                .replace(/[^a-z0-9]+/g, '-')
-                .replace(/(^-|-$)/g, '');
+                .replace(/[^\da-z]+/g, '-')
+                .replace(/(^-|-$)/g, '')
             }
             if (typeof value === 'string') {
-              return value.toLowerCase().replace(/[^a-z0-9-]/g, '-');
+              return value.toLowerCase().replace(/[^\da-z-]/g, '-')
             }
-            return value;
+            return value
           },
         ],
       },
@@ -72,7 +68,6 @@ const Tags: CollectionConfig = {
     },
   ],
   timestamps: true,
-};
+}
 
-export default Tags;
-
+export default Tags

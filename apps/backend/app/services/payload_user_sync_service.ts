@@ -5,6 +5,18 @@ import type User from '#models/user';
 import payloadRestService from '#services/payload_rest_service';
 import payloadService from '#services/payload_service';
 
+type TenantRelation = {
+  tenant: string | number | { id?: string | number };
+};
+
+type PayloadLocalApi = {
+  find: (args: Record<string, unknown>) => Promise<{ docs: Array<{ id?: string | number }> }>;
+  findByID: (args: Record<string, unknown>) => Promise<Record<string, unknown>>;
+  create: (args: Record<string, unknown>) => Promise<{ id?: string | number }>;
+  update: (args: Record<string, unknown>) => Promise<unknown>;
+  delete: (args: Record<string, unknown>) => Promise<unknown>;
+};
+
 /**
  * Payload User Sync Service
  *
@@ -48,7 +60,7 @@ export class PayloadUserSyncService {
    */
   static async findPayloadUserByEmail(email: string): Promise<string | null> {
     try {
-      const payload = await payloadService.getPayload();
+      const payload = (await payloadService.getPayload()) as unknown as PayloadLocalApi;
 
       const result = await payload.find({
         collection: 'users',
@@ -61,7 +73,7 @@ export class PayloadUserSyncService {
       });
 
       if (result.docs.length > 0 && result.docs[0].id) {
-        return result.docs[0].id as string;
+        return String(result.docs[0].id);
       }
 
       return null;
@@ -76,7 +88,7 @@ export class PayloadUserSyncService {
    */
   static async verifyPayloadUserExists(payloadUserId: string): Promise<boolean> {
     try {
-      const payload = await payloadService.getPayload();
+      const payload = (await payloadService.getPayload()) as unknown as PayloadLocalApi;
 
       await payload.findByID({
         collection: 'users',
@@ -154,14 +166,14 @@ export class PayloadUserSyncService {
       let useRestApi = false;
 
       try {
-        const payload = await payloadService.getPayload();
+        const payload = (await payloadService.getPayload()) as unknown as PayloadLocalApi;
 
         // Check if Payload user already exists
         payloadUserId = user.payloadUserId || (await this.findPayloadUserByEmail(user.email));
 
         if (payloadUserId) {
           // Update existing Payload user
-          const updateData: Record<string, any> = {
+          const updateData: Record<string, unknown> = {
             email: user.email,
             role: payloadRole,
             firstName: user.firstName || undefined,
@@ -183,7 +195,7 @@ export class PayloadUserSyncService {
           logger.info(`Updated Payload user ${payloadUserId} for Adonis user ${user.id}`);
         } else {
           // Create new Payload user
-          const userData: Record<string, any> = {
+          const userData: Record<string, unknown> = {
             email: user.email,
             role: payloadRole,
             firstName: user.firstName || undefined,
@@ -202,7 +214,7 @@ export class PayloadUserSyncService {
             data: userData,
           });
 
-          payloadUserId = createdUser.id as string;
+          payloadUserId = String(createdUser.id);
           if (!payloadUserId) {
             throw new Error('Payload user created but no ID returned');
           }
@@ -291,7 +303,7 @@ export class PayloadUserSyncService {
    */
   static async createTenantForPublisher(payloadUserId: string, adonisUser: User): Promise<void> {
     try {
-      const payload = await payloadService.getPayload();
+      const payload = (await payloadService.getPayload()) as unknown as PayloadLocalApi;
 
       // Get the Payload user to check existing tenants
       const payloadUser = await payload.findByID({
@@ -301,7 +313,7 @@ export class PayloadUserSyncService {
 
       // Check if user already has spaces (tenants) assigned
       // Note: Plugin uses "tenants" field name internally, but collection is "spaces"
-      const existingSpaces = (payloadUser as any).tenants || [];
+      const existingSpaces = (payloadUser as { tenants?: unknown }).tenants || [];
       if (Array.isArray(existingSpaces) && existingSpaces.length > 0) {
         logger.info(
           `Publisher ${payloadUserId} already has ${existingSpaces.length} space(s) assigned`
@@ -333,7 +345,7 @@ export class PayloadUserSyncService {
 
       if (existingSpacesBySlug.docs.length > 0) {
         // Use existing space
-        spaceId = existingSpacesBySlug.docs[0].id as string;
+        spaceId = String(existingSpacesBySlug.docs[0].id);
         logger.info(`Using existing space ${spaceId} for publisher ${payloadUserId}`);
       } else {
         // Create new space with username as name (collection slug is 'tenants' for plugin compatibility)
@@ -348,7 +360,7 @@ export class PayloadUserSyncService {
           },
         });
 
-        spaceId = newSpace.id as string;
+        spaceId = String(newSpace.id);
         logger.info(`Created space ${spaceId} (${spaceSlug}) for publisher ${payloadUserId}`);
       }
 
@@ -377,7 +389,7 @@ export class PayloadUserSyncService {
    */
   static async deleteTenantForPublisher(payloadUserId: string, adonisUser: User): Promise<void> {
     try {
-      const payload = await payloadService.getPayload();
+      const payload = (await payloadService.getPayload()) as unknown as PayloadLocalApi;
 
       // Get Payload user to find their spaces (plugin uses "tenants" field name)
       const payloadUser = await payload.findByID({
@@ -392,7 +404,7 @@ export class PayloadUserSyncService {
       }
 
       // Get user's spaces (plugin field is called "tenants" but collection is "spaces")
-      const userSpaces = (payloadUser as any).tenants || [];
+      const userSpaces = (payloadUser as { tenants?: unknown }).tenants || [];
       if (!Array.isArray(userSpaces) || userSpaces.length === 0) {
         logger.info(`No spaces found for Payload user ${payloadUserId}`);
         return;
@@ -423,19 +435,19 @@ export class PayloadUserSyncService {
         return;
       }
 
-      const spaceId = spaceResult.docs[0].id as string;
+      const spaceId = String(spaceResult.docs[0].id);
 
       // Remove space from user's spaces array (plugin uses "tenants" field name)
-      const updatedSpaces = userSpaces.filter(
-        (t: any) => (typeof t.tenant === 'object' ? t.tenant.id : t.tenant) !== spaceId
+      const updatedSpaces = (userSpaces as TenantRelation[]).filter(
+        (t) => String(typeof t.tenant === 'object' && t.tenant ? t.tenant.id : t.tenant) !== spaceId
       );
 
       await payload.update({
         collection: 'users',
         id: payloadUserId,
         data: {
-          tenants: updatedSpaces.map((t: any) => ({
-            tenant: typeof t.tenant === 'object' ? t.tenant.id : t.tenant,
+          tenants: updatedSpaces.map((t) => ({
+            tenant: typeof t.tenant === 'object' && t.tenant ? t.tenant.id : t.tenant,
           })),
         },
       });
@@ -458,7 +470,7 @@ export class PayloadUserSyncService {
    */
   static async updatePayloadUserEmail(payloadUserId: string, email: string): Promise<boolean> {
     try {
-      const payload = await payloadService.getPayload();
+      const payload = (await payloadService.getPayload()) as unknown as PayloadLocalApi;
 
       await payload.update({
         collection: 'users',
@@ -487,7 +499,7 @@ export class PayloadUserSyncService {
     }
 
     try {
-      const payload = await payloadService.getPayload();
+      const payload = (await payloadService.getPayload()) as unknown as PayloadLocalApi;
 
       await payload.update({
         collection: 'users',

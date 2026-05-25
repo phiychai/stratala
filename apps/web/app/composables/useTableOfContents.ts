@@ -1,15 +1,28 @@
 import { ref, watch, type Ref } from 'vue';
 import type { TocLink } from '~/types/composables';
 
+type LexicalNode = {
+  type?: string;
+  tag?: string;
+  depth?: number;
+  text?: string;
+  children?: LexicalNode[] | LexicalNode;
+  root?: {
+    children?: LexicalNode[];
+  };
+};
+
 export function useTableOfContents(
-  content: Ref<string | null | undefined | any> | (() => string | null | undefined | any)
+  content:
+    | Ref<string | LexicalNode | null | undefined>
+    | (() => string | LexicalNode | null | undefined)
 ) {
   const tocLinks = ref<TocLink[]>([]);
 
   /**
    * Extract text from a Lexical node (recursively)
    */
-  function extractTextFromLexicalNode(node: any): string {
+  function extractTextFromLexicalNode(node: LexicalNode | string | null | undefined): string {
     if (!node) return '';
 
     if (typeof node === 'string') {
@@ -21,7 +34,7 @@ export function useTableOfContents(
     }
 
     if (Array.isArray(node.children)) {
-      return node.children.map((child: any) => extractTextFromLexicalNode(child)).join('');
+      return node.children.map((child) => extractTextFromLexicalNode(child)).join('');
     }
 
     if (node.children && !Array.isArray(node.children)) {
@@ -35,7 +48,7 @@ export function useTableOfContents(
    * Extract headings from Lexical format
    */
   function extractHeadingsFromLexical(
-    content: any,
+    content: LexicalNode | null | undefined,
     headings: TocLink[] = [],
     stack: TocLink[] = []
   ): TocLink[] {
@@ -111,11 +124,11 @@ export function useTableOfContents(
     const stack: TocLink[] = [];
 
     for (const line of lines) {
-      // Match markdown headings (## Heading or ### Heading, etc.)
-      const match = line.match(/^(#{1,6})\s+(.+)$/);
-      if (match && match[1] && match[2]) {
-        const depth = match[1].length;
-        const text = match[2].trim();
+      const trimmed = line.trimStart();
+      const hashes = trimmed.match(/^#{1,6}/)?.[0];
+      if (hashes && trimmed.length > hashes.length && trimmed[hashes.length] === ' ') {
+        const depth = hashes.length;
+        const text = trimmed.slice(depth).trim();
         const id = text
           .toLowerCase()
           .replace(/[^\da-z]+/g, '-')
@@ -152,7 +165,7 @@ export function useTableOfContents(
     return headings;
   }
 
-  function generateToc(content: string | any): TocLink[] {
+  function generateToc(content: string | LexicalNode): TocLink[] {
     if (!content) return [];
 
     // If it's a string, treat it as markdown

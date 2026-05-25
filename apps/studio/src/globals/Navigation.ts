@@ -1,4 +1,4 @@
-import type { GlobalConfig } from 'payload';
+import type { GlobalConfig } from 'payload'
 
 /**
  * Navigation Global
@@ -50,10 +50,9 @@ const Navigation: GlobalConfig = {
           type: 'relationship',
           relationTo: 'pages',
           admin: {
-            condition: (data, siblingData) => {
+            condition: (data, siblingData) =>
               // In array fields, use siblingData to access other fields in the same array item
-              return siblingData?.type === 'page';
-            },
+              siblingData?.type === 'page',
             description: 'Select a page to link to',
           },
         },
@@ -62,9 +61,7 @@ const Navigation: GlobalConfig = {
           type: 'relationship',
           relationTo: 'posts',
           admin: {
-            condition: (data, siblingData) => {
-              return siblingData?.type === 'post';
-            },
+            condition: (data, siblingData) => siblingData?.type === 'post',
             description: 'Select a post to link to',
           },
         },
@@ -72,10 +69,9 @@ const Navigation: GlobalConfig = {
           name: 'url',
           type: 'text',
           admin: {
-            condition: (data, siblingData) => {
-              return siblingData?.type === 'url';
-            },
-            description: 'The URL to link to. Could be relative (ie /my-page) or a full external URL',
+            condition: (data, siblingData) => siblingData?.type === 'url',
+            description:
+              'The URL to link to. Could be relative (ie /my-page) or a full external URL',
           },
         },
         {
@@ -142,9 +138,7 @@ const Navigation: GlobalConfig = {
               type: 'relationship',
               relationTo: 'pages',
               admin: {
-                condition: (data, siblingData) => {
-                  return siblingData?.type === 'page';
-                },
+                condition: (data, siblingData) => siblingData?.type === 'page',
                 description: 'Select a page to link to',
               },
             },
@@ -153,9 +147,7 @@ const Navigation: GlobalConfig = {
               type: 'relationship',
               relationTo: 'posts',
               admin: {
-                condition: (data, siblingData) => {
-                  return siblingData?.type === 'post';
-                },
+                condition: (data, siblingData) => siblingData?.type === 'post',
                 description: 'Select a post to link to',
               },
             },
@@ -163,9 +155,7 @@ const Navigation: GlobalConfig = {
               name: 'url',
               type: 'text',
               admin: {
-                condition: (data, siblingData) => {
-                  return siblingData?.type === 'url';
-                },
+                condition: (data, siblingData) => siblingData?.type === 'url',
                 description: 'The URL to link to',
               },
             },
@@ -180,7 +170,6 @@ const Navigation: GlobalConfig = {
       },
     },
   ],
-};
+}
 
-export default Navigation;
-
+export default Navigation

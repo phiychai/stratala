@@ -77,9 +77,26 @@ export default class UserController {
       }
 
       // User can always update their own profile
-      const data = await request.validateUsing(updateProfileValidator, {
+      const rawData = await (
+        request as unknown as {
+          validateUsing: (
+            validator: typeof updateProfileValidator,
+            options: { meta: { userId: number } }
+          ) => Promise<Record<string, unknown>>;
+        }
+      ).validateUsing(updateProfileValidator, {
         meta: { userId: user.id },
       });
+      const data = rawData as {
+        firstName?: string;
+        lastName?: string;
+        fullName?: string;
+        email?: string;
+        username?: string;
+        avatarUrl?: string | null;
+        bio?: string | null;
+        preferences?: UserPreferences;
+      };
 
       // Handle name splitting if a single "name" field is provided
       // This is for frontend compatibility where name might come as a single field

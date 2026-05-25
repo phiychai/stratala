@@ -6,6 +6,13 @@ const {
 } = await useFetch('/api/site-data', {
   key: 'site-data',
 });
+type SiteDataResponse = {
+  globals?: {
+    accent_color?: string;
+    title?: string;
+  };
+};
+const siteDataValue = computed(() => unref(siteData) as SiteDataResponse | null);
 
 const { isVisualEditingEnabled, apply } = useVisualEditing();
 const { isAuthenticated } = useAuth();
@@ -24,7 +31,7 @@ useHead({
   style: [
     {
       id: 'accent-color',
-      innerHTML: `:root { --accent-color: ${unref(siteData)?.globals.accent_color || '#6644ff'} !important; }`,
+      innerHTML: `:root { --accent-color: ${siteDataValue.value?.globals?.accent_color || '#6644ff'} !important; }`,
     },
   ],
   bodyAttrs: {
@@ -33,8 +40,8 @@ useHead({
 });
 
 useSeoMeta({
-  titleTemplate: `%s / ${unref(siteData)?.globals.title}`,
-  ogSiteName: unref(siteData)?.globals.title,
+  titleTemplate: `%s / ${siteDataValue.value?.globals?.title || ''}`,
+  ogSiteName: siteDataValue.value?.globals?.title,
 });
 // Dashboard sidebar links (only used when authenticated)
 const open = ref(false);

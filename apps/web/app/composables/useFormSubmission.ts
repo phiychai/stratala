@@ -11,7 +11,7 @@
  * @returns Form submission utilities
  */
 export function useFormSubmission<T>(options: {
-  onSubmit: (data: T) => Promise<{ success: boolean; error?: string } | void>;
+  onSubmit: (data: T) => Promise<{ success: boolean; error?: string } | undefined>;
   onSuccess?: (data: T) => void | Promise<void>;
   onError?: (error: string) => void;
   successMessage?: string;

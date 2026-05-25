@@ -1,6 +1,7 @@
 import logger from '@adonisjs/core/services/logger';
 
 import type { HttpContext } from '@adonisjs/core/http';
+import type { UserRoleType } from '@stratala/shared-types';
 
 import * as abilities from '#abilities/main';
 import { auth } from '#config/better_auth';
@@ -118,7 +119,21 @@ export default class AdminController {
     await abilities.manageUsers.execute(authContext.user!);
 
     try {
-      const data = await request.validateUsing(createUserValidator);
+      const rawData = await (
+        request as unknown as {
+          validateUsing: (
+            validator: typeof createUserValidator
+          ) => Promise<Record<string, unknown>>;
+        }
+      ).validateUsing(createUserValidator);
+      const data = rawData as {
+        email: string;
+        password: string;
+        role: UserRoleType;
+        firstName?: string;
+        lastName?: string;
+        username?: string;
+      };
 
       // Check if user already exists
       const existingUser = await User.findBy('email', data.email);
@@ -285,7 +300,6 @@ export default class AdminController {
     ]);
 
     const oldRole = targetUser.role;
-    const oldEmail = targetUser.email;
 
     // Update in AdonisJS first (canonical)
     if (firstName !== undefined) targetUser.firstName = firstName;
@@ -296,7 +310,7 @@ export default class AdminController {
       await EmailSyncService.syncEmailToAdonisAndPayload(targetUser, email);
     }
     if (role !== undefined) {
-      targetUser.role = role as 'user' | 'admin' | 'content_admin' | 'editor' | 'writer';
+      targetUser.role = role as 'user' | 'admin' | 'content_admin' | 'editor' | 'publisher';
     }
     if (isActive !== undefined) targetUser.isActive = isActive;
 

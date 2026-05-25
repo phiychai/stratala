@@ -1,4 +1,4 @@
-import type { Block } from 'payload';
+import type { Block } from 'payload'
 
 /**
  * Gallery Block Collection
@@ -22,7 +22,8 @@ const BlockGallery: CollectionConfig = {
       name: 'tagline',
       type: 'text',
       admin: {
-        description: 'Smaller copy shown above the headline to label a section or add extra context',
+        description:
+          'Smaller copy shown above the headline to label a section or add extra context',
       },
     },
     {
@@ -53,7 +54,6 @@ const BlockGallery: CollectionConfig = {
     },
   ],
   timestamps: true,
-};
+}
 
-export default BlockGallery;
-
+export default BlockGallery

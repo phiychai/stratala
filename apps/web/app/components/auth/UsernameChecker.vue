@@ -54,7 +54,7 @@ interface Props {
   placeholder?: string;
 }
 
-const props = withDefaults(defineProps<Props>(), {
+const _props = withDefaults(defineProps<Props>(), {
   placeholder: 'Choose a username',
 });
 

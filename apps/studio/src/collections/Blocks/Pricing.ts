@@ -1,4 +1,4 @@
-import type { Block } from 'payload';
+import type { Block } from 'payload'
 
 /**
  * Pricing Block Collection
@@ -22,7 +22,8 @@ const BlockPricing: CollectionConfig = {
       name: 'tagline',
       type: 'text',
       admin: {
-        description: 'Smaller copy shown above the headline to label a section or add extra context',
+        description:
+          'Smaller copy shown above the headline to label a section or add extra context',
       },
     },
     {
@@ -62,7 +63,8 @@ const BlockPricing: CollectionConfig = {
           name: 'badge',
           type: 'text',
           admin: {
-            description: 'Badge that displays at the top of the pricing plan card to add helpful context',
+            description:
+              'Badge that displays at the top of the pricing plan card to add helpful context',
           },
         },
         {
@@ -149,7 +151,6 @@ const BlockPricing: CollectionConfig = {
     },
   ],
   timestamps: true,
-};
+}
 
-export default BlockPricing;
-
+export default BlockPricing

@@ -20,9 +20,23 @@ export default [
     rules: {
       // Allow console in backend
       'no-console': 'off',
+      '@typescript-eslint/no-extraneous-class': 'off',
+      'preserve-caught-error': 'off',
+      'prefer-destructuring': 'off',
     },
   },
   {
     ignores: ['build/**', 'tmp/**', 'node_modules/**', 'ace.js', '**/*.generated.*', '**/*.cjs'],
+  },
+  {
+    ignores: [
+      'database/migrations/**',
+      'commands/**',
+      'scripts/**',
+      'tests/**',
+      'bin/**',
+      '.adonisjs/**',
+      'adonisrc.ts',
+    ],
   },
 ];

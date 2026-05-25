@@ -9,8 +9,8 @@ const props = defineProps<{
   options: { value: string; text: string }[];
   id?: string;
   placeholder?: string | null;
-  'aria-describedby'?: string;
-  'aria-invalid'?: boolean;
+  ariaDescribedby?: string;
+  ariaInvalid?: boolean;
   class?: string;
 }>();
 

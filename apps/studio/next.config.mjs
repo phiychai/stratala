@@ -5,7 +5,14 @@ const nextConfig = {
   // Your Next.js config here
   // Parse allowedDevOrigins from environment variable (comma-separated)
   // Default: localhost:3000 if not set
-  allowedDevOrigins: ['http://localhost:3000','http://webdev.lan','https://webdev.lan','http://cms.webdev.lan','https://cms.webdev.lan','cms.webdev.lan'],
+  allowedDevOrigins: [
+    'http://localhost:3000',
+    'http://webdev.lan',
+    'https://webdev.lan',
+    'http://cms.webdev.lan',
+    'https://cms.webdev.lan',
+    'cms.webdev.lan',
+  ],
   webpack: (webpackConfig) => {
     webpackConfig.resolve.extensionAlias = {
       '.cjs': ['.cts', '.cjs'],

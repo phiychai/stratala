@@ -1,4 +1,4 @@
-import type { Block } from 'payload';
+import type { Block } from 'payload'
 
 /**
  * Hero Block
@@ -16,7 +16,8 @@ const Hero: Block = {
       name: 'tagline',
       type: 'text',
       admin: {
-        description: 'Smaller copy shown above the headline to label a section or add extra context',
+        description:
+          'Smaller copy shown above the headline to label a section or add extra context',
       },
     },
     {
@@ -59,7 +60,8 @@ const Hero: Block = {
         },
       ],
       admin: {
-        description: 'The layout for the component. You can set the image to display left, right, or in the center of page',
+        description:
+          'The layout for the component. You can set the image to display left, right, or in the center of page',
       },
     },
     {
@@ -111,7 +113,8 @@ const Hero: Block = {
           type: 'text',
           admin: {
             condition: (data) => data.type === 'url',
-            description: 'The URL to link to. Could be relative (ie /my-page) or a full external URL',
+            description:
+              'The URL to link to. Could be relative (ie /my-page) or a full external URL',
           },
         },
         {
@@ -149,7 +152,6 @@ const Hero: Block = {
       },
     },
   ],
-};
+}
 
-export default Hero;
-
+export default Hero

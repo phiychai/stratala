@@ -163,8 +163,17 @@ export default defineNuxtConfig({
       allowedHosts: ['webdev.lan', 'admin.webdev.lan', 'cms.webdev.lan'],
     },
     optimizeDeps: {
-      include: ['@payloadcms/richtext-lexical/html',    '@vee-validate/zod','better-auth/client', 'better-auth/client/plugins', 'date-fns',  'turndown', 'remark-emoji', 'vee-validate',
-     'zod',],
+      include: [
+        '@payloadcms/richtext-lexical/html',
+        '@vee-validate/zod',
+        'better-auth/client',
+        'better-auth/client/plugins',
+        'date-fns',
+        'turndown',
+        'remark-emoji',
+        'vee-validate',
+        'zod',
+      ],
       exclude: ['@nuxtjs/mdc'],
     },
     build: {

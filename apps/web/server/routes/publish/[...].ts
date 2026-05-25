@@ -22,7 +22,7 @@ export default defineEventHandler(async (event) => {
   const proxyBasePath = '/publish';
 
   // Debug: Log the request path
-  console.log('[Publish Proxy] Request path:', event.path, 'Method:', event.method);
+  console.warn('[Publish Proxy] Request path:', event.path, 'Method:', event.method);
 
   // Skip Next.js internal routes and error handling routes - these should not be proxied
   const nextJsInternalPaths = [
@@ -37,7 +37,7 @@ export default defineEventHandler(async (event) => {
   if (nextJsInternalPaths.some((internalPath) => pathAfterPublish.includes(internalPath))) {
     // Return 404 for Next.js internal routes - they shouldn't be accessed through proxy
     // These are Next.js error handling routes and shouldn't be proxied to Payload
-    console.log('[Publish Proxy] Skipping Next.js internal route:', event.path);
+    console.warn('[Publish Proxy] Skipping Next.js internal route:', event.path);
     throw createError({
       statusCode: 404,
       statusMessage: 'Not found',
@@ -127,7 +127,7 @@ export default defineEventHandler(async (event) => {
       const buffer = Buffer.from(arrayBuffer);
 
       // Set content-length after we know the size
-      setHeader(event, 'content-length', String(buffer.length));
+      setHeader(event, 'content-length', buffer.length);
 
       return buffer;
     } catch (error) {

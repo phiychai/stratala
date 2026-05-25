@@ -1,6 +1,11 @@
 import { getItems } from '~~/server/utils/payload-server';
+type CategoryDoc = {
+  id?: string | number;
+  title?: string;
+  slug?: string;
+};
 
-export default defineEventHandler(async (event) => {
+export default defineEventHandler(async (_event) => {
   try {
     // Query categories collection directly
     const result = await getItems('categories', {
@@ -16,7 +21,7 @@ export default defineEventHandler(async (event) => {
 
     // Convert to expected format
     const formattedCategories = result.docs
-      .map((cat: any) => ({
+      .map((cat: CategoryDoc) => ({
         id: String(cat.id),
         name: String(cat.title || ''),
         slug: cat.slug

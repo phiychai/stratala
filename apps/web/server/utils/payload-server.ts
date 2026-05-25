@@ -20,10 +20,10 @@ const payloadBaseUrl = (payloadUrl as string) || 'http://localhost:3002';
 /**
  * Get items from a collection
  */
-export async function getItems<T = any>(
+export async function getItems<T = unknown>(
   collection: string,
   options: {
-    where?: Record<string, any>;
+    where?: Record<string, unknown>;
     limit?: number;
     page?: number;
     sort?: string;
@@ -73,7 +73,7 @@ export async function getItems<T = any>(
 /**
  * Get a single item by ID
  */
-export async function getItem<T = any>(
+export async function getItem<T = unknown>(
   collection: string,
   id: string,
   options: {
@@ -98,7 +98,7 @@ export async function getItem<T = any>(
 /**
  * Get global data
  */
-export async function getGlobal<T = any>(
+export async function getGlobal<T = unknown>(
   global: string,
   options: {
     depth?: number;
@@ -122,9 +122,9 @@ export async function getGlobal<T = any>(
 /**
  * Create an item
  */
-export async function createItem<T = any>(
+export async function createItem<T = unknown>(
   collection: string,
-  data: Record<string, any>,
+  data: Record<string, unknown>,
   options: {
     depth?: number;
     locale?: string;
@@ -150,10 +150,10 @@ export async function createItem<T = any>(
 /**
  * Update an item
  */
-export async function updateItem<T = any>(
+export async function updateItem<T = unknown>(
   collection: string,
   id: string,
-  data: Record<string, any>,
+  data: Record<string, unknown>,
   options: {
     depth?: number;
     locale?: string;
@@ -190,7 +190,7 @@ export async function deleteItem(collection: string, id: string): Promise<void> 
 /**
  * Payload query filter type (for TypeScript)
  */
-export type PayloadWhere = Record<string, any>;
+export type PayloadWhere = Record<string, unknown>;
 
 /**
  * Payload server instance (for compatibility with existing code)

@@ -1,6 +1,6 @@
 import { getItems } from '~~/server/utils/payload-server';
 
-export default defineEventHandler(async (event) => {
+export default defineEventHandler(async (_event) => {
   try {
     // Fetch all tags
     const result = await getItems('tags', {

@@ -3,6 +3,9 @@
   "compilerOptions": {
     "rootDir": "./",
     "outDir": "./build",
-    "rewriteRelativeImportExtensions": true
-  }
+    "rewriteRelativeImportExtensions": true,
+    "noUnusedLocals": false,
+    "noUnusedParameters": false
+  },
+  "include": ["app/**/*.ts", "config/**/*.ts", "start/**/*.ts", "providers/**/*.ts"]
 }

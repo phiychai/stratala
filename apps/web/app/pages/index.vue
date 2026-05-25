@@ -1,5 +1,5 @@
 <script setup lang="ts">
-const { isAuthenticated, fetchUser } = useAuth();
+const { isAuthenticated, fetchUser: _fetchUser } = useAuth();
 
 // Redirect authenticated users to their dashboard
 if (isAuthenticated.value) {

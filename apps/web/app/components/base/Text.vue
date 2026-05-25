@@ -5,6 +5,10 @@ import { lexicalToHtml, isLexicalContent } from '~/utils/lexicalToHtml';
 const props = withDefaults(defineProps<ProseProps>(), {
   size: 'md',
 });
+const normalizedContent = computed<string | Record<string, unknown> | undefined>(() => {
+  if (!props.content) return;
+  return props.content as string | Record<string, unknown>;
+});
 const contentEl = ref<HTMLElement | null>(null);
 
 // Use a ref to store markdown content for better reactivity
@@ -18,6 +22,10 @@ const mdcKey = computed(() => {
   const markdownHash = markdownContent.value ? markdownContent.value.slice(0, 50) : 'no-md';
   return `mdc-${contentHash}-${markdownHash}`;
 });
+
+const originalContentLength = computed(() =>
+  typeof props.content === 'string' ? props.content.length : 0
+);
 
 // Convert Lexical content to Markdown reactively
 const updateMarkdownContent = () => {
@@ -133,9 +141,9 @@ watch(
   <div ref="contentEl">
     <!-- Render Markdown content (converted from Lexical or original) -->
     <MDC
-      v-if="content && (useConvertedMarkdown ? markdownContent : content)"
-      :key="`${mdcKey}-${useConvertedMarkdown ? markdownContent?.length || 0 : content?.length || 0}`"
-      :value="useConvertedMarkdown ? markdownContent : content"
+      v-if="normalizedContent && (useConvertedMarkdown ? markdownContent : normalizedContent)"
+      :key="`${mdcKey}-${useConvertedMarkdown ? markdownContent?.length || 0 : originalContentLength}`"
+      :value="useConvertedMarkdown ? markdownContent || '' : normalizedContent"
       :class="[
         'prose dark:prose-invert max-w-none',
         {

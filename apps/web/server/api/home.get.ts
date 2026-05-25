@@ -1,4 +1,17 @@
 import { getItems } from '~~/server/utils/payload-server';
+interface ContentRecord {
+  id?: string | number;
+}
+interface EditorsPick {
+  contentType?: 'post' | 'video';
+  post?: number | ContentRecord;
+  video?: number | ContentRecord;
+  featuredOrder?: number;
+}
+interface TrendingItem {
+  content?: ContentRecord;
+  trendingScore?: number;
+}
 
 export default defineCachedEventHandler(
   async (event) => {
@@ -18,10 +31,13 @@ export default defineCachedEventHandler(
       });
 
       // Process editor's picks to get actual content
-      const editorsPicks: Array<{ type: 'post' | 'video'; content: any; featuredOrder: number }> =
-        [];
+      const editorsPicks: Array<{
+        type: 'post' | 'video';
+        content: ContentRecord;
+        featuredOrder: number;
+      }> = [];
 
-      for (const pick of editorsPicksResult.docs) {
+      for (const pick of editorsPicksResult.docs as EditorsPick[]) {
         // Skip if type filter doesn't match
         if (type !== 'all' && pick.contentType !== type) {
           continue;
@@ -78,18 +94,18 @@ export default defineCachedEventHandler(
 
       const responses = await Promise.all(fetchPromises);
 
-      let trendingPosts: Array<{ type: 'post'; content: any; score: number }> = [];
-      let trendingVideos: Array<{ type: 'video'; content: any; score: number }> = [];
+      let trendingPosts: Array<{ type: 'post'; content: ContentRecord; score: number }> = [];
+      let trendingVideos: Array<{ type: 'video'; content: ContentRecord; score: number }> = [];
 
       let responseIndex = 0;
       if (shouldFetchPosts) {
         const trendingPostsResponse = responses[responseIndex++];
         if (trendingPostsResponse?.ok) {
           const data = await trendingPostsResponse.json();
-          trendingPosts = (data.content || []).map((item: any) => ({
+          trendingPosts = ((data as { content?: TrendingItem[] }).content || []).map((item) => ({
             type: 'post' as const,
             content: item.content,
-            score: item.trendingScore,
+            score: item.trendingScore ?? 0,
           }));
         }
       }
@@ -98,10 +114,10 @@ export default defineCachedEventHandler(
         const trendingVideosResponse = responses[responseIndex++];
         if (trendingVideosResponse?.ok) {
           const data = await trendingVideosResponse.json();
-          trendingVideos = (data.content || []).map((item: any) => ({
+          trendingVideos = ((data as { content?: TrendingItem[] }).content || []).map((item) => ({
             type: 'video' as const,
             content: item.content,
-            score: item.trendingScore,
+            score: item.trendingScore ?? 0,
           }));
         }
       }
@@ -119,7 +135,7 @@ export default defineCachedEventHandler(
           depth: 2,
         });
 
-        trendingPosts = recentPosts.docs.map((item) => ({
+        trendingPosts = recentPosts.docs.map((item: ContentRecord) => ({
           type: 'post' as const,
           content: item,
           score: 0,
@@ -138,7 +154,7 @@ export default defineCachedEventHandler(
           depth: 2,
         });
 
-        trendingVideos = recentVideos.docs.map((item) => ({
+        trendingVideos = recentVideos.docs.map((item: ContentRecord) => ({
           type: 'video' as const,
           content: item,
           score: 0,
@@ -148,7 +164,7 @@ export default defineCachedEventHandler(
       // Merge all content with type discriminator
       const allContent: Array<{
         type: 'post' | 'video';
-        content: any;
+        content: ContentRecord;
         source: 'trending' | 'editors-pick';
         score?: number;
         featuredOrder?: number;

@@ -1,4 +1,16 @@
 import { getItems } from '~~/server/utils/payload-server';
+type PageDoc = {
+  id?: string | number;
+  title?: string;
+  permalink?: string;
+};
+type PostDoc = {
+  id?: string | number;
+  title?: string;
+  description?: string;
+  slug?: string;
+  content?: string;
+};
 
 export default defineCachedEventHandler(
   async (event) => {
@@ -38,15 +50,15 @@ export default defineCachedEventHandler(
       ]);
 
       const results = [
-        ...pagesResult.docs.map((page: any) => ({
+        ...pagesResult.docs.map((page: PageDoc) => ({
           id: page.id,
           title: page.title,
           type: 'Page',
-          link: `/${page.permalink.replace(/^\/+/, '')}`,
+          link: `/${(page.permalink || '').replace(/^\/+/, '')}`,
           content: '',
         })),
 
-        ...postsResult.docs.map((post: any) => ({
+        ...postsResult.docs.map((post: PostDoc) => ({
           id: post.id,
           title: post.title,
           description: post.description,

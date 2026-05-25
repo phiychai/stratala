@@ -5,7 +5,7 @@
  */
 import type { ButtonGroupProps } from '~/types/components';
 
-const props = withDefaults(defineProps<ButtonGroupProps>(), {
+const _props = withDefaults(defineProps<ButtonGroupProps>(), {
   orientation: 'horizontal',
 });
 </script>

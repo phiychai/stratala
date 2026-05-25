@@ -33,7 +33,7 @@ export function getPayloadMediaURL(
 
   // If it looks like a filename (has extension), use /api/media/file/{filename}
   // Otherwise, use /api/media/{id}
-  const hasExtension = /\.(jpg|jpeg|png|gif|webp|svg)$/i.test(idOrFilename);
+  const hasExtension = /\.(?:jpg|jpeg|png|gif|webp|svg)$/i.test(idOrFilename);
   const url = hasExtension
     ? `${baseUrl}/api/media/file/${idOrFilename}`
     : `${baseUrl}/api/media/${idOrFilename}`;

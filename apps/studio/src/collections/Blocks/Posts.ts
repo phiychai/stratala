@@ -1,4 +1,4 @@
-import type { Block } from 'payload';
+import type { Block } from 'payload'
 
 /**
  * Posts Block Collection
@@ -22,7 +22,8 @@ const BlockPosts: CollectionConfig = {
       name: 'tagline',
       type: 'text',
       admin: {
-        description: 'Smaller copy shown above the headline to label a section or add extra context',
+        description:
+          'Smaller copy shown above the headline to label a section or add extra context',
       },
     },
     {
@@ -57,7 +58,6 @@ const BlockPosts: CollectionConfig = {
     },
   ],
   timestamps: true,
-};
+}
 
-export default BlockPosts;
-
+export default BlockPosts

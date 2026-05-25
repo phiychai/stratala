@@ -22,10 +22,9 @@ const vueConfigFiltered = vueConfig
     const hasConflicting = pluginsToRemove.some((p) => config.plugins?.[p]);
 
     if (hasConflicting) {
-      const plugins = { ...config.plugins };
-      for (const p of pluginsToRemove) {
-        delete plugins[p];
-      }
+      const plugins = Object.fromEntries(
+        Object.entries(config.plugins || {}).filter(([plugin]) => !pluginsToRemove.includes(plugin))
+      );
       return {
         ...config,
         plugins,
@@ -60,6 +59,7 @@ export default withNuxt(
       'content.config.ts',
       'vitest.config.ts',
       'tests/**',
+      'types/**/*.d.ts',
     ],
   }
 );

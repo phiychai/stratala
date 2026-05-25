@@ -12,8 +12,8 @@
  */
 export function useOtpVerification(options: {
   email: string;
-  onVerify: (otp: string) => Promise<{ success: boolean; error?: string } | void>;
-  onResend: () => Promise<{ success: boolean; error?: string } | void>;
+  onVerify: (otp: string) => Promise<{ success: boolean; error?: string } | undefined>;
+  onResend: () => Promise<{ success: boolean; error?: string } | undefined>;
   cooldownSeconds?: number;
 }) {
   const otp = ref('');

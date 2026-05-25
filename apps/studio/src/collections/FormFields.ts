@@ -1,4 +1,4 @@
-import type { CollectionConfig } from 'payload';
+import type { CollectionConfig } from 'payload'
 
 const FormFields: CollectionConfig = {
   slug: 'form-fields',
@@ -66,7 +66,8 @@ const FormFields: CollectionConfig = {
       name: 'validation',
       type: 'text',
       admin: {
-        description: 'Available rules: `email`, `url`, `min:5`, `max:20`, `length:10`. Combine with pipes example: `email|max:255`',
+        description:
+          'Available rules: `email`, `url`, `min:5`, `max:20`, `length:10`. Combine with pipes example: `email|max:255`',
       },
     },
     {
@@ -127,7 +128,6 @@ const FormFields: CollectionConfig = {
     },
   ],
   timestamps: true,
-};
+}
 
-export default FormFields;
-
+export default FormFields

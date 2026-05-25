@@ -13,18 +13,19 @@ import TurndownService from 'turndown';
 export interface LexicalContent {
   root?: {
     type?: string;
-    children?: any[];
-    [key: string]: any;
+    children?: unknown[];
+    [key: string]: unknown;
   };
-  [key: string]: any;
+  [key: string]: unknown;
 }
 
 /**
  * Check if content is Lexical format
  */
-export function isLexicalContent(content: any): content is LexicalContent {
+export function isLexicalContent(content: unknown): content is LexicalContent {
   if (!content || typeof content !== 'object') return false;
-  return 'root' in content || (content.type === 'root' && Array.isArray(content.children));
+  const record = content as { root?: unknown; type?: unknown; children?: unknown };
+  return 'root' in record || (record.type === 'root' && Array.isArray(record.children));
 }
 
 // Initialize Turndown service for HTML to Markdown conversion
@@ -39,7 +40,7 @@ const turndownService = new TurndownService({
 // Configure Turndown to handle images properly
 turndownService.addRule('image', {
   filter: 'img',
-  replacement: (content, node) => {
+  replacement: (_content: string, node: Node) => {
     const img = node as HTMLImageElement;
     const alt = img.alt || '';
     const src = img.src || '';
@@ -52,7 +53,7 @@ turndownService.addRule('image', {
  * Convert Lexical content to Markdown string
  * Uses Payload's HTML converter, then converts HTML to Markdown for Nuxt MDC
  */
-export function lexicalToHtml(content: LexicalContent | any | string | null | undefined): string {
+export function lexicalToHtml(content: LexicalContent | string | null | undefined): string {
   if (!content) return '';
 
   // If it's already a string, return as-is (might be markdown or plain HTML)
@@ -63,7 +64,7 @@ export function lexicalToHtml(content: LexicalContent | any | string | null | un
   try {
     // Step 1: Convert Lexical to HTML using Payload's official converter
     const html = convertLexicalToHTML({
-      data: content,
+      data: content as unknown as Parameters<typeof convertLexicalToHTML>[0]['data'],
     });
 
     // Step 2: Convert HTML to Markdown for use with Nuxt MDC

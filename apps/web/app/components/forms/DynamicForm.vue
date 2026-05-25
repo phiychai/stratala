@@ -17,7 +17,7 @@ const props = defineProps<{
 
 const isSubmitting = ref(false);
 
-const { setAttr } = useVisualEditing();
+const { setAttr: _setAttr } = useVisualEditing();
 
 const sortedFields = computed(() =>
   [...props.fields].sort((a, b) => (a.sort || 0) - (b.sort || 0))
@@ -80,7 +80,9 @@ const onSubmitForm = handleSubmit(async (formValues) => {
   if (isSubmitting.value) return;
   try {
     isSubmitting.value = true;
-    await props.onSubmit(formValues);
+    await props.onSubmit(
+      formValues as Record<string, string | number | boolean | File | null | undefined>
+    );
   } finally {
     isSubmitting.value = false;
   }

@@ -5,7 +5,7 @@
  */
 import type { TaglineProps } from '~/types/components';
 
-const props = defineProps<TaglineProps>();
+const _props = defineProps<TaglineProps>();
 </script>
 
 <template>

@@ -1,4 +1,4 @@
-import type { CollectionConfig } from 'payload';
+import type { CollectionConfig } from 'payload'
 
 /**
  * Spaces Collection
@@ -26,11 +26,11 @@ const Spaces: CollectionConfig = {
     // Publishers can update spaces they created or are assigned to
     // Admins and content admins can update all spaces
     update: ({ req: { user } }) => {
-      if (!user) return false;
+      if (!user) return false
       // Admins and content admins can update all
-      if (user.role === 'admin' || user.role === 'content_admin') return true;
+      if (user.role === 'admin' || user.role === 'content_admin') return true
       // Publishers and other users can update (access will be checked per document)
-      return true;
+      return true
     },
     // Only admins can delete spaces
     delete: ({ req: { user } }) => user?.role === 'admin',
@@ -82,18 +82,17 @@ const Spaces: CollectionConfig = {
       ({ data, req, operation }) => {
         // Auto-set createdBy to current user on create
         if (operation === 'create' && req.user && !data.createdBy) {
-          data.createdBy = req.user.id;
+          data.createdBy = req.user.id
         }
         // Remove tenant field if plugin tries to add it (tenants collection IS the tenant)
         if ('tenant' in data) {
-          delete data.tenant;
+          delete data.tenant
         }
-        return data;
+        return data
       },
     ],
   },
   timestamps: true,
-};
+}
 
-export default Spaces;
-
+export default Spaces

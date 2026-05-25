@@ -29,7 +29,6 @@ export function usePersonalizedFeed(
 ): UsePersonalizedFeedReturn {
   const route = useRoute();
   const router = useRouter();
-  const requestFetch = useRequestFetch();
 
   const perPage = options.limit || 20;
   const currentPage = ref(options.page || Number(route.query.page) || 1);
@@ -49,19 +48,20 @@ export function usePersonalizedFeed(
     count: number;
     totalDocs: number;
   }>('/api/feed', {
-    $fetch: requestFetch,
     key: () => `feed-${currentPage.value}-${sortBy.value}`,
-    query: {
-      page: currentPage,
+    query: computed(() => ({
+      page: currentPage.value,
       limit: perPage,
       sortBy: sortBy.value,
-    },
+    })),
     watch: [currentPage, sortBy],
     credentials: 'include', // Include cookies for authentication
   });
 
-  const content = computed(() => data.value?.content || []);
-  const count = computed(() => data.value?.count || 0);
+  const content = computed(
+    () => (data.value as { content?: UnifiedContent[] } | null)?.content || []
+  );
+  const count = computed(() => (data.value as { count?: number } | null)?.count || 0);
   const totalPages = computed(() => Math.ceil(count.value / perPage));
 
   function handlePageChange(page: number) {

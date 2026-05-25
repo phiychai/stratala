@@ -48,9 +48,12 @@ export function useVideoCategories(videos?: Ref<Video[]>) {
     const categoryMap = new Map<string, Category>();
 
     for (const video of videos.value) {
-      if (video.categories) {
-        const videoCategories = Array.isArray(video.categories) ? video.categories : [];
-        videoCategories.forEach((cat: unknown) => {
+      const videoRecord = video as { categories?: unknown; category?: unknown };
+      const rawCategories =
+        videoRecord.categories ?? (videoRecord.category ? [videoRecord.category] : []);
+      if (rawCategories) {
+        const videoCategories = Array.isArray(rawCategories) ? rawCategories : [];
+        for (const cat of videoCategories) {
           if (typeof cat === 'string' && cat) {
             // If it's a string, create a category from it
             const slug = cat.toLowerCase().replace(/\s+/g, '-');
@@ -76,7 +79,7 @@ export function useVideoCategories(videos?: Ref<Video[]>) {
               categoryMap.set(category.id, category);
             }
           }
-        });
+        }
       }
     }
 
@@ -84,7 +87,7 @@ export function useVideoCategories(videos?: Ref<Video[]>) {
   });
 
   // Function to handle category filter clicks
-  function handleCategoryClick(categorySlug: string | undefined) {
+  function handleCategoryClick(categorySlug?: string) {
     router.push({
       path: route.path,
       query: {

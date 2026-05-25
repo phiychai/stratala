@@ -1,4 +1,4 @@
-import { GlobalConfig } from 'payload/types';
+import type { GlobalConfig } from 'payload/types'
 
 const Globals: GlobalConfig = {
   slug: 'globals',
@@ -26,7 +26,6 @@ const Globals: GlobalConfig = {
       relationTo: 'media',
     },
   ],
-};
+}
 
-export default Globals;
-
+export default Globals

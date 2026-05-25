@@ -3,6 +3,24 @@
  * Used by @nuxtjs/seo sitemap module
  */
 import { getItems } from '../utils/payload-server';
+type PageDoc = {
+  permalink?: string;
+  updatedAt?: string;
+  createdAt?: string;
+};
+type TenantDoc = {
+  slug?: string;
+};
+type AuthorDoc = {
+  email?: string;
+};
+type PostDoc = {
+  slug?: string;
+  updatedAt?: string;
+  createdAt?: string;
+  tenant?: number | TenantDoc | null;
+  author?: number | AuthorDoc | null;
+};
 
 export default defineEventHandler(async () => {
   try {
@@ -31,15 +49,15 @@ export default defineEventHandler(async () => {
     const pages = pagesResult.docs;
     const posts = postsResult.docs;
 
-    const pageUrls = pages.map((page: any) => ({
+    const pageUrls = (pages as PageDoc[]).map((page) => ({
       loc: page.permalink,
       lastmod: page.updatedAt || page.createdAt,
     }));
 
     // Legacy blog URLs (for backward compatibility)
     const legacyPostUrls = posts
-      .filter((post: any) => !post.tenant) // Posts without spaces (plugin uses "tenant" field name)
-      .map((post: any) => ({
+      .filter((post: PostDoc) => !post.tenant) // Posts without spaces (plugin uses "tenant" field name)
+      .map((post: PostDoc) => ({
         loc: `/blog/${post.slug}`,
         lastmod: post.updatedAt || post.createdAt,
       }));
@@ -48,7 +66,7 @@ export default defineEventHandler(async () => {
     // TODO: Resolve username from author/owner - for now using email prefix as placeholder
     const spacePostUrls: Array<{ loc: string; lastmod: string | null }> = [];
 
-    for (const post of posts) {
+    for (const post of posts as PostDoc[]) {
       if (!post.tenant || !post.author) continue; // Plugin uses "tenant" field name
 
       const space = typeof post.tenant === 'object' ? post.tenant : null;
@@ -72,7 +90,7 @@ export default defineEventHandler(async () => {
     const profileUrls: Array<{ loc: string; lastmod: string | null }> = [];
     const processedUsernames = new Set<string>();
 
-    for (const post of posts) {
+    for (const post of posts as PostDoc[]) {
       if (!post.author) continue;
 
       const author = typeof post.author === 'object' ? post.author : null;

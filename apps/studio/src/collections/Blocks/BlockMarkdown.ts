@@ -1,4 +1,4 @@
-import { CollectionConfig } from 'payload/types';
+import type { CollectionConfig } from 'payload/types'
 
 const BlockMarkdown: CollectionConfig = {
   slug: 'block-markdown',
@@ -21,7 +21,6 @@ const BlockMarkdown: CollectionConfig = {
     },
   ],
   timestamps: true,
-};
+}
 
-export default BlockMarkdown;
-
+export default BlockMarkdown

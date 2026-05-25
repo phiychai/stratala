@@ -1,6 +1,6 @@
 import { getGlobal } from '../utils/payload-server';
 
-export default defineEventHandler(async (event) => {
+export default defineEventHandler(async (_event) => {
   try {
     // Payload globals are accessed via /api/globals/{global-slug}
     const [siteSettings, navigation] = await Promise.all([

@@ -49,12 +49,6 @@ useSeoMeta({
           orientation="horizontal"
           :ui="{
             base: 'flex flex-col gap-4 lg:gap-y-4',
-            variants: {
-              orientation: {
-                horizontal: 'sm:grid sm:grid-cols-2 lg:grid-cols-3',
-                vertical: '',
-              },
-            },
           }"
         >
           <ContentCard

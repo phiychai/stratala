@@ -1,4 +1,5 @@
-import { Config } from '@/payload-types'
+import type { Config } from '@/payload-types'
+
 import type { CollectionSlug } from 'payload'
 
 export const extractID = <T extends Config['collections'][CollectionSlug]>(

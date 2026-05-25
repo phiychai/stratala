@@ -1,4 +1,4 @@
-import type { CollectionConfig } from 'payload';
+import type { CollectionConfig } from 'payload'
 
 /**
  * Redirects Collection
@@ -36,9 +36,9 @@ const Redirects: CollectionConfig = {
           ({ value }) => {
             // Ensure URL starts with /
             if (typeof value === 'string' && !value.startsWith('/')) {
-              return `/${value}`;
+              return `/${value}`
             }
-            return value;
+            return value
           },
         ],
       },
@@ -48,7 +48,7 @@ const Redirects: CollectionConfig = {
       type: 'text',
       required: true,
       admin: {
-        description: 'The URL you\'re redirecting to (can be relative or full URL)',
+        description: "The URL you're redirecting to (can be relative or full URL)",
       },
     },
     {
@@ -79,6 +79,6 @@ const Redirects: CollectionConfig = {
     },
   ],
   timestamps: true,
-};
+}
 
-export default Redirects;
+export default Redirects

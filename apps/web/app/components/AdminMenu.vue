@@ -6,11 +6,11 @@ defineProps<{
 }>();
 
 const colorMode = useColorMode();
-const appConfig = useAppConfig();
+const _appConfig = useAppConfig();
 const router = useRouter();
 const { user: authUser, logout } = useAuth();
 
-const colors = [
+const _colors = [
   'red',
   'orange',
   'amber',
@@ -29,7 +29,7 @@ const colors = [
   'pink',
   'rose',
 ];
-const neutrals = ['slate', 'gray', 'zinc', 'neutral', 'stone'];
+const _neutrals = ['slate', 'gray', 'zinc', 'neutral', 'stone'];
 
 const user = computed(() => ({
   name: authUser.value?.fullName || authUser.value?.email || 'User',
@@ -39,7 +39,7 @@ const user = computed(() => ({
   },
 }));
 
-const profileUrl = computed(() => {
+const _profileUrl = computed(() => {
   if (authUser.value?.username) {
     return `/@${authUser.value.username}`;
   }

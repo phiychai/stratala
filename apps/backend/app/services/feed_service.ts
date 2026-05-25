@@ -7,13 +7,20 @@ import env from '#start/env';
  * Manages personalized feeds based on user's followed spaces
  */
 export default class FeedService {
+  private static getPublishedAt(value: unknown): string | null {
+    if (typeof value === 'object' && value !== null && 'publishedAt' in value) {
+      const { publishedAt } = value as { publishedAt?: unknown };
+      return typeof publishedAt === 'string' ? publishedAt : null;
+    }
+    return null;
+  }
   /**
    * Helper to fetch items from Payload via HTTP
    */
   private static async fetchPayloadItems(
     collection: string,
     options: {
-      where?: Record<string, any>;
+      where?: Record<string, unknown>;
       limit?: number;
       page?: number;
       sort?: string;
@@ -46,7 +53,7 @@ export default class FeedService {
     if (!response.ok) {
       throw new Error(`Failed to fetch ${collection}: ${response.statusText}`);
     }
-    return (await response.json()) as { docs: any[]; totalDocs: number };
+    return (await response.json()) as { docs: unknown[]; totalDocs: number };
   }
   /**
    * Get user's followed spaces
@@ -69,7 +76,7 @@ export default class FeedService {
       sortBy?: 'chronological' | 'engagement';
     } = {}
   ): Promise<{
-    content: Array<{ type: 'post' | 'video'; content: any }>;
+    content: Array<{ type: 'post' | 'video'; content: unknown }>;
     count: number;
     totalDocs: number;
   }> {
@@ -130,19 +137,22 @@ export default class FeedService {
     ]);
 
     // Merge and sort by published date if chronological
-    const allContent: Array<{ type: 'post' | 'video'; content: any; publishedAt: string | null }> =
-      [
-        ...postsResult.docs.map((post) => ({
-          type: 'post' as const,
-          content: post,
-          publishedAt: post.publishedAt || null,
-        })),
-        ...videosResult.docs.map((video) => ({
-          type: 'video' as const,
-          content: video,
-          publishedAt: video.publishedAt || null,
-        })),
-      ];
+    const allContent: Array<{
+      type: 'post' | 'video';
+      content: unknown;
+      publishedAt: string | null;
+    }> = [
+      ...postsResult.docs.map((post) => ({
+        type: 'post' as const,
+        content: post,
+        publishedAt: this.getPublishedAt(post),
+      })),
+      ...videosResult.docs.map((video) => ({
+        type: 'video' as const,
+        content: video,
+        publishedAt: this.getPublishedAt(video),
+      })),
+    ];
 
     if (sortBy === 'chronological') {
       allContent.sort((a, b) => {

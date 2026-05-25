@@ -1,4 +1,4 @@
-import type { CollectionConfig } from 'payload';
+import type { CollectionConfig } from 'payload'
 
 const FormSubmissionValues: CollectionConfig = {
   slug: 'form-submission-values',
@@ -32,7 +32,6 @@ const FormSubmissionValues: CollectionConfig = {
     },
   ],
   timestamps: true,
-};
+}
 
-export default FormSubmissionValues;
-
+export default FormSubmissionValues

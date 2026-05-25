@@ -1,4 +1,4 @@
-import type { CollectionConfig } from 'payload';
+import type { CollectionConfig } from 'payload'
 
 /**
  * Pages Collection
@@ -25,11 +25,11 @@ const Pages: CollectionConfig = {
     // Admins and content admins can read all pages
     read: ({ req: { user } }) => {
       if (user && ['admin', 'content_admin'].includes(user.role)) {
-        return true;
+        return true
       }
       // Editors can read all pages
       if (user?.role === 'editor') {
-        return true;
+        return true
       }
       // Publishers can only read their own pages
       if (user?.role === 'publisher') {
@@ -37,25 +37,25 @@ const Pages: CollectionConfig = {
           createdBy: {
             equals: user.id,
           },
-        };
+        }
       }
       // Public read access for published pages (for frontend)
       return {
         status: {
           equals: 'published',
         },
-      };
+      }
     },
     // Only authenticated users can create pages
     create: ({ req: { user } }) => !!user,
     // Users can update their own pages, admins/content admins can update any
     update: ({ req: { user } }) => {
       if (user && ['admin', 'content_admin'].includes(user.role)) {
-        return true;
+        return true
       }
       // Editors can update all pages
       if (user?.role === 'editor') {
-        return true;
+        return true
       }
       // Publishers can only update their own pages
       if (user?.role === 'publisher') {
@@ -63,23 +63,23 @@ const Pages: CollectionConfig = {
           createdBy: {
             equals: user.id,
           },
-        };
+        }
       }
-      return false;
+      return false
     },
     // Users can delete their own pages, admins can delete any
     delete: ({ req: { user } }) => {
       if (user && ['admin', 'content_admin'].includes(user.role)) {
-        return true;
+        return true
       }
       if (user?.role === 'writer') {
         return {
           createdBy: {
             equals: user.id,
           },
-        };
+        }
       }
-      return false;
+      return false
     },
   },
   fields: [
@@ -97,16 +97,17 @@ const Pages: CollectionConfig = {
       required: true,
       unique: true,
       admin: {
-        description: 'Unique URL for this page (start with /, can have multiple segments /about/me)',
+        description:
+          'Unique URL for this page (start with /, can have multiple segments /about/me)',
       },
       hooks: {
         beforeValidate: [
           ({ value }) => {
             // Ensure permalink starts with /
             if (typeof value === 'string' && !value.startsWith('/')) {
-              return `/${value}`;
+              return `/${value}`
             }
-            return value;
+            return value
           },
         ],
       },
@@ -183,21 +184,40 @@ const Pages: CollectionConfig = {
               type: 'array',
               fields: [
                 { name: 'label', type: 'text', required: true },
-                { name: 'type', type: 'select', required: true, options: [
-                  { label: 'Page', value: 'page' },
-                  { label: 'Post', value: 'post' },
-                  { label: 'URL', value: 'url' },
-                ]},
-                { name: 'page', type: 'relationship', relationTo: 'pages', admin: { condition: (data) => data.type === 'page' }},
-                { name: 'post', type: 'relationship', relationTo: 'posts', admin: { condition: (data) => data.type === 'post' }},
-                { name: 'url', type: 'text', admin: { condition: (data) => data.type === 'url' }},
-                { name: 'variant', type: 'select', options: [
-                  { label: 'Default', value: 'default' },
-                  { label: 'Outline', value: 'outline' },
-                  { label: 'Soft', value: 'soft' },
-                  { label: 'Ghost', value: 'ghost' },
-                  { label: 'Link', value: 'link' },
-                ]},
+                {
+                  name: 'type',
+                  type: 'select',
+                  required: true,
+                  options: [
+                    { label: 'Page', value: 'page' },
+                    { label: 'Post', value: 'post' },
+                    { label: 'URL', value: 'url' },
+                  ],
+                },
+                {
+                  name: 'page',
+                  type: 'relationship',
+                  relationTo: 'pages',
+                  admin: { condition: (data) => data.type === 'page' },
+                },
+                {
+                  name: 'post',
+                  type: 'relationship',
+                  relationTo: 'posts',
+                  admin: { condition: (data) => data.type === 'post' },
+                },
+                { name: 'url', type: 'text', admin: { condition: (data) => data.type === 'url' } },
+                {
+                  name: 'variant',
+                  type: 'select',
+                  options: [
+                    { label: 'Default', value: 'default' },
+                    { label: 'Outline', value: 'outline' },
+                    { label: 'Soft', value: 'soft' },
+                    { label: 'Ghost', value: 'ghost' },
+                    { label: 'Link', value: 'link' },
+                  ],
+                },
               ],
             },
           ],
@@ -232,7 +252,13 @@ const Pages: CollectionConfig = {
           fields: [
             { name: 'tagline', type: 'text' },
             { name: 'headline', type: 'text' },
-            { name: 'collection', type: 'select', required: true, defaultValue: 'posts', options: [{ label: 'Posts', value: 'posts' }]},
+            {
+              name: 'collection',
+              type: 'select',
+              required: true,
+              defaultValue: 'posts',
+              options: [{ label: 'Posts', value: 'posts' }],
+            },
             { name: 'limit', type: 'number', defaultValue: 6 },
           ],
         },
@@ -259,14 +285,33 @@ const Pages: CollectionConfig = {
                   type: 'group',
                   fields: [
                     { name: 'label', type: 'text', required: true },
-                    { name: 'type', type: 'select', required: true, options: [
-                      { label: 'Page', value: 'page' },
-                      { label: 'Post', value: 'post' },
-                      { label: 'URL', value: 'url' },
-                    ]},
-                    { name: 'page', type: 'relationship', relationTo: 'pages', admin: { condition: (data) => data.type === 'page' }},
-                    { name: 'post', type: 'relationship', relationTo: 'posts', admin: { condition: (data) => data.type === 'post' }},
-                    { name: 'url', type: 'text', admin: { condition: (data) => data.type === 'url' }},
+                    {
+                      name: 'type',
+                      type: 'select',
+                      required: true,
+                      options: [
+                        { label: 'Page', value: 'page' },
+                        { label: 'Post', value: 'post' },
+                        { label: 'URL', value: 'url' },
+                      ],
+                    },
+                    {
+                      name: 'page',
+                      type: 'relationship',
+                      relationTo: 'pages',
+                      admin: { condition: (data) => data.type === 'page' },
+                    },
+                    {
+                      name: 'post',
+                      type: 'relationship',
+                      relationTo: 'posts',
+                      admin: { condition: (data) => data.type === 'post' },
+                    },
+                    {
+                      name: 'url',
+                      type: 'text',
+                      admin: { condition: (data) => data.type === 'url' },
+                    },
                   ],
                 },
                 { name: 'isHighlighted', type: 'checkbox', defaultValue: false },
@@ -317,7 +362,6 @@ const Pages: CollectionConfig = {
     },
   ],
   timestamps: true,
-};
+}
 
-export default Pages;
-
+export default Pages
