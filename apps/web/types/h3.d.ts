@@ -5,4 +5,3 @@ declare module 'h3' {
     tenant?: TenantContext;
   }
 }
-

@@ -20,9 +20,9 @@ const EditorsPicks: CollectionConfig = {
     // Public read access for published picks
     read: () => true,
     // Only admins and content admins can create/update/delete
-    create: ({ req: { user } }) => user && ['admin', 'content_admin'].includes(user.role),
-    update: ({ req: { user } }) => user && ['admin', 'content_admin'].includes(user.role),
-    delete: ({ req: { user } }) => user && ['admin', 'content_admin'].includes(user.role),
+    create: ({ req: { user } }) => Boolean(user && ['admin', 'content_admin'].includes(user.role)),
+    update: ({ req: { user } }) => Boolean(user && ['admin', 'content_admin'].includes(user.role)),
+    delete: ({ req: { user } }) => Boolean(user && ['admin', 'content_admin'].includes(user.role)),
   },
   fields: [
     {

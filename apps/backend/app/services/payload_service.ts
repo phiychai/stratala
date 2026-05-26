@@ -6,7 +6,7 @@ import logger from '@adonisjs/core/services/logger';
 import { getPayload } from 'payload';
 
 import type User from '#models/user';
-import type { Payload, CollectionSlug } from 'payload';
+import type { CollectionSlug, Payload, Where } from 'payload';
 
 // Payload config will be imported dynamically to handle monorepo path resolution
 // The config path is relative to the backend app: ../../studio/src/payload.config
@@ -181,7 +181,7 @@ class PayloadService {
     collection: CollectionSlug,
     options: {
       user?: User;
-      where?: Record<string, unknown>;
+      where?: Where;
       limit?: number;
       page?: number;
       sort?: string;
@@ -191,7 +191,7 @@ class PayloadService {
     const payload = await this.getPayload();
 
     // Build where clause with tenant isolation
-    const where: Record<string, any> = {
+    const where: Where = {
       ...options.where,
     };
 

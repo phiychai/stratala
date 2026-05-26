@@ -1,4 +1,4 @@
-import type { CollectionConfig } from 'payload'
+import type { CollectionConfig, Where } from 'payload'
 
 /**
  * Pages Collection
@@ -37,14 +37,14 @@ const Pages: CollectionConfig = {
           createdBy: {
             equals: user.id,
           },
-        }
+        } as Where
       }
       // Public read access for published pages (for frontend)
       return {
         status: {
           equals: 'published',
         },
-      }
+      } as Where
     },
     // Only authenticated users can create pages
     create: ({ req: { user } }) => !!user,
@@ -63,7 +63,7 @@ const Pages: CollectionConfig = {
           createdBy: {
             equals: user.id,
           },
-        }
+        } as Where
       }
       return false
     },
@@ -72,12 +72,12 @@ const Pages: CollectionConfig = {
       if (user && ['admin', 'content_admin'].includes(user.role)) {
         return true
       }
-      if (user?.role === 'writer') {
+      if (user?.role === 'publisher') {
         return {
           createdBy: {
             equals: user.id,
           },
-        }
+        } as Where
       }
       return false
     },

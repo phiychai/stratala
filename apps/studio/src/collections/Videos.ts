@@ -1,4 +1,4 @@
-import type { CollectionConfig } from 'payload'
+import type { CollectionConfig, Where } from 'payload'
 
 /**
  * Videos Collection
@@ -38,14 +38,14 @@ const Videos: CollectionConfig = {
           author: {
             equals: user.id,
           },
-        }
+        } as Where
       }
       // Public read access for published videos (for frontend)
       return {
         status: {
           equals: 'published',
         },
-      }
+      } as Where
     },
     // Only authenticated users can create videos
     create: ({ req: { user } }) => !!user,
@@ -64,7 +64,7 @@ const Videos: CollectionConfig = {
           author: {
             equals: user.id,
           },
-        }
+        } as Where
       }
       return false
     },
@@ -73,12 +73,12 @@ const Videos: CollectionConfig = {
       if (user && ['admin', 'content_admin'].includes(user.role)) {
         return true
       }
-      if (user?.role === 'writer') {
+      if (user?.role === 'publisher') {
         return {
           author: {
             equals: user.id,
           },
-        }
+        } as Where
       }
       return false
     },

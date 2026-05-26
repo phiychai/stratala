@@ -1,4 +1,4 @@
-import type { Block } from 'payload'
+import type { CollectionConfig } from 'payload'
 
 /**
  * Rich Text Block Collection

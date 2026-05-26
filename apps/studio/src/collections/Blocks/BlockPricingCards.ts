@@ -1,4 +1,4 @@
-import type { CollectionConfig } from 'payload/types'
+import type { CollectionConfig } from 'payload'
 
 const BlockPricingCards: CollectionConfig = {
   slug: 'block-pricing-cards',
@@ -57,8 +57,59 @@ const BlockPricingCards: CollectionConfig = {
     },
     {
       name: 'button',
-      type: 'relationship',
-      relationTo: 'block-button',
+      type: 'group',
+      fields: [
+        {
+          name: 'label',
+          type: 'text',
+          required: true,
+        },
+        {
+          name: 'type',
+          type: 'select',
+          required: true,
+          options: [
+            { label: 'Page', value: 'page' },
+            { label: 'Post', value: 'post' },
+            { label: 'URL', value: 'url' },
+          ],
+        },
+        {
+          name: 'page',
+          type: 'relationship',
+          relationTo: 'pages',
+          admin: {
+            condition: (data: unknown) =>
+              typeof data === 'object' &&
+              data !== null &&
+              'type' in data &&
+              (data as { type?: string }).type === 'page',
+          },
+        },
+        {
+          name: 'post',
+          type: 'relationship',
+          relationTo: 'posts',
+          admin: {
+            condition: (data: unknown) =>
+              typeof data === 'object' &&
+              data !== null &&
+              'type' in data &&
+              (data as { type?: string }).type === 'post',
+          },
+        },
+        {
+          name: 'url',
+          type: 'text',
+          admin: {
+            condition: (data: unknown) =>
+              typeof data === 'object' &&
+              data !== null &&
+              'type' in data &&
+              (data as { type?: string }).type === 'url',
+          },
+        },
+      ],
       admin: {
         description: 'The action button / link shown at the bottom of the pricing card.',
       },

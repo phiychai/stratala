@@ -1,11 +1,7 @@
-import type { Config } from '@/payload-types'
-
-import type { CollectionSlug } from 'payload'
-
-export const extractID = <T extends Config['collections'][CollectionSlug]>(
-  objectOrID: T | T['id'],
-): T['id'] => {
-  if (objectOrID && typeof objectOrID === 'object') return objectOrID.id
+export const extractID = <T extends { id: unknown }>(objectOrID: T | T['id']): T['id'] => {
+  if (objectOrID && typeof objectOrID === 'object' && 'id' in objectOrID) {
+    return (objectOrID as T).id
+  }
 
   return objectOrID
 }

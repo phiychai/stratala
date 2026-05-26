@@ -1,6 +1,8 @@
 ---
 title: 'Documentation & Compliance'
-description: 'User documentation, developer documentation, operational runbooks, and legal compliance'
+description:
+  'User documentation, developer documentation, operational runbooks, and legal
+  compliance'
 navigation:
   title: 'Documentation & Compliance'
   order: 8
@@ -8,11 +10,13 @@ navigation:
 
 ## Overview
 
-Create comprehensive documentation for users, developers, and operators, and ensure legal compliance with GDPR, PCI DSS, and other regulations.
+Create comprehensive documentation for users, developers, and operators, and
+ensure legal compliance with GDPR, PCI DSS, and other regulations.
 
 ## 6.1 User Documentation
 
 ### Terms of Service
+
 - **Create Terms of Service page**: `apps/web/app/pages/terms.vue`
 - **Include sections**:
   - Service description
@@ -26,6 +30,7 @@ Create comprehensive documentation for users, developers, and operators, and ens
 - **Acceptance tracking**: Log when users accept terms
 
 ### Privacy Policy
+
 - **Create Privacy Policy page**: `apps/web/app/pages/privacy.vue`
 - **Include sections**:
   - Data collection practices
@@ -40,6 +45,7 @@ Create comprehensive documentation for users, developers, and operators, and ens
 - **Regular updates**: Keep policy current with practices
 
 ### Cookie Policy
+
 - **Create Cookie Policy page**: `apps/web/app/pages/cookies.vue`
 - **Explain cookie usage**:
   - Essential cookies
@@ -53,6 +59,7 @@ Create comprehensive documentation for users, developers, and operators, and ens
   - Easy to change preferences later
 
 ### GDPR Compliance (If Applicable)
+
 - **Data export functionality**:
   - Allow users to download their data
   - Include all user data (profile, subscriptions, activity)
@@ -78,6 +85,7 @@ Create comprehensive documentation for users, developers, and operators, and ens
 ## 6.2 Developer Documentation
 
 ### API Documentation
+
 - **Swagger/OpenAPI** (partially set up):
   - Complete all endpoint documentation
   - Add request/response examples
@@ -103,6 +111,7 @@ Create comprehensive documentation for users, developers, and operators, and ens
   - Retry logic
 
 ### Deployment Guides
+
 - **Production deployment checklist**:
   - Environment setup
   - Database configuration
@@ -122,6 +131,7 @@ Create comprehensive documentation for users, developers, and operators, and ens
   - Service connectivity issues
 
 ### Architecture Documentation
+
 - **System architecture diagrams**:
   - High-level architecture
   - Database schema
@@ -140,6 +150,7 @@ Create comprehensive documentation for users, developers, and operators, and ens
 ## 6.3 Operational Documentation
 
 ### Runbooks
+
 - **Common issues and solutions**:
   - Service down procedures
   - Database connection issues
@@ -162,6 +173,7 @@ Create comprehensive documentation for users, developers, and operators, and ens
   - Post-incident review
 
 ### Operational Procedures
+
 - **Monitoring procedures**:
   - What to monitor
   - Alert thresholds
@@ -179,6 +191,7 @@ Create comprehensive documentation for users, developers, and operators, and ens
 ## 6.4 Compliance Documentation
 
 ### GDPR Documentation (If Applicable)
+
 - **Data processing records**:
   - Document data processing activities
   - Purpose of processing
@@ -193,6 +206,7 @@ Create comprehensive documentation for users, developers, and operators, and ens
   - Communication templates
 
 ### PCI DSS Compliance (For Payment Handling)
+
 - **Ensure no card data stored**:
   - Verify card data never touches servers
   - Use tokenization only
@@ -228,5 +242,5 @@ Create comprehensive documentation for users, developers, and operators, and ens
 
 ---
 
-**Next**: [Additional Production Considerations](./07-additional-considerations.md)
-
+**Next**:
+[Additional Production Considerations](./07-additional-considerations.md)

@@ -1,6 +1,8 @@
 ---
 title: 'Frontend UI/UX Polish'
-description: 'Design consistency, accessibility, responsive design, loading states, animations, and user feedback'
+description:
+  'Design consistency, accessibility, responsive design, loading states,
+  animations, and user feedback'
 navigation:
   title: 'Frontend UI/UX'
   order: 6
@@ -8,11 +10,14 @@ navigation:
 
 ## Overview
 
-Polish the frontend user interface and user experience to ensure consistency, accessibility, responsiveness, and professional appearance throughout the application.
+Polish the frontend user interface and user experience to ensure consistency,
+accessibility, responsiveness, and professional appearance throughout the
+application.
 
 ## 8.1 Design System & Consistency
 
 ### Component Library
+
 - **Establish design system**:
   - Color palette (primary, secondary, accent colors)
   - Typography scale (headings, body, captions)
@@ -29,6 +34,7 @@ Polish the frontend user interface and user experience to ensure consistency, ac
   - Props and events reference
 
 ### Visual Consistency
+
 - **Button styles**:
   - Consistent button sizes
   - Consistent hover/focus states
@@ -49,6 +55,7 @@ Polish the frontend user interface and user experience to ensure consistency, ac
   - Consistent link styling
 
 ### Brand Identity
+
 - **Logo placement**:
   - Consistent logo placement
   - Logo in header/navbar
@@ -65,6 +72,7 @@ Polish the frontend user interface and user experience to ensure consistency, ac
 ## 8.2 Accessibility (A11y)
 
 ### WCAG Compliance
+
 - **WCAG 2.1 Level AA compliance**:
   - Color contrast ratios (4.5:1 for text)
   - Keyboard navigation
@@ -80,6 +88,7 @@ Polish the frontend user interface and user experience to ensure consistency, ac
   - Form labels
 
 ### Keyboard Navigation
+
 - **All interactive elements keyboard accessible**:
   - Buttons, links, form inputs
   - Modals and dialogs
@@ -95,6 +104,7 @@ Polish the frontend user interface and user experience to ensure consistency, ac
   - Document shortcuts for users
 
 ### Screen Reader Support
+
 - **Proper semantic markup**:
   - Use semantic HTML
   - ARIA landmarks
@@ -108,6 +118,7 @@ Polish the frontend user interface and user experience to ensure consistency, ac
   - Success messages
 
 ### Testing Accessibility
+
 - **Automated testing**:
   - Use axe-core or similar
   - Run in CI/CD
@@ -120,6 +131,7 @@ Polish the frontend user interface and user experience to ensure consistency, ac
 ## 8.3 Responsive Design
 
 ### Mobile-First Approach
+
 - **Mobile optimization**:
   - Design for mobile first
   - Test on real devices
@@ -136,6 +148,7 @@ Polish the frontend user interface and user experience to ensure consistency, ac
   - Stacked layouts on mobile
 
 ### Tablet Support
+
 - **Tablet-optimized layouts**:
   - Use available screen space
   - Side-by-side content where appropriate
@@ -145,6 +158,7 @@ Polish the frontend user interface and user experience to ensure consistency, ac
   - Landscape and portrait orientations
 
 ### Desktop Enhancement
+
 - **Desktop-specific features**:
   - Hover states
   - Keyboard shortcuts
@@ -158,6 +172,7 @@ Polish the frontend user interface and user experience to ensure consistency, ac
 ## 8.4 Loading States & Feedback
 
 ### Loading Indicators
+
 - **Consistent loading patterns**:
   - Spinner for quick operations (< 1s)
   - Skeleton screens for content loading
@@ -173,6 +188,7 @@ Polish the frontend user interface and user experience to ensure consistency, ac
   - Non-blocking where possible
 
 ### Error States
+
 - **Error messaging**:
   - Clear, actionable error messages
   - Specific error details
@@ -189,6 +205,7 @@ Polish the frontend user interface and user experience to ensure consistency, ac
   - Undo functionality where possible
 
 ### Success Feedback
+
 - **Success messages**:
   - Toast notifications
   - Inline success messages
@@ -199,6 +216,7 @@ Polish the frontend user interface and user experience to ensure consistency, ac
   - Color coding (green for success)
 
 ### Empty States
+
 - **Empty state design**:
   - Helpful messaging
   - Clear call-to-action
@@ -208,6 +226,7 @@ Polish the frontend user interface and user experience to ensure consistency, ac
 ## 8.5 Animations & Transitions
 
 ### Micro-Interactions
+
 - **Button interactions**:
   - Hover effects
   - Click feedback
@@ -222,6 +241,7 @@ Polish the frontend user interface and user experience to ensure consistency, ac
   - Breadcrumb navigation
 
 ### Page Transitions
+
 - **Smooth transitions**:
   - Page load animations
   - Route transitions
@@ -232,6 +252,7 @@ Polish the frontend user interface and user experience to ensure consistency, ac
   - Keep animations under 300ms
 
 ### Accessibility in Animations
+
 - **Respect prefers-reduced-motion**:
   - Disable animations for users who prefer reduced motion
   - Use CSS media query: `@media (prefers-reduced-motion: reduce)`
@@ -242,6 +263,7 @@ Polish the frontend user interface and user experience to ensure consistency, ac
 ## 8.6 User Feedback & Help
 
 ### Tooltips & Help Text
+
 - **Contextual help**:
   - Tooltips for icons
   - Help text for complex fields
@@ -252,6 +274,7 @@ Polish the frontend user interface and user experience to ensure consistency, ac
   - Not blocking important content
 
 ### Onboarding
+
 - **Welcome tour** (optional):
   - First-time user experience
   - Feature highlights
@@ -263,6 +286,7 @@ Polish the frontend user interface and user experience to ensure consistency, ac
   - Link to full documentation
 
 ### Notifications
+
 - **Notification system**:
   - Toast notifications for temporary messages
   - Persistent notifications for important info
@@ -276,6 +300,7 @@ Polish the frontend user interface and user experience to ensure consistency, ac
 ## 8.7 Form UX
 
 ### Form Design
+
 - **Form layout**:
   - Logical grouping
   - Clear labels
@@ -293,6 +318,7 @@ Polish the frontend user interface and user experience to ensure consistency, ac
   - Error handling
 
 ### Input Enhancements
+
 - **Input masks**:
   - Phone number formatting
   - Credit card formatting
@@ -310,6 +336,7 @@ Polish the frontend user interface and user experience to ensure consistency, ac
 ## 8.8 Data Visualization
 
 ### Charts & Graphs
+
 - **Chart libraries**:
   - Choose charting library (Chart.js, Recharts, etc.)
   - Consistent chart styling
@@ -321,6 +348,7 @@ Polish the frontend user interface and user experience to ensure consistency, ac
   - Trend indicators
 
 ### Tables & Data Display
+
 - **Table design**:
   - Sortable columns
   - Filterable data
@@ -335,6 +363,7 @@ Polish the frontend user interface and user experience to ensure consistency, ac
 ## 8.9 Performance UX
 
 ### Perceived Performance
+
 - **Optimistic UI updates**:
   - Update UI before server confirmation
   - Rollback on error
@@ -348,6 +377,7 @@ Polish the frontend user interface and user experience to ensure consistency, ac
   - Update in background
 
 ### Performance Metrics
+
 - **Core Web Vitals**:
   - Largest Contentful Paint (LCP) < 2.5s
   - First Input Delay (FID) < 100ms
@@ -385,4 +415,3 @@ Polish the frontend user interface and user experience to ensure consistency, ac
 ---
 
 **Back to**: [Roadmap Overview](./README.md)
-

@@ -1,6 +1,8 @@
 ---
 title: 'Admin Dashboard'
-description: 'User management, subscription management, Payload integration, analytics, and permissions'
+description:
+  'User management, subscription management, Payload integration, analytics, and
+  permissions'
 navigation:
   title: 'Admin Dashboard'
   order: 4
@@ -8,7 +10,8 @@ navigation:
 
 ## Overview
 
-Build a comprehensive admin dashboard with user management, subscription management, Payload integration, analytics, and proper permissions.
+Build a comprehensive admin dashboard with user management, subscription
+management, Payload integration, analytics, and proper permissions.
 
 ## Implementation Status
 
@@ -21,6 +24,7 @@ Build a comprehensive admin dashboard with user management, subscription managem
 ## 3.1 User Management
 
 ### User Listing
+
 - **Location**: `apps/web/app/pages/admin/users.vue`
 - **Replace placeholder data** with real API calls:
   - Fetch users from backend API
@@ -48,6 +52,7 @@ Build a comprehensive admin dashboard with user management, subscription managem
   - Actions column
 
 ### User CRUD Operations
+
 - **View user details**:
   - View full user profile
   - View subscription details
@@ -73,6 +78,7 @@ Build a comprehensive admin dashboard with user management, subscription managem
   - Handle related data (subscriptions, invoices)
 
 ### Bulk Operations
+
 - **Bulk activate/deactivate**:
   - Select multiple users
   - Apply status change to selected users
@@ -89,6 +95,7 @@ Build a comprehensive admin dashboard with user management, subscription managem
 ## 3.2 Subscription Management (Admin)
 
 ### View All Subscriptions
+
 - **Create page**: `apps/web/app/pages/admin/subscriptions.vue`
 - **List all subscriptions**:
   - Active subscriptions
@@ -109,6 +116,7 @@ Build a comprehensive admin dashboard with user management, subscription managem
   - Total revenue from subscription
 
 ### Manual Subscription Operations
+
 - **Create subscription for user**:
   - Select user
   - Choose plan
@@ -129,6 +137,7 @@ Build a comprehensive admin dashboard with user management, subscription managem
   - Track discount usage
 
 ### Revenue Analytics
+
 - **Monthly Recurring Revenue (MRR)**:
   - Calculate total MRR
   - MRR growth trends
@@ -147,6 +156,7 @@ Build a comprehensive admin dashboard with user management, subscription managem
 ## 3.3 Payload Integration in Admin
 
 ### Payload Content Management UI
+
 - **Embed Payload admin or create proxy UI**:
   - Option 1: Iframe embed Payload admin (requires auth)
   - Option 2: Create custom UI using Payload API
@@ -168,6 +178,7 @@ Build a comprehensive admin dashboard with user management, subscription managem
   - Delete unused assets
 
 ### Payload API Integration
+
 - **Service location**: `apps/backend/app/services/payload_service.ts` (exists)
 - **Admin endpoints** to sync/manage Payload content:
   - `GET /api/admin/cms/collections` - List collections
@@ -183,6 +194,7 @@ Build a comprehensive admin dashboard with user management, subscription managem
 ## 3.4 Admin Analytics & Reports
 
 ### Dashboard Stats
+
 - **Location**: `apps/web/app/pages/admin/index.vue`
 - **Replace placeholder data** with real metrics:
   - **Real-time user count**:
@@ -206,6 +218,7 @@ Build a comprehensive admin dashboard with user management, subscription managem
     - Average resolution time
 
 ### User Activity Logs
+
 - **Track user actions**:
   - Logins (successful and failed)
   - Purchases/subscriptions
@@ -225,6 +238,7 @@ Build a comprehensive admin dashboard with user management, subscription managem
   - Export logs
 
 ### System Health Monitoring
+
 - **Database status**:
   - Connection status
   - Query performance
@@ -244,6 +258,7 @@ Build a comprehensive admin dashboard with user management, subscription managem
 ## 3.5 Admin Permissions
 
 ### Role-Based Access Control
+
 - **Verify admin middleware**: `apps/web/app/middleware/admin.ts`
   - Ensure it properly checks user role
   - Handle unauthorized access
@@ -258,6 +273,7 @@ Build a comprehensive admin dashboard with user management, subscription managem
   - Audit all admin actions
 
 ### Permission Management
+
 - **Permission system design**:
   - Define permission roles
   - Map permissions to features
@@ -270,9 +286,12 @@ Build a comprehensive admin dashboard with user management, subscription managem
 
 ## Implementation Checklist
 
-- [ ] Replace placeholder data with real API calls in admin dashboard ⚠️ (Placeholder data exists)
-- [~] Implement user listing with pagination and search ⚠️ (AdminController exists, UI may be incomplete)
-- [~] Create user CRUD operations UI ⚠️ (AdminController has user management methods)
+- [ ] Replace placeholder data with real API calls in admin dashboard ⚠️
+      (Placeholder data exists)
+- [~] Implement user listing with pagination and search ⚠️ (AdminController
+  exists, UI may be incomplete)
+- [~] Create user CRUD operations UI ⚠️ (AdminController has user management
+  methods)
 - [ ] Add bulk operations functionality
 - [ ] Build subscription management page
 - [ ] Implement revenue analytics and charts
@@ -280,10 +299,11 @@ Build a comprehensive admin dashboard with user management, subscription managem
 - [x] Create Payload API service endpoints ✅ (PayloadService exists)
 - [ ] Build activity logs and audit trail
 - [ ] Implement system health monitoring
-- [~] Set up granular admin permissions ⚠️ (Admin middleware exists, needs verification)
-- [x] Protect all admin routes with proper middleware ✅ (Admin middleware exists)
+- [~] Set up granular admin permissions ⚠️ (Admin middleware exists, needs
+  verification)
+- [x] Protect all admin routes with proper middleware ✅ (Admin middleware
+      exists)
 
 ---
 
 **Next**: [Security & Infrastructure](./04-security-infrastructure.md)
-

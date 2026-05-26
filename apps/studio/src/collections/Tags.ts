@@ -17,9 +17,9 @@ const Tags: CollectionConfig = {
     // Everyone can read tags (for frontend)
     read: () => true,
     // Only admins and content admins can create tags
-    create: ({ req: { user } }) => user && ['admin', 'content_admin'].includes(user.role),
+    create: ({ req: { user } }) => Boolean(user && ['admin', 'content_admin'].includes(user.role)),
     // Only admins and content admins can update tags
-    update: ({ req: { user } }) => user && ['admin', 'content_admin'].includes(user.role),
+    update: ({ req: { user } }) => Boolean(user && ['admin', 'content_admin'].includes(user.role)),
     // Only admins can delete tags
     delete: ({ req: { user } }) => user?.role === 'admin',
   },

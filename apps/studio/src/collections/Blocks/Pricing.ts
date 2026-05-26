@@ -1,4 +1,4 @@
-import type { Block } from 'payload'
+import type { CollectionConfig } from 'payload'
 
 /**
  * Pricing Block Collection
@@ -113,7 +113,11 @@ const BlockPricing: CollectionConfig = {
               type: 'relationship',
               relationTo: 'pages',
               admin: {
-                condition: (data) => data.type === 'page',
+                condition: (data: unknown) =>
+                  typeof data === 'object' &&
+                  data !== null &&
+                  'type' in data &&
+                  (data as { type?: string }).type === 'page',
               },
             },
             {
@@ -121,14 +125,22 @@ const BlockPricing: CollectionConfig = {
               type: 'relationship',
               relationTo: 'posts',
               admin: {
-                condition: (data) => data.type === 'post',
+                condition: (data: unknown) =>
+                  typeof data === 'object' &&
+                  data !== null &&
+                  'type' in data &&
+                  (data as { type?: string }).type === 'post',
               },
             },
             {
               name: 'url',
               type: 'text',
               admin: {
-                condition: (data) => data.type === 'url',
+                condition: (data: unknown) =>
+                  typeof data === 'object' &&
+                  data !== null &&
+                  'type' in data &&
+                  (data as { type?: string }).type === 'url',
               },
             },
           ],

@@ -1,4 +1,4 @@
-import type { CollectionConfig } from 'payload'
+import type { CollectionConfig, Where } from 'payload'
 
 /**
  * Posts Collection
@@ -37,14 +37,14 @@ const Posts: CollectionConfig = {
           author: {
             equals: user.id,
           },
-        }
+        } as Where
       }
       // Public read access for published posts (for frontend)
       return {
         status: {
           equals: 'published',
         },
-      }
+      } as Where
     },
     // Only authenticated users can create posts
     create: ({ req: { user } }) => !!user,
@@ -63,7 +63,7 @@ const Posts: CollectionConfig = {
           author: {
             equals: user.id,
           },
-        }
+        } as Where
       }
       return false
     },
@@ -72,12 +72,12 @@ const Posts: CollectionConfig = {
       if (user && ['admin', 'content_admin'].includes(user.role)) {
         return true
       }
-      if (user?.role === 'writer') {
+      if (user?.role === 'publisher') {
         return {
           author: {
             equals: user.id,
           },
-        }
+        } as Where
       }
       return false
     },

@@ -1,6 +1,8 @@
 ---
 title: 'Authentication & Authorization Architecture'
-description: 'Architecture guide: Better Auth for authentication, AdonisJS for authorization'
+description:
+  'Architecture guide: Better Auth for authentication, AdonisJS for
+  authorization'
 navigation:
   title: 'Auth Architecture'
   order: 2
@@ -8,18 +10,23 @@ navigation:
 
 ## Overview
 
-This application uses a clean separation between **authentication** (who you are) and **authorization** (what you can do):
+This application uses a clean separation between **authentication** (who you
+are) and **authorization** (what you can do):
 
-- **Better Auth**: Handles authentication only (sessions, tokens, MFA, OAuth providers)
-- **AdonisJS Users Table**: Canonical source of truth for ALL profile and authorization data
+- **Better Auth**: Handles authentication only (sessions, tokens, MFA, OAuth
+  providers)
+- **AdonisJS Users Table**: Canonical source of truth for ALL profile and
+  authorization data
 - **Bouncer**: Authorization policies based on Adonis User model
 
 ## Data Storage
 
 ### Better Auth (`user` table)
+
 **Purpose**: Authentication and session management only
 
 **Stores**:
+
 - `id`: Unique identifier (nanoid)
 - `email`: Email address (for login)
 - `emailVerified`: Email verification status
@@ -29,20 +36,26 @@ This application uses a clean separation between **authentication** (who you are
 - Session/token data in `session` table
 
 **Does NOT store** (canonical in AdonisJS):
+
 - ❌ `role` - Only in AdonisJS users table
 - ❌ `firstName`, `lastName`, `username` - Only in AdonisJS users table
 - ❌ Preferences, app-specific fields - Only in AdonisJS users table
 
-**Note**: Better Auth may temporarily store profile data from OAuth providers (firstName, lastName, etc.), but this is immediately synced to AdonisJS and AdonisJS is the canonical source.
+**Note**: Better Auth may temporarily store profile data from OAuth providers
+(firstName, lastName, etc.), but this is immediately synced to AdonisJS and
+AdonisJS is the canonical source.
 
 ### AdonisJS Users (`users` table)
+
 **Purpose**: Canonical storage for ALL user profile and authorization data
 
 **Stores**:
+
 - `id`: Primary key
 - `email`: Email address (canonical)
 - `firstName`, `lastName`, `username`: Profile data (canonical)
-- `role`: Authorization role - "user" | "admin" | "content_admin" | "editor" | "writer" (canonical)
+- `role`: Authorization role - "user" | "admin" | "content_admin" | "editor" |
+  "writer" (canonical)
 - `isActive`: Account status
 - `better_auth_user_id`: Reference to Better Auth user
 - `payload_user_id`: Reference to Payload user (for content roles)
@@ -113,11 +126,11 @@ All authorization is based on **Adonis User model**, not Better Auth:
 ```typescript
 // Abilities defined in app/abilities/main.ts
 export const manageUsers = Bouncer.ability((user: User) => {
-  return user.role === 'admin' // Role from Adonis User
-})
+  return user.role === 'admin'; // Role from Adonis User
+});
 
 // Usage in controllers
-await ctx.bouncer.authorize('manageUsers', ctx.auth.user)
+await ctx.bouncer.authorize('manageUsers', ctx.auth.user);
 ```
 
 ## Data Sync Strategy
@@ -127,28 +140,36 @@ await ctx.bouncer.authorize('manageUsers', ctx.auth.user)
 Profile data flows **one-way only**: Better Auth → AdonisJS
 
 **Why?**
+
 - Better Auth may receive profile updates from OAuth providers
 - AdonisJS is the canonical source for all profile data
-- Updates made in AdonisJS don't need to sync back to Better Auth (Better Auth only needs auth data)
+- Updates made in AdonisJS don't need to sync back to Better Auth (Better Auth
+  only needs auth data)
 
 **When profile data syncs:**
+
 - `onAfterSignUp`: Initial profile from Better Auth → AdonisJS
 - `onAfterSignIn`: Sync OAuth profile updates → AdonisJS
 - `onAfterUpdateUser`: Sync Better Auth profile updates → AdonisJS
 
 **What syncs:**
+
 - ✅ `firstName`, `lastName` (from OAuth providers)
 - ✅ `username` (if provided)
-- ✅ `role` - Synced to Better Auth (mapped to admin/user) and Payload (for content roles)
+- ✅ `role` - Synced to Better Auth (mapped to admin/user) and Payload (for
+  content roles)
 - ✅ `email` - Synced from Better Auth to Adonis and Payload (one-way flow)
 
 ## Benefits
 
 1. **Single Source of Truth**: All profile/authorization data in AdonisJS
-2. **Better Auth Upgrades**: Can upgrade Better Auth without affecting authorization model
+2. **Better Auth Upgrades**: Can upgrade Better Auth without affecting
+   authorization model
 3. **Flexibility**: Easy to add app-specific fields to AdonisJS users table
-4. **OAuth Compatibility**: OAuth profile data automatically syncs to canonical storage
-5. **Clear Separation**: Authentication (Better Auth) vs Authorization (AdonisJS + Bouncer)
+4. **OAuth Compatibility**: OAuth profile data automatically syncs to canonical
+   storage
+5. **Clear Separation**: Authentication (Better Auth) vs Authorization
+   (AdonisJS + Bouncer)
 
 ## Migration Path
 
@@ -162,7 +183,7 @@ If migrating from an existing setup:
 ## Key Files
 
 - `apps/backend/config/better_auth.ts`: Better Auth config with hooks
-- `apps/backend/app/middleware/auth_middleware.ts`: Loads Adonis User from session
+- `apps/backend/app/middleware/auth_middleware.ts`: Loads Adonis User from
+  session
 - `apps/backend/app/abilities/main.ts`: Bouncer abilities based on Adonis User
 - `apps/backend/app/models/user.ts`: Adonis User model (canonical)
-

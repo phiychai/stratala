@@ -20,8 +20,12 @@ export default class AuthErrorsController {
    * @response 403 - Forbidden - Admin access required
    */
   async index({ auth, request, response }: HttpContext) {
+    const currentUser = auth.user;
+    if (!currentUser) {
+      return response.unauthorized({ message: 'Authentication required' });
+    }
     // Admin only
-    await abilities.manageUsers.execute(auth.user!);
+    await abilities.manageUsers.execute(currentUser);
 
     const page = request.input('page', 1);
     const limit = request.input('limit', 50);
@@ -53,7 +57,11 @@ export default class AuthErrorsController {
    * @response 403 - Forbidden - Admin access required
    */
   async stats({ auth, response }: HttpContext) {
-    await abilities.manageUsers.execute(auth.user!);
+    const currentUser = auth.user;
+    if (!currentUser) {
+      return response.unauthorized({ message: 'Authentication required' });
+    }
+    await abilities.manageUsers.execute(currentUser);
 
     const stats = await AuthErrorLogger.getErrorStats();
     return response.json(stats);
@@ -71,7 +79,11 @@ export default class AuthErrorsController {
    * @response 404 - Error not found
    */
   async handle({ auth, params, response }: HttpContext) {
-    await abilities.manageUsers.execute(auth.user!);
+    const currentUser = auth.user;
+    if (!currentUser) {
+      return response.unauthorized({ message: 'Authentication required' });
+    }
+    await abilities.manageUsers.execute(currentUser);
 
     const error = await AuthSyncError.findOrFail(params.id);
     await error.markAsHandled();
@@ -93,7 +105,11 @@ export default class AuthErrorsController {
    * @response 500 - Server error - Reconciliation failed
    */
   async reconcile({ auth, response }: HttpContext) {
-    await abilities.manageUsers.execute(auth.user!);
+    const currentUser = auth.user;
+    if (!currentUser) {
+      return response.unauthorized({ message: 'Authentication required' });
+    }
+    await abilities.manageUsers.execute(currentUser);
 
     const result = await runReconciliation();
 

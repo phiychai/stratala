@@ -5,7 +5,7 @@ import env from '#start/env';
 export interface TrendingContent {
   id: string;
   type: 'post' | 'video';
-  content: any;
+  content: Record<string, unknown>;
   trendingScore: number;
   viewCount: number;
   likeCount: number;
@@ -21,6 +21,12 @@ export interface TrendingContent {
  * - Recency boost (time-based)
  * - Manual boost (editor's picks)
  */
+type PayloadDocument = {
+  id: string | number;
+  publishedAt?: string | null;
+  [key: string]: unknown;
+};
+
 export default class TrendingService {
   /**
    * Calculate trending score for content
@@ -60,12 +66,12 @@ export default class TrendingService {
   private static async fetchPayloadItems(
     collection: string,
     options: {
-      where?: Record<string, any>;
+      where?: Record<string, unknown>;
       limit?: number;
       sort?: string;
       depth?: number;
     } = {}
-  ): Promise<{ docs: any[]; totalDocs: number }> {
+  ): Promise<{ docs: PayloadDocument[]; totalDocs: number }> {
     const baseUrl = env.get('PAYLOAD_PUBLIC_SERVER_URL', 'http://localhost:3002');
     const queryParams = new URLSearchParams();
 
@@ -93,7 +99,7 @@ export default class TrendingService {
       if (!response.ok) {
         throw new Error(`Failed to fetch ${collection}: ${response.statusText}`);
       }
-      return (await response.json()) as { docs: any[]; totalDocs: number };
+      return (await response.json()) as { docs: PayloadDocument[]; totalDocs: number };
     } catch (error) {
       clearTimeout(timeoutId);
       if (error instanceof Error && error.name === 'AbortError') {
@@ -117,7 +123,7 @@ export default class TrendingService {
 
     // Fetch ALL editors-picks ONCE before processing content
     // Since it's a collection, we can fetch all at once and filter in memory
-    let allEditorsPicks: any[] = [];
+    let allEditorsPicks: Array<Record<string, unknown>> = [];
     try {
       const editorsPicksResult = await this.fetchPayloadItems('editors-picks', {
         where: {},
@@ -135,11 +141,11 @@ export default class TrendingService {
     for (const pick of allEditorsPicks) {
       const pickContentId =
         pick.contentType === 'post'
-          ? typeof pick.post === 'object'
-            ? pick.post?.id
+          ? typeof pick.post === 'object' && pick.post !== null
+            ? (pick.post as { id?: string | number }).id
             : pick.post
-          : typeof pick.video === 'object'
-            ? pick.video?.id
+          : typeof pick.video === 'object' && pick.video !== null
+            ? (pick.video as { id?: string | number }).id
             : pick.video;
       if (pickContentId) {
         editorsPickIds.add(String(pickContentId));

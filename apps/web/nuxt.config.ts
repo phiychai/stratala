@@ -24,7 +24,7 @@ export default defineNuxtConfig({
     '@nuxt/scripts',
     '@nuxtjs/mdc',
     '@nuxtjs/seo',
-    '@nuxt/fonts',
+    // '@nuxt/fonts',
   ],
 
   devtools: {
@@ -45,11 +45,12 @@ export default defineNuxtConfig({
 
   routeRules: {
     // Public pages - SSR enabled for SEO
-    '/': { ssr: true, prerender: true },
+    '/': { ssr: true, prerender: false },
     '/docs/**': { ssr: true, prerender: true },
     '/blog/**': { ssr: true, prerender: true },
     '/explore': { ssr: true, prerender: false }, // Dynamic content
-    '/@*/**': { ssr: true, prerender: false }, // User profiles - dynamic
+    '/:username': { ssr: true, prerender: false }, // User profiles (including @username) - dynamic
+    '/:username/**': { ssr: true, prerender: false }, // User subpages - dynamic
 
     // Auth pages - SSR enabled (no SEO needed but faster initial load)
     '/login': { ssr: true },
@@ -82,7 +83,7 @@ export default defineNuxtConfig({
 
   nitro: {
     prerender: {
-      routes: ['/'],
+      routes: [],
       crawlLinks: false, // Disable link crawling to avoid prerender failures for dynamic pages
       failOnError: false, // Don't fail build on prerender errors
     },

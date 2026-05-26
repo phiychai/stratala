@@ -6,35 +6,44 @@ navigation:
   order: 0
 ---
 
-This document identifies potential security issues in the authentication plan and milestone documents. All issues should be addressed before implementation.
+This document identifies potential security issues in the authentication plan
+and milestone documents. All issues should be addressed before implementation.
 
 ## Critical Issues
 
 ### 1. Username Enumeration Vulnerability
 
-**Location**: `2.milestone-1-database-schema.md` - Username availability endpoint (line 594-610)
+**Location**: `2.milestone-1-database-schema.md` - Username availability
+endpoint (line 594-610)
 
-**Issue**: The `/api/user/check-username` endpoint allows attackers to enumerate valid usernames by checking availability.
+**Issue**: The `/api/user/check-username` endpoint allows attackers to enumerate
+valid usernames by checking availability.
 
-**Risk**: Information disclosure - attackers can determine which usernames exist in the system.
+**Risk**: Information disclosure - attackers can determine which usernames exist
+in the system.
 
 **Recommendation**:
+
 - Always return the same response structure regardless of username existence
-- Return generic messages: "Username is available" or "Username is not available" (don't distinguish between "invalid format" and "already taken")
-- Add rate limiting specifically for this endpoint (e.g., 10 requests per minute per IP)
+- Return generic messages: "Username is available" or "Username is not
+  available" (don't distinguish between "invalid format" and "already taken")
+- Add rate limiting specifically for this endpoint (e.g., 10 requests per minute
+  per IP)
 - Consider requiring authentication for username checks
 - Add CAPTCHA after multiple failed checks from same IP
 
 **Example Fix**:
+
 ```typescript
 // Always return same structure, don't reveal if username exists
 return response.json({
   available: validation.isAvailable && validation.isValid,
   valid: validation.isValid,
   // Don't return specific error messages that reveal username existence
-  message: validation.isValid && validation.isAvailable
-    ? "Username is available"
-    : "Username is not available",
+  message:
+    validation.isValid && validation.isAvailable
+      ? 'Username is available'
+      : 'Username is not available',
   suggestions: validation.suggestions,
 });
 ```
@@ -43,20 +52,26 @@ return response.json({
 
 ### 2. Email Enumeration in Error Logs
 
-**Location**: `2.milestone-1-database-schema.md` - auth_sync_errors table (line 97-98)
+**Location**: `2.milestone-1-database-schema.md` - auth_sync_errors table (line
+97-98)
 
-**Issue**: The `auth_sync_errors` table stores email addresses, which could be used for enumeration if the error logs are accessible.
+**Issue**: The `auth_sync_errors` table stores email addresses, which could be
+used for enumeration if the error logs are accessible.
 
-**Risk**: Information disclosure - attackers could query error logs to discover valid email addresses.
+**Risk**: Information disclosure - attackers could query error logs to discover
+valid email addresses.
 
 **Recommendation**:
+
 - Hash or encrypt email addresses before storing in error logs
 - Use one-way hash (bcrypt with salt) for email storage
 - Restrict access to error logs table (admin-only access)
 - Add audit logging for who accesses error logs
-- Consider redacting email domain (store only hash, display partial: `u***@example.com`)
+- Consider redacting email domain (store only hash, display partial:
+  `u***@example.com`)
 
 **Example Fix**:
+
 ```typescript
 // Hash email before storing
 import { hash } from 'bcryptjs';
@@ -72,42 +87,53 @@ await AuthSyncError.create({
 
 ### 3. Missing Rate Limiting on Username Check Endpoint
 
-**Location**: `2.milestone-1-database-schema.md` - Username availability endpoint (line 594-610)
+**Location**: `2.milestone-1-database-schema.md` - Username availability
+endpoint (line 594-610)
 
-**Issue**: No explicit rate limiting mentioned for the public username check endpoint.
+**Issue**: No explicit rate limiting mentioned for the public username check
+endpoint.
 
 **Risk**: DoS attacks, brute force enumeration, resource exhaustion.
 
 **Recommendation**:
+
 - Add rate limiting: 10 requests per minute per IP
 - Implement exponential backoff for repeated requests
 - Add CAPTCHA after 5 failed attempts
 - Monitor and alert on suspicious patterns
 
 **Implementation**:
+
 ```typescript
 // Add to routes.ts
 import { limiter } from '@adonisjs/limiter';
 
-router.get("/check-username", limiter.allowRequests(10).perMinute(), [UserController, "checkUsername"]);
+router.get('/check-username', limiter.allowRequests(10).perMinute(), [
+  UserController,
+  'checkUsername',
+]);
 ```
 
 ---
 
 ### 4. Predictable Username Generation
 
-**Location**: `2.milestone-1-database-schema.md` - Username generation (line 238-243)
+**Location**: `2.milestone-1-database-schema.md` - Username generation (line
+238-243)
 
-**Issue**: When counter exceeds 9999, username uses `Date.now()` which is predictable.
+**Issue**: When counter exceeds 9999, username uses `Date.now()` which is
+predictable.
 
 **Risk**: Username enumeration and timing attacks.
 
 **Recommendation**:
+
 - Use cryptographically secure random suffix instead of timestamp
 - Use UUID v4 for random component
 - Add random salt to prevent predictability
 
 **Example Fix**:
+
 ```typescript
 if (counter > 9999) {
   // Use crypto random instead of timestamp
@@ -121,19 +147,23 @@ if (counter > 9999) {
 
 ### 5. Sensitive Data in Error Payloads
 
-**Location**: `2.milestone-1-database-schema.md` - auth_sync_errors payload (line 106)
+**Location**: `2.milestone-1-database-schema.md` - auth_sync_errors payload
+(line 106)
 
-**Issue**: Payload field stores up to 1KB of data, which could contain sensitive information like tokens, passwords, or personal data.
+**Issue**: Payload field stores up to 1KB of data, which could contain sensitive
+information like tokens, passwords, or personal data.
 
 **Risk**: Data breach if error logs are compromised.
 
 **Recommendation**:
+
 - Redact sensitive fields before storing payload
 - Remove or mask: passwords, tokens, API keys, credit card numbers
 - Sanitize all user input before storing
 - Implement payload sanitization function
 
 **Example Fix**:
+
 ```typescript
 private static sanitizePayload(payload: Record<string, any>): Record<string, any> {
   const sensitiveKeys = ['password', 'token', 'apiKey', 'secret', 'creditCard'];
@@ -153,13 +183,15 @@ private static sanitizePayload(payload: Record<string, any>): Record<string, any
 
 ### 6. Missing CSRF Protection
 
-**Location**: `1.authentication-plan.md` - Security Considerations (line 231-237)
+**Location**: `1.authentication-plan.md` - Security Considerations (line
+231-237)
 
 **Issue**: No mention of CSRF protection for authentication endpoints.
 
 **Risk**: Cross-site request forgery attacks on authentication flows.
 
 **Recommendation**:
+
 - Ensure Better Auth handles CSRF tokens (verify this)
 - Add CSRF protection to all state-changing endpoints
 - Use SameSite cookie attributes (already configured in better_auth.ts)
@@ -176,6 +208,7 @@ private static sanitizePayload(payload: Record<string, any>): Record<string, any
 **Risk**: Brute force attacks on user accounts.
 
 **Recommendation**:
+
 - Implement account lockout after 5 failed attempts
 - Lock duration: 15 minutes initially, increasing with each violation
 - Store lockout state in database (not just session)
@@ -188,13 +221,17 @@ private static sanitizePayload(payload: Record<string, any>): Record<string, any
 
 **Location**: `2.milestone-1-database-schema.md` - Migration (line 58)
 
-**Issue**: Email is nullable for OAuth users, which could cause issues with email-based lookups and validations.
+**Issue**: Email is nullable for OAuth users, which could cause issues with
+email-based lookups and validations.
 
-**Risk**: Authentication bypass, duplicate account issues, data integrity problems.
+**Risk**: Authentication bypass, duplicate account issues, data integrity
+problems.
 
 **Recommendation**:
+
 - Ensure email is always set for OAuth users (extract from provider)
-- Add validation to ensure at least one identifier (email or better_auth_user_id) exists
+- Add validation to ensure at least one identifier (email or
+  better_auth_user_id) exists
 - Add unique constraint on (email, better_auth_user_id) combination
 - Handle edge cases where OAuth provider doesn't return email
 
@@ -204,23 +241,26 @@ private static sanitizePayload(payload: Record<string, any>): Record<string, any
 
 **Location**: `3.milestone-2-user-sync.md` - UserSyncService (line 57-60)
 
-**Issue**: The query uses `orWhere` which could match multiple users if email changes or if Better Auth user ID is reused.
+**Issue**: The query uses `orWhere` which could match multiple users if email
+changes or if Better Auth user ID is reused.
 
 **Risk**: Data corruption, wrong user updates, security issues.
 
 **Recommendation**:
+
 - Use database transactions for sync operations
 - Add unique constraint on `better_auth_user_id`
 - Use `SELECT FOR UPDATE` to lock rows during sync
 - Handle race conditions explicitly with proper error handling
 
 **Example Fix**:
+
 ```typescript
 // Use transaction and row locking
 const user = await db.transaction(async (trx) => {
   return await User.query({ client: trx })
-    .where("better_auth_user_id", betterAuthUser.id)
-    .orWhere("email", betterAuthUser.email)
+    .where('better_auth_user_id', betterAuthUser.id)
+    .orWhere('email', betterAuthUser.email)
     .forUpdate() // Lock rows
     .first();
 });
@@ -230,13 +270,15 @@ const user = await db.transaction(async (trx) => {
 
 ### 10. IP Address Storage (GDPR/Privacy)
 
-**Location**: `2.milestone-1-database-schema.md` - auth_sync_errors table (line 102)
+**Location**: `2.milestone-1-database-schema.md` - auth_sync_errors table
+(line 102)
 
 **Issue**: Storing client IP addresses may violate GDPR/privacy regulations.
 
 **Risk**: Legal compliance issues, privacy violations.
 
 **Recommendation**:
+
 - Hash IP addresses before storing (use one-way hash)
 - Implement data retention policy (delete after 90 days)
 - Add user consent mechanism if required by jurisdiction
@@ -253,6 +295,7 @@ const user = await db.transaction(async (trx) => {
 **Risk**: Injection attacks, data corruption, type confusion.
 
 **Recommendation**:
+
 - Validate all fields from Better Auth before processing
 - Use schema validation (Zod, Yup, or similar)
 - Sanitize string inputs (trim, escape)
@@ -265,11 +308,13 @@ const user = await db.transaction(async (trx) => {
 
 **Location**: `1.authentication-plan.md` - Session Security (line 233)
 
-**Issue**: Session security is delegated to Better Auth but no explicit validation of session expiration in middleware.
+**Issue**: Session security is delegated to Better Auth but no explicit
+validation of session expiration in middleware.
 
 **Risk**: Use of expired sessions, session hijacking.
 
 **Recommendation**:
+
 - Verify Better Auth handles session expiration correctly
 - Add explicit session expiration check in middleware
 - Implement session refresh mechanism
@@ -286,6 +331,7 @@ const user = await db.transaction(async (trx) => {
 **Risk**: Information disclosure through logs.
 
 **Recommendation**:
+
 - Sanitize error messages before logging
 - Don't log full error objects in production
 - Use structured logging with redaction
@@ -302,6 +348,7 @@ const user = await db.transaction(async (trx) => {
 **Risk**: Account takeover through password reset attacks.
 
 **Recommendation**:
+
 - Implement secure password reset tokens (cryptographically random)
 - Token expiration: 1 hour
 - Single-use tokens (invalidate after use)
@@ -315,11 +362,13 @@ const user = await db.transaction(async (trx) => {
 
 **Location**: `1.authentication-plan.md` - Architecture (line 27)
 
-**Issue**: OAuth provider tokens stored in Better Auth, but no mention of encryption at rest.
+**Issue**: OAuth provider tokens stored in Better Auth, but no mention of
+encryption at rest.
 
 **Risk**: Token theft if database is compromised.
 
 **Recommendation**:
+
 - Verify Better Auth encrypts OAuth tokens at rest
 - If not, implement encryption for sensitive fields
 - Use application-level encryption with key rotation
@@ -336,6 +385,7 @@ const user = await db.transaction(async (trx) => {
 **Risk**: Unauthorized privilege escalation going undetected.
 
 **Recommendation**:
+
 - Log all role/permission changes
 - Include: who made change, what changed, when, from what IP
 - Alert on suspicious changes (e.g., admin role assignment)
@@ -345,13 +395,15 @@ const user = await db.transaction(async (trx) => {
 
 ### 17. Username Uniqueness Race Condition
 
-**Location**: `2.milestone-1-database-schema.md` - Username validation (line 237)
+**Location**: `2.milestone-1-database-schema.md` - Username validation
+(line 237)
 
 **Issue**: Username availability check and creation are not atomic.
 
 **Risk**: Two users could get the same username if they register simultaneously.
 
 **Recommendation**:
+
 - Use database unique constraint (already planned)
 - Handle unique constraint violation errors gracefully
 - Retry with new username if conflict occurs
@@ -368,6 +420,7 @@ const user = await db.transaction(async (trx) => {
 **Risk**: Email verification bypass, account takeover.
 
 **Recommendation**:
+
 - Use cryptographically secure verification tokens
 - Token expiration: 24 hours
 - Single-use tokens
@@ -386,6 +439,7 @@ const user = await db.transaction(async (trx) => {
 **Issue**: JSON field could be used for injection if not properly validated.
 
 **Recommendation**:
+
 - Validate JSON structure before storing
 - Set maximum depth and size limits
 - Sanitize user input
@@ -400,6 +454,7 @@ const user = await db.transaction(async (trx) => {
 **Issue**: No explicit size limits on sync payloads.
 
 **Recommendation**:
+
 - Set maximum payload size (e.g., 10KB)
 - Validate payload size before processing
 - Reject oversized payloads with appropriate error
@@ -413,6 +468,7 @@ const user = await db.transaction(async (trx) => {
 **Issue**: IP extraction from headers is vulnerable to spoofing.
 
 **Recommendation**:
+
 - Validate IP comes from trusted proxy
 - Use last untrusted IP in X-Forwarded-For chain
 - Implement IP validation middleware
@@ -424,7 +480,8 @@ const user = await db.transaction(async (trx) => {
 
 ### 22. Username Suggestions Could Be Predictable
 
-**Location**: `2.milestone-1-database-schema.md` - Username suggestions (line 392-399)
+**Location**: `2.milestone-1-database-schema.md` - Username suggestions (line
+392-399)
 
 **Issue**: Sequential numbering makes suggestions predictable.
 
@@ -490,4 +547,3 @@ const user = await db.transaction(async (trx) => {
 - [OWASP Session Management Cheat Sheet](https://cheatsheetseries.owasp.org/cheatsheets/Session_Management_Cheat_Sheet.html)
 - [NIST Digital Identity Guidelines](https://pages.nist.gov/800-63-3/)
 - [GDPR Data Protection Requirements](https://gdpr.eu/)
-
