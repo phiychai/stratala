@@ -119,3 +119,7 @@ public/uploads/
 *.code-workspace
 
 .cursor/rules/documentation.mdc
+apps/web/.nuxtrc
+.codex/
+.kilo/
+.kilocode/

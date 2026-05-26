@@ -58,6 +58,7 @@ export default withNuxt(
       '**/*.cjs',
       'content.config.ts',
       'vitest.config.ts',
+      'vitest.unit.config.ts',
       'tests/**',
       'types/**/*.d.ts',
     ],
