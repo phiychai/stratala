@@ -59,9 +59,9 @@ export default await Env.create(new URL('../', import.meta.url), {
   | Variables for Payload CMS integration
   |----------------------------------------------------------
   */
-  PAYLOAD_URL: Env.schema.string(),
+  PAYLOAD_URL: Env.schema.string.optional(),
   PAYLOAD_SECRET: Env.schema.string(),
-  PAYLOAD_DATABASE_URI: Env.schema.string(),
+  PAYLOAD_DATABASE_URI: Env.schema.string.optional(),
   PAYLOAD_PUBLIC_SERVER_URL: Env.schema.string(),
 
   /*
