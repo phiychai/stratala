@@ -82,7 +82,7 @@
     "pnpm": ">=9.0.0"
   },
   "optionalDependencies": {
-    "@oxc-minify/binding-darwin-x64": "0.96.0",
+    "@oxc-minify/binding-darwin-x64": "0.132.0",
     "@oxc-parser/binding-darwin-x64": "0.96.0",
     "@oxc-transform/binding-darwin-x64": "0.132.0"
   }
