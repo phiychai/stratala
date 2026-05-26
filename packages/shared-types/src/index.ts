@@ -1,6 +1,7 @@
 // Re-export Payload types
 export type {
   Category,
+  Config,
   Form,
   FormField,
   Media,

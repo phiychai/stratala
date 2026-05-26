@@ -81,6 +81,9 @@ export interface Config {
     'form-fields': FormField;
     'form-submissions': FormSubmission;
     'form-submission-values': FormSubmissionValue;
+    'block-gallery': BlockGallery;
+    'block-gallery-items': BlockGalleryItem;
+    'block-pricing': BlockPricing;
     'payload-kv': PayloadKv;
     'payload-locked-documents': PayloadLockedDocument;
     'payload-preferences': PayloadPreference;
@@ -102,6 +105,9 @@ export interface Config {
     'form-fields': FormFieldsSelect<false> | FormFieldsSelect<true>;
     'form-submissions': FormSubmissionsSelect<false> | FormSubmissionsSelect<true>;
     'form-submission-values': FormSubmissionValuesSelect<false> | FormSubmissionValuesSelect<true>;
+    'block-gallery': BlockGallerySelect<false> | BlockGallerySelect<true>;
+    'block-gallery-items': BlockGalleryItemsSelect<false> | BlockGalleryItemsSelect<true>;
+    'block-pricing': BlockPricingSelect<false> | BlockPricingSelect<true>;
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
     'payload-locked-documents':
       | PayloadLockedDocumentsSelect<false>
@@ -806,6 +812,115 @@ export interface FormSubmissionValue {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "block-gallery".
+ */
+export interface BlockGallery {
+  id: number;
+  /**
+   * Smaller copy shown above the headline to label a section or add extra context
+   */
+  tagline?: string | null;
+  /**
+   * Larger main headline for this page section
+   */
+  headline?: string | null;
+  /**
+   * Images to include in the image gallery
+   */
+  items?:
+    | {
+        image: number | Media;
+        caption?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "block-gallery-items".
+ */
+export interface BlockGalleryItem {
+  id: number;
+  /**
+   * The id of the gallery block this item belongs to.
+   */
+  blockGallery?: (number | null) | BlockGallery;
+  /**
+   * The id of the file included in the gallery.
+   */
+  image?: (number | null) | Media;
+  sort?: number | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "block-pricing".
+ */
+export interface BlockPricing {
+  id: number;
+  /**
+   * Smaller copy shown above the headline to label a section or add extra context
+   */
+  tagline?: string | null;
+  /**
+   * Larger main headline for this page section
+   */
+  headline?: string | null;
+  /**
+   * The individual pricing cards to display
+   */
+  pricingCards?:
+    | {
+        /**
+         * Name of the pricing plan. Shown at the top of the card
+         */
+        title: string;
+        /**
+         * Short, one sentence description of the pricing plan and who it is for
+         */
+        description?: string | null;
+        /**
+         * Price and term for the pricing plan. (ie $199/mo)
+         */
+        price?: string | null;
+        /**
+         * Badge that displays at the top of the pricing plan card to add helpful context
+         */
+        badge?: string | null;
+        /**
+         * Short list of features included in this plan
+         */
+        features?:
+          | {
+              feature?: string | null;
+              id?: string | null;
+            }[]
+          | null;
+        /**
+         * The action button / link shown at the bottom of the pricing card
+         */
+        button: {
+          label: string;
+          type: 'page' | 'post' | 'url';
+          page?: (number | null) | Page;
+          post?: (number | null) | Post;
+          url?: string | null;
+        };
+        /**
+         * Highlight this pricing card
+         */
+        isHighlighted?: boolean | null;
+        id?: string | null;
+      }[]
+    | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "payload-kv".
  */
 export interface PayloadKv {
@@ -883,6 +998,18 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'form-submission-values';
         value: number | FormSubmissionValue;
+      } | null)
+    | ({
+        relationTo: 'block-gallery';
+        value: number | BlockGallery;
+      } | null)
+    | ({
+        relationTo: 'block-gallery-items';
+        value: number | BlockGalleryItem;
+      } | null)
+    | ({
+        relationTo: 'block-pricing';
+        value: number | BlockPricing;
       } | null);
   globalSlug?: string | null;
   user: {
@@ -1296,6 +1423,69 @@ export interface FormSubmissionValuesSelect<T extends boolean = true> {
   submission?: T;
   field?: T;
   value?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "block-gallery_select".
+ */
+export interface BlockGallerySelect<T extends boolean = true> {
+  tagline?: T;
+  headline?: T;
+  items?:
+    | T
+    | {
+        image?: T;
+        caption?: T;
+        id?: T;
+      };
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "block-gallery-items_select".
+ */
+export interface BlockGalleryItemsSelect<T extends boolean = true> {
+  blockGallery?: T;
+  image?: T;
+  sort?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "block-pricing_select".
+ */
+export interface BlockPricingSelect<T extends boolean = true> {
+  tagline?: T;
+  headline?: T;
+  pricingCards?:
+    | T
+    | {
+        title?: T;
+        description?: T;
+        price?: T;
+        badge?: T;
+        features?:
+          | T
+          | {
+              feature?: T;
+              id?: T;
+            };
+        button?:
+          | T
+          | {
+              label?: T;
+              type?: T;
+              page?: T;
+              post?: T;
+              url?: T;
+            };
+        isHighlighted?: T;
+        id?: T;
+      };
   updatedAt?: T;
   createdAt?: T;
 }

@@ -10,6 +10,9 @@ import { buildConfig } from 'payload'
 import sharp from 'sharp'
 
 // Collections
+import BlockGalleryItems from './collections/Blocks/BlockGalleryItems'
+import BlockGallery from './collections/Blocks/Gallery'
+import BlockPricing from './collections/Blocks/Pricing'
 import Categories from './collections/Categories'
 import EditorsPicks from './collections/EditorsPicks'
 import FormFields from './collections/FormFields'
@@ -26,7 +29,6 @@ import { Users } from './collections/Users'
 import Videos from './collections/Videos'
 import Navigation from './globals/Navigation'
 import SiteSettings from './globals/SiteSettings'
-import { getUserTenantIDs } from './utilities/getUserTenantIDs'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
@@ -58,13 +60,16 @@ export default buildConfig({
     FormFields,
     FormSubmissions,
     FormSubmissionValues,
+    BlockGallery,
+    BlockGalleryItems,
+    BlockPricing,
   ],
   globals: [SiteSettings, Navigation],
   editor: lexicalEditor(),
   secret: process.env.PAYLOAD_SECRET || '',
   serverURL: process.env.PAYLOAD_PUBLIC_SERVER_URL || 'https://0.0.0.0:3002',
   typescript: {
-    outputFile: path.resolve(rootDir, 'packages', 'shared-types', 'src', 'payload-types.ts'),
+    outputFile: path.resolve(rootDir, 'packages/shared-types/src/payload-types.ts'),
   },
   graphQL: {
     schemaOutputFile: path.resolve(dirname, '../schema.graphql'),
@@ -79,10 +84,6 @@ export default buildConfig({
     limits: {
       fileSize: 20000000, // 20MB
     },
-  },
-  // Enable preview mode for live preview functionality
-  preview: {
-    enabled: true,
   },
   plugins: [
     multiTenantPlugin({
@@ -105,7 +106,7 @@ export default buildConfig({
       // The tenants collection is NOT in the tenant-scoped collections list,
       // so it should NOT be filtered, but the plugin might still check userHasAccessToAllTenants
       // By returning true for all authenticated users, we ensure all spaces are visible
-      userHasAccessToAllTenants: (user: User) =>
+      userHasAccessToAllTenants: (user: { role?: string } | null) =>
         user?.role === 'admin' || user?.role === 'content_admin' || user?.role === 'publisher',
       tenantsArrayField: {
         includeDefaultField: true,
