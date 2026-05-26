@@ -197,5 +197,4 @@ export default defineNuxtConfig({
     // Re-enable once the build issue is resolved
     highlight: false,
   },
-
 });
