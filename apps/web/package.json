@@ -65,7 +65,7 @@
     "@oxc-parser/binding-darwin-x64": "0.96.0",
     "@oxc-transform/binding-darwin-x64": "0.132.0",
     "@stratala/eslint-config": "workspace:*",
-    "@types/react": "19.1.8",
+    "@types/react": "19.2.15",
     "@types/react-dom": "19.1.6",
     "@vitest/ui": "^4.1.7",
     "@vue/test-utils": "^2.4.6",
