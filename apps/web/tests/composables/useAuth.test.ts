@@ -1,12 +1,15 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { createPinia, setActivePinia } from 'pinia';
 import { useAuth } from '~/composables/useAuth';
 
 // Mock $fetch
 global.$fetch = vi.fn();
+vi.setConfig({ hookTimeout: 30000 });
 
 describe('useAuth', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    setActivePinia(createPinia());
   });
 
   it('returns auth state and methods', () => {

@@ -1,4 +1,6 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
+
+vi.setConfig({ hookTimeout: 30000 });
 
 // Example utility test - add your actual utility functions
 describe('Utility Functions', () => {

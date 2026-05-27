@@ -2,9 +2,17 @@ import { describe, it, expect } from 'vitest';
 import { mount } from '@vue/test-utils';
 import BaseButton from '~/components/base/BaseButton.vue';
 
+const UButtonStub = {
+  props: ['label', 'disabled'],
+  template: '<button :disabled="disabled" @click="$emit(\'click\')">{{ label }}<slot /></button>',
+};
+
 describe('BaseButton', () => {
   it('renders button with label', () => {
     const wrapper = mount(BaseButton, {
+      global: {
+        stubs: { UButton: UButtonStub },
+      },
       props: {
         id: 'test-button-1',
         label: 'Click me',
@@ -17,6 +25,9 @@ describe('BaseButton', () => {
 
   it('applies correct variant class', () => {
     const wrapper = mount(BaseButton, {
+      global: {
+        stubs: { UButton: UButtonStub },
+      },
       props: {
         id: 'test-button-2',
         label: 'Test',
@@ -35,6 +46,9 @@ describe('BaseButton', () => {
 
   it('emits click event when clicked', async () => {
     const wrapper = mount(BaseButton, {
+      global: {
+        stubs: { UButton: UButtonStub },
+      },
       props: {
         id: 'test-button-3',
         label: 'Test',
@@ -47,6 +61,9 @@ describe('BaseButton', () => {
 
   it('is disabled when disabled prop is true', () => {
     const wrapper = mount(BaseButton, {
+      global: {
+        stubs: { UButton: UButtonStub },
+      },
       props: {
         id: 'test-button-4',
         label: 'Test',
