@@ -1,28 +1,39 @@
 version: 2
 
 updates:
-  # Enable version updates for npm
   - package-ecosystem: 'npm'
     directory: '/'
     schedule:
       interval: 'weekly'
       day: 'monday'
-    open-pull-requests-limit: 10
+    open-pull-requests-limit: 8
+    labels:
+      - 'dependencies'
+      - 'dependabot'
+    commit-message:
+      prefix: 'deps'
     groups:
-      turborepo:
+      frameworks:
         patterns:
-          - 'turbo*'
-      nuxt:
-        patterns:
-          - 'nuxt*'
+          - 'next'
+          - '@next/*'
+          - 'nuxt'
           - '@nuxt/*'
-      typescript:
+          - 'react'
+          - 'react-*'
+          - '@react-*/*'
+          - 'vue'
+          - '@vue/*'
+          - 'payload'
+          - '@payloadcms/*'
+          - '@adonisjs/*'
+      typescript-eslint:
         patterns:
           - 'typescript'
           - '@types/*'
-      eslint:
-        patterns:
-          - 'eslint*'
+          - 'eslint'
+          - 'eslint-*'
+          - '@eslint/*'
           - '@typescript-eslint/*'
       testing:
         patterns:
@@ -30,53 +41,73 @@ updates:
           - '@vitest/*'
           - 'playwright'
           - '@playwright/*'
+          - '@testing-library/*'
+          - '@japa/*'
+      build-tooling:
+        patterns:
+          - 'turbo'
+          - 'tsx'
+          - 'prettier'
+          - '@swc/*'
+          - 'vite'
+          - 'vue-tsc'
+      ui-and-icons:
+        patterns:
+          - '@iconify/*'
+          - 'lucide*'
+          - '@unovis/*'
+          - 'vee-validate'
+      misc-patch:
+        patterns:
+          - '*'
+        update-types:
+          - 'minor'
+          - 'patch'
 
-  # Web app dependencies
-  - package-ecosystem: 'npm'
-    directory: '/apps/web'
-    schedule:
-      interval: 'weekly'
-      day: 'monday'
-    open-pull-requests-limit: 5
-
-  # Backend dependencies
-  - package-ecosystem: 'npm'
-    directory: '/apps/backend'
-    schedule:
-      interval: 'weekly'
-      day: 'monday'
-    open-pull-requests-limit: 5
-
-  # Shared packages
-  - package-ecosystem: 'npm'
-    directory: '/packages/eslint-config'
-    schedule:
-      interval: 'weekly'
-      day: 'monday'
-
-  - package-ecosystem: 'npm'
-    directory: '/packages/shared-types'
-    schedule:
-      interval: 'weekly'
-      day: 'monday'
-
-  - package-ecosystem: 'npm'
-    directory: '/packages/shared-utils'
-    schedule:
-      interval: 'weekly'
-      day: 'monday'
-
-  # GitHub Actions
   - package-ecosystem: 'github-actions'
     directory: '/'
     schedule:
       interval: 'weekly'
       day: 'monday'
     open-pull-requests-limit: 5
+    labels:
+      - 'dependencies'
+      - 'dependabot'
+    commit-message:
+      prefix: 'deps'
 
-  # Docker
+  - package-ecosystem: 'docker'
+    directory: '/apps/backend'
+    schedule:
+      interval: 'weekly'
+      day: 'monday'
+    open-pull-requests-limit: 5
+    labels:
+      - 'dependencies'
+      - 'dependabot'
+    commit-message:
+      prefix: 'deps'
+
+  - package-ecosystem: 'docker'
+    directory: '/apps/web'
+    schedule:
+      interval: 'weekly'
+      day: 'monday'
+    open-pull-requests-limit: 5
+    labels:
+      - 'dependencies'
+      - 'dependabot'
+    commit-message:
+      prefix: 'deps'
+
   - package-ecosystem: 'docker'
     directory: '/apps/studio'
     schedule:
       interval: 'weekly'
       day: 'monday'
+    open-pull-requests-limit: 5
+    labels:
+      - 'dependencies'
+      - 'dependabot'
+    commit-message:
+      prefix: 'deps'
