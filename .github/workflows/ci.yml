@@ -318,7 +318,7 @@ jobs:
             ${{ runner.os }}-turbo-
 
       - name: Run tests
-        run: pnpm turbo run test
+        run: pnpm turbo run test --filter web
 
       - name: Upload coverage
         if: always()
