@@ -9,7 +9,6 @@ updates:
     open-pull-requests-limit: 8
     labels:
       - 'dependencies'
-      - 'dependabot'
     commit-message:
       prefix: 'deps'
     groups:
@@ -72,7 +71,6 @@ updates:
     open-pull-requests-limit: 5
     labels:
       - 'dependencies'
-      - 'dependabot'
     commit-message:
       prefix: 'deps'
 
@@ -84,7 +82,6 @@ updates:
     open-pull-requests-limit: 5
     labels:
       - 'dependencies'
-      - 'dependabot'
     commit-message:
       prefix: 'deps'
 
@@ -96,7 +93,6 @@ updates:
     open-pull-requests-limit: 5
     labels:
       - 'dependencies'
-      - 'dependabot'
     commit-message:
       prefix: 'deps'
 
@@ -108,6 +104,5 @@ updates:
     open-pull-requests-limit: 5
     labels:
       - 'dependencies'
-      - 'dependabot'
     commit-message:
       prefix: 'deps'
