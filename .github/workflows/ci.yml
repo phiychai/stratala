@@ -216,6 +216,20 @@ jobs:
     name: Test
     runs-on: ubuntu-latest
     timeout-minutes: 15
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: test_db
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd="pg_isready -U postgres -d test_db"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
     env:
       # Ensure env vars are available for backend tests
       NODE_ENV: test
@@ -226,7 +240,9 @@ jobs:
       DB_HOST: localhost
       DB_PORT: 5432
       DB_USER: postgres
+      DB_PASSWORD: postgres
       DB_DATABASE: test_db
+      PAYLOAD_DATABASE_URI: postgresql://postgres:postgres@localhost:5432/test_db
       REDIS_HOST: localhost
       REDIS_PORT: 6379
       SESSION_DRIVER: memory

@@ -4,7 +4,7 @@ This template comes configured with the bare minimum to get started on anything 
 
 ## Quick start
 
-This template can be deployed directly from our Cloud hosting and it will setup MongoDB and cloud S3 object storage for media.
+This studio app is configured to use PostgreSQL for local and test environments.
 
 ## Quick Start - local setup
 
@@ -17,7 +17,7 @@ After you click the `Deploy` button above, you'll want to have standalone copy o
 ### Development
 
 1. First [clone the repo](#clone) if you have not done so already
-2. `cd my-project && cp .env.example .env` to copy the example environment variables. You'll need to add the `MONGODB_URI` from your Cloud project to your `.env` if you want to use S3 storage and the MongoDB database that was created for you.
+2. `cd my-project && cp .env.example .env` to copy the example environment variables. Update `DATABASE_URI` / `PAYLOAD_DATABASE_URI` if your local Postgres credentials differ from defaults.
 
 3. `pnpm install && pnpm dev` to install dependencies and start the dev server
 4. open `http://localhost:3000` to open the app in your browser
@@ -26,13 +26,12 @@ That's it! Changes made in `./src` will be reflected in your app. Follow the on-
 
 #### Docker (Optional)
 
-If you prefer to use Docker for local development instead of a local MongoDB instance, the provided docker-compose.yml file can be used.
+If you prefer to use Docker for local development, the provided `docker-compose.yml` includes Postgres.
 
 To do so, follow these steps:
 
-- Modify the `MONGODB_URI` in your `.env` file to `mongodb://127.0.0.1/<dbname>`
-- Modify the `docker-compose.yml` file's `MONGODB_URI` to match the above `<dbname>`
-- Run `docker-compose up` to start the database, optionally pass `-d` to run in the background.
+- Ensure your `.env` has a valid Postgres connection string, for example `postgresql://postgres:postgres@127.0.0.1:5432/payload_db`
+- Run `docker-compose up` to start studio + postgres (optionally pass `-d`).
 
 ## How it works
 
