@@ -18,29 +18,49 @@ interface UserData {
 
 const usersToCreate: UserData[] = [
   // Admin
-  { email: 'admin@example.com', firstName: 'Admin', lastName: 'User', role: 'admin' },
+  { email: 'alex.mercer@stratala.dev', firstName: 'Alex', lastName: 'Mercer', role: 'admin' },
   // Content Admin
-  { email: 'content@example.com', firstName: 'Content', lastName: 'Admin', role: 'content_admin' },
+  {
+    email: 'nora.bennett@stratala.dev',
+    firstName: 'Nora',
+    lastName: 'Bennett',
+    role: 'content_admin',
+  },
   // Publishers (writers)
-  { email: 'publisher1@example.com', firstName: 'Publisher', lastName: 'One', role: 'publisher' },
-  { email: 'publisher2@example.com', firstName: 'Publisher', lastName: 'Two', role: 'publisher' },
-  { email: 'publisher3@example.com', firstName: 'Publisher', lastName: 'Three', role: 'publisher' },
+  {
+    email: 'liam.carter@stratala.dev',
+    firstName: 'Liam',
+    lastName: 'Carter',
+    role: 'publisher',
+  },
+  {
+    email: 'maya.thompson@stratala.dev',
+    firstName: 'Maya',
+    lastName: 'Thompson',
+    role: 'publisher',
+  },
+  {
+    email: 'daniel.kim@stratala.dev',
+    firstName: 'Daniel',
+    lastName: 'Kim',
+    role: 'publisher',
+  },
   // Ordinary users
-  { email: 'user1@example.com', firstName: 'User', lastName: 'One', role: 'user' },
-  { email: 'user2@example.com', firstName: 'User', lastName: 'Two', role: 'user' },
-  { email: 'user3@example.com', firstName: 'User', lastName: 'Three', role: 'user' },
-  { email: 'user4@example.com', firstName: 'User', lastName: 'Four', role: 'user' },
-  { email: 'user5@example.com', firstName: 'User', lastName: 'Five', role: 'user' },
-  { email: 'user6@example.com', firstName: 'User', lastName: 'Six', role: 'user' },
-  { email: 'user7@example.com', firstName: 'User', lastName: 'Seven', role: 'user' },
-  { email: 'user8@example.com', firstName: 'User', lastName: 'Eight', role: 'user' },
-  { email: 'user9@example.com', firstName: 'User', lastName: 'Nine', role: 'user' },
-  { email: 'user10@example.com', firstName: 'User', lastName: 'Ten', role: 'user' },
-  { email: 'user11@example.com', firstName: 'User', lastName: 'Eleven', role: 'user' },
-  { email: 'user12@example.com', firstName: 'User', lastName: 'Twelve', role: 'user' },
-  { email: 'user13@example.com', firstName: 'User', lastName: 'Thirteen', role: 'user' },
-  { email: 'user14@example.com', firstName: 'User', lastName: 'Fourteen', role: 'user' },
-  { email: 'user15@example.com', firstName: 'User', lastName: 'Fifteen', role: 'user' },
+  { email: 'olivia.grant@stratala.dev', firstName: 'Olivia', lastName: 'Grant', role: 'user' },
+  { email: 'ethan.price@stratala.dev', firstName: 'Ethan', lastName: 'Price', role: 'user' },
+  { email: 'chloe.hughes@stratala.dev', firstName: 'Chloe', lastName: 'Hughes', role: 'user' },
+  { email: 'benjamin.ross@stratala.dev', firstName: 'Benjamin', lastName: 'Ross', role: 'user' },
+  { email: 'zoe.patel@stratala.dev', firstName: 'Zoe', lastName: 'Patel', role: 'user' },
+  { email: 'samuel.reed@stratala.dev', firstName: 'Samuel', lastName: 'Reed', role: 'user' },
+  { email: 'ava.morris@stratala.dev', firstName: 'Ava', lastName: 'Morris', role: 'user' },
+  { email: 'james.cooper@stratala.dev', firstName: 'James', lastName: 'Cooper', role: 'user' },
+  { email: 'amelia.ward@stratala.dev', firstName: 'Amelia', lastName: 'Ward', role: 'user' },
+  { email: 'noah.parker@stratala.dev', firstName: 'Noah', lastName: 'Parker', role: 'user' },
+  { email: 'harper.bailey@stratala.dev', firstName: 'Harper', lastName: 'Bailey', role: 'user' },
+  { email: 'lucas.foster@stratala.dev', firstName: 'Lucas', lastName: 'Foster', role: 'user' },
+  { email: 'grace.hill@stratala.dev', firstName: 'Grace', lastName: 'Hill', role: 'user' },
+  { email: 'henry.brooks@stratala.dev', firstName: 'Henry', lastName: 'Brooks', role: 'user' },
+  { email: 'ella.bryant@stratala.dev', firstName: 'Ella', lastName: 'Bryant', role: 'user' },
 ];
 
 export default class SeedAll extends BaseCommand {
@@ -53,7 +73,7 @@ export default class SeedAll extends BaseCommand {
   };
 
   async run() {
-    const password = process.env.SEED_PASSWORD || 'password123';
+    const password = process.env.SEED_PASSWORD || 'strat2026';
     this.logger.info('🚀 Starting comprehensive seed process...\n');
     this.logger.info(`Using password: ${password.substring(0, 3)}***\n`);
 
@@ -68,7 +88,9 @@ export default class SeedAll extends BaseCommand {
       await dbClient.connect();
       this.logger.info('✅ Connected to database\n');
 
-      let successCount = 0;
+      let createdCount = 0;
+      let updatedCount = 0;
+      let skippedCount = 0;
       let failCount = 0;
 
       for (const userData of usersToCreate) {
@@ -79,6 +101,7 @@ export default class SeedAll extends BaseCommand {
           const existingUser = await User.findBy('email', userData.email);
           if (existingUser) {
             this.logger.info(`  ⚠️  User ${userData.email} already exists`);
+            let wasUpdated = false;
 
             // Check if user needs Payload sync (role requires it but payloadUserId is missing)
             if (
@@ -95,6 +118,7 @@ export default class SeedAll extends BaseCommand {
                   password
                 );
                 await existingUser.refresh();
+                wasUpdated = true;
                 if (existingUser.payloadUserId) {
                   this.logger.success(`  ✓ Synced to Payload (ID: ${existingUser.payloadUserId})`);
                 } else {
@@ -115,13 +139,26 @@ export default class SeedAll extends BaseCommand {
                   existingUser.betterAuthUserId,
                 ]);
                 this.logger.info('  ✓ Email verified');
+                wasUpdated = true;
               } catch {
                 // Non-fatal - email might already be verified
                 this.logger.debug('  Email verification check skipped');
               }
             }
 
+            if (existingUser.role !== userData.role) {
+              existingUser.role = userData.role;
+              await existingUser.save();
+              this.logger.info(`  ✓ Role reconciled to ${userData.role}`);
+              wasUpdated = true;
+            }
+
             this.logger.info('  Skipping user creation (already exists)...');
+            if (wasUpdated) {
+              updatedCount++;
+            } else {
+              skippedCount++;
+            }
             continue;
           }
 
@@ -274,7 +311,7 @@ export default class SeedAll extends BaseCommand {
           if (adonisUser.username) {
             this.logger.info(`     Username: ${adonisUser.username}`);
           }
-          successCount++;
+          createdCount++;
         } catch (error: unknown) {
           this.logger.error(
             `  ❌ Failed to create ${userData.email}: ${error instanceof Error ? error.message : String(error)}`
@@ -289,7 +326,9 @@ export default class SeedAll extends BaseCommand {
       await dbClient.end();
 
       this.logger.info('\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
-      this.logger.success(`✅ Successfully created: ${successCount} users`);
+      this.logger.success(`✅ Created: ${createdCount} users`);
+      this.logger.info(`🔄 Updated: ${updatedCount} users`);
+      this.logger.info(`⏭️  Skipped: ${skippedCount} users`);
       if (failCount > 0) {
         this.logger.error(`❌ Failed: ${failCount} users`);
       }
