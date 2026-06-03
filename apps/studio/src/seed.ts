@@ -1,11 +1,13 @@
-import { dirname, resolve } from 'node:path'
+import crypto from 'node:crypto'
+import { dirname, extname, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
 import dotenv from 'dotenv'
 import { getPayload } from 'payload'
 
-import { seededPosts, seededPostSlugs } from './seed-data/posts'
-import type { SeedMode, SeedSummary } from './seed-data/types'
+import { buildLexicalContent } from './seed-data/content-builders'
+import { seedMediaLibrary, seededPosts, seededPostSlugs } from './seed-data/posts'
+import type { SeedMediaSummary, SeedMode, SeedPost, SeedSummary } from './seed-data/types'
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = dirname(__filename)
@@ -31,15 +33,19 @@ const skipImages = process.env.SEED_SKIP_IMAGES === 'true'
 const imageRetries = Number(process.env.SEED_IMAGE_RETRIES || 2)
 const imageTimeoutMs = Number(process.env.SEED_IMAGE_TIMEOUT_MS || 15000)
 
-const summary: SeedSummary = {
-  created: 0,
-  updated: 0,
-  skipped: 0,
-  failed: 0,
+const summary: SeedSummary = { created: 0, updated: 0, skipped: 0, failed: 0 }
+const mediaSummary: SeedMediaSummary = { created: 0, reused: 0, failed: 0, skipped: 0 }
+const statusFallbackMap: Record<string, 'draft' | 'published'> = {
+  in_review: 'draft',
 }
 
-const log = (message: string) => {
-  console.log(`[seed] ${message}`)
+const log = (message: string) => console.log(`[seed] ${message}`)
+const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))
+
+const toNumericId = (value: unknown): number | null => {
+  if (typeof value === 'number' && Number.isFinite(value)) return value
+  if (typeof value === 'string' && value.trim() !== '' && !Number.isNaN(Number(value))) return Number(value)
+  return null
 }
 
 const fetchWithTimeout = async (url: string, timeoutMs: number): Promise<ArrayBuffer> => {
@@ -48,10 +54,7 @@ const fetchWithTimeout = async (url: string, timeoutMs: number): Promise<ArrayBu
 
   try {
     const response = await fetch(url, { signal: controller.signal })
-    if (!response.ok) {
-      throw new Error(`HTTP ${response.status}`)
-    }
-
+    if (!response.ok) throw new Error(`HTTP ${response.status}`)
     return await response.arrayBuffer()
   } finally {
     clearTimeout(timeout)
@@ -67,50 +70,66 @@ const downloadImageWithRetry = async (url: string): Promise<Buffer> => {
       return Buffer.from(data)
     } catch (error) {
       lastError = error
-      if (attempt < imageRetries) {
-        await new Promise((resolve) => setTimeout(resolve, 250 * attempt))
-      }
+      if (attempt < imageRetries) await delay(300 * attempt)
     }
   }
 
   throw lastError instanceof Error ? lastError : new Error(String(lastError))
 }
 
-const getOrCreateImageId = async (
+const getMediaFilename = (seedKey: string, url: string) => {
+  const hash = crypto.createHash('sha1').update(url).digest('hex').slice(0, 12)
+  const extension = extname(new URL(url).pathname) || '.jpg'
+  return `seed-${seedKey}-${hash}${extension}`
+}
+
+const mediaCache = new Map<string, number | null>()
+
+const getOrCreateMediaId = async (
   payload: Awaited<ReturnType<typeof getPayload>>,
-  slug: string,
-  title: string,
-  imageUrl?: string,
+  seedKey?: string,
 ): Promise<number | null> => {
-  if (skipImages || !imageUrl) {
+  if (!seedKey || skipImages) {
+    mediaSummary.skipped++
     return null
   }
 
-  const filename = `${slug}.jpg`
+  if (mediaCache.has(seedKey)) {
+    return mediaCache.get(seedKey) ?? null
+  }
 
-  const existingMedia = await payload.find({
+  const mediaDef = seedMediaLibrary.find((entry) => entry.key === seedKey)
+  if (!mediaDef) {
+    mediaSummary.failed++
+    log(`media key not found: ${seedKey}`)
+    mediaCache.set(seedKey, null)
+    return null
+  }
+
+  const filename = getMediaFilename(seedKey, mediaDef.url)
+
+  const existing = await payload.find({
     collection: 'media',
     overrideAccess: true,
-    where: {
-      filename: {
-        equals: filename,
-      },
-    },
+    where: { filename: { equals: filename } },
     limit: 1,
   })
 
-  if (existingMedia.docs.length > 0) {
-    return Number(existingMedia.docs[0].id)
+  if (existing.docs[0]) {
+    const existingId = toNumericId(existing.docs[0].id)
+    if (existingId !== null) {
+      mediaSummary.reused++
+      mediaCache.set(seedKey, existingId)
+      return existingId
+    }
   }
 
   try {
-    const imageBuffer = await downloadImageWithRetry(imageUrl)
-    const uploadedMedia = await payload.create({
+    const imageBuffer = await downloadImageWithRetry(mediaDef.url)
+    const uploaded = await payload.create({
       collection: 'media',
       overrideAccess: true,
-      data: {
-        alt: title,
-      },
+      data: { alt: mediaDef.alt },
       file: {
         data: imageBuffer,
         mimetype: 'image/jpeg',
@@ -119,51 +138,79 @@ const getOrCreateImageId = async (
       },
     })
 
-    return Number(uploadedMedia.id)
+    const uploadedId = toNumericId(uploaded.id)
+    if (uploadedId === null) {
+      throw new Error(`Uploaded media returned non-numeric id for key ${seedKey}`)
+    }
+
+    mediaSummary.created++
+    mediaCache.set(seedKey, uploadedId)
+    return uploadedId
   } catch (error) {
-    log(
-      `image fetch failed for ${slug}: ${error instanceof Error ? error.message : String(error)}; continuing without image`,
-    )
+    mediaSummary.failed++
+    log(`media upload failed for ${seedKey}: ${error instanceof Error ? error.message : String(error)}`)
+    mediaCache.set(seedKey, null)
     return null
   }
 }
 
-const resolvePublisherAuthorIds = async (
+const ensureMediaExists = async (
   payload: Awaited<ReturnType<typeof getPayload>>,
-): Promise<number[]> => {
-  const usersResult = await payload.find({
+  mediaId: number | null,
+): Promise<number | null> => {
+  if (mediaId === null) return null
+
+  const existing = await payload
+    .findByID({
+      collection: 'media',
+      id: mediaId,
+      overrideAccess: true,
+    })
+    .catch(() => null)
+
+  if (!existing) {
+    log(`media id ${mediaId} no longer exists; omitting relation`)
+    return null
+  }
+
+  return mediaId
+}
+
+const resolvePublisherAuthorIds = async (payload: Awaited<ReturnType<typeof getPayload>>): Promise<number[]> => {
+  const users = await payload.find({
     collection: 'users',
     overrideAccess: true,
-    where: {
-      role: {
-        equals: 'publisher',
-      },
-    },
+    where: { role: { equals: 'publisher' } },
     limit: 100,
   })
 
-  if (usersResult.docs.length === 0) {
+  const publisherIds = users.docs
+    .map((user) => toNumericId(user.id))
+    .filter((id): id is number => id !== null)
+
+  if (publisherIds.length === 0) {
     throw new Error('No publisher user found. Run backend seed first to create publishers.')
   }
 
-  return usersResult.docs.map((user) => Number(user.id))
+  return publisherIds
 }
 
 const resolveTenantId = async (
   payload: Awaited<ReturnType<typeof getPayload>>,
   authorId: number,
 ): Promise<number> => {
-  const tenantsResult = await payload.find({
+  const tenants = await payload.find({
     collection: 'tenants',
     overrideAccess: true,
     limit: 1,
   })
 
-  if (tenantsResult.docs.length > 0) {
-    return Number(tenantsResult.docs[0].id)
+  if (tenants.docs[0]) {
+    const existingTenantId = toNumericId(tenants.docs[0].id)
+    if (existingTenantId !== null) return existingTenantId
   }
 
-  const tenant = await payload.create({
+  const createdTenant = await payload.create({
     collection: 'tenants',
     overrideAccess: true,
     data: {
@@ -174,104 +221,147 @@ const resolveTenantId = async (
     },
   })
 
-  return Number(tenant.id)
+  const createdTenantId = toNumericId(createdTenant.id)
+  if (createdTenantId === null) {
+    throw new Error('Default tenant created with non-numeric id')
+  }
+
+  return createdTenantId
 }
 
-const buildPostData = (post: (typeof seededPosts)[number], authorId: number, tenantId: number) => ({
-  title: post.title,
-  slug: post.slug,
-  description: post.description,
-  content: post.content,
-  status: post.status,
-  type: post.type,
-  publishedAt: post.publishedAt,
-  author: authorId,
-  tenant: tenantId,
-})
+const createPostWithTenantFallback = async (
+  payload: Awaited<ReturnType<typeof getPayload>>,
+  data: Record<string, unknown>,
+) => {
+  try {
+    return await payload.create({
+      collection: 'posts',
+      overrideAccess: true,
+      data,
+    })
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error)
+    const isTenantShapeError = /(tenant|tenants).*(invalid|required|expected|relationship)/i.test(message)
+
+    if (!isTenantShapeError || typeof data.tenant !== 'number') {
+      throw error
+    }
+
+    const withTenants = {
+      ...data,
+      tenants: [{ tenant: data.tenant }],
+    }
+
+    return await payload.create({
+      collection: 'posts',
+      overrideAccess: true,
+      data: withTenants,
+    })
+  }
+}
+
+const updatePostWithTenantFallback = async (
+  payload: Awaited<ReturnType<typeof getPayload>>,
+  id: number,
+  data: Record<string, unknown>,
+) => {
+  try {
+    return await payload.update({
+      collection: 'posts',
+      overrideAccess: true,
+      id,
+      data,
+    })
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error)
+    const isTenantShapeError = /(tenant|tenants).*(invalid|required|expected|relationship)/i.test(message)
+
+    if (!isTenantShapeError || typeof data.tenant !== 'number') {
+      throw error
+    }
+
+    const withTenants = {
+      ...data,
+      tenants: [{ tenant: data.tenant }],
+    }
+
+    return await payload.update({
+      collection: 'posts',
+      overrideAccess: true,
+      id,
+      data: withTenants,
+    })
+  }
+}
+
+const buildPostData = async (
+  payload: Awaited<ReturnType<typeof getPayload>>,
+  post: SeedPost,
+  authorId: number,
+  tenantId: number,
+) => {
+  const featuredImageId = await ensureMediaExists(payload, await getOrCreateMediaId(payload, post.featuredImageKey))
+  const inlineImageId = post.content.inlineImageKey
+    ? await ensureMediaExists(payload, await getOrCreateMediaId(payload, post.content.inlineImageKey))
+    : null
+
+  const data: Record<string, unknown> = {
+    title: post.title,
+    slug: post.slug,
+    description: post.description,
+    content: buildLexicalContent(post.content, inlineImageId),
+    status: statusFallbackMap[post.status] ?? post.status,
+    type: post.type,
+    publishedAt: post.publishedAt,
+    author: authorId,
+    tenant: tenantId,
+  }
+
+  if (featuredImageId !== null) {
+    data.image = featuredImageId
+  }
+
+  if (statusFallbackMap[post.status]) {
+    log(`status fallback for ${post.slug}: ${post.status} -> ${statusFallbackMap[post.status]}`)
+  }
+
+  return data
+}
 
 const createOrUpdatePost = async (
   payload: Awaited<ReturnType<typeof getPayload>>,
-  post: (typeof seededPosts)[number],
+  post: SeedPost,
   authorId: number,
   tenantId: number,
 ) => {
   const existing = await payload.find({
     collection: 'posts',
     overrideAccess: true,
-    where: {
-      slug: {
-        equals: post.slug,
-      },
-    },
+    where: { slug: { equals: post.slug } },
     limit: 1,
   })
 
   const existingDoc = existing.docs[0]
-  const imageId = await getOrCreateImageId(payload, post.slug, post.title, post.imageUrl)
-  const baseData = buildPostData(post, authorId, tenantId)
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const postData: any = {
-    ...baseData,
-    ...(imageId ? { image: imageId } : {}),
-  }
 
-  if (!existingDoc) {
-    try {
-      await payload.create({
-        collection: 'posts',
-        overrideAccess: true,
-        data: postData,
-      })
-      summary.created++
-      return
-    } catch (error) {
-      const message = error instanceof Error ? error.message : String(error)
-      if (/invalid:\s*slug/i.test(message) || /field is invalid:\s*slug/i.test(message)) {
-        if (seedMode === 'create-missing') {
-          summary.skipped++
-          log(`slug already exists for ${post.slug}; treating as skipped`)
-          return
-        }
-
-        const bySlug = await payload.find({
-          collection: 'posts',
-          overrideAccess: true,
-          where: {
-            slug: {
-              equals: post.slug,
-            },
-          },
-          limit: 1,
-        })
-
-        if (bySlug.docs[0]) {
-          await payload.update({
-            collection: 'posts',
-            overrideAccess: true,
-            id: bySlug.docs[0].id,
-            data: postData,
-          })
-          summary.updated++
-          log(`slug collision for ${post.slug}; updated existing record`)
-          return
-        }
-      }
-
-      throw error
-    }
-  }
-
-  if (seedMode === 'create-missing') {
+  if (seedMode === 'create-missing' && existingDoc) {
     summary.skipped++
     return
   }
 
-  await payload.update({
-    collection: 'posts',
-    overrideAccess: true,
-    id: existingDoc.id,
-    data: postData,
-  })
+  const postData = await buildPostData(payload, post, authorId, tenantId)
+
+  if (!existingDoc) {
+    await createPostWithTenantFallback(payload, postData)
+    summary.created++
+    return
+  }
+
+  const existingId = toNumericId(existingDoc.id)
+  if (existingId === null) {
+    throw new Error(`existing post id is invalid for slug ${post.slug}`)
+  }
+
+  await updatePostWithTenantFallback(payload, existingId, postData)
   summary.updated++
 }
 
@@ -280,11 +370,7 @@ const removeSeededPosts = async (payload: Awaited<ReturnType<typeof getPayload>>
     const existing = await payload.find({
       collection: 'posts',
       overrideAccess: true,
-      where: {
-        slug: {
-          equals: slug,
-        },
-      },
+      where: { slug: { equals: slug } },
       limit: 1,
     })
 
@@ -307,11 +393,11 @@ const seed = async () => {
   const configModule = await import('./payload.config.js')
   const payload = await getPayload({ config: configModule.default })
 
-  log(`mode=${seedMode}, skipImages=${skipImages}`)
+  log(`mode=${seedMode} skipImages=${skipImages} posts=${seededPosts.length}`)
 
   try {
-    const publisherAuthorIds = await resolvePublisherAuthorIds(payload)
-    const tenantId = await resolveTenantId(payload, publisherAuthorIds[0])
+    const publisherIds = await resolvePublisherAuthorIds(payload)
+    const tenantId = await resolveTenantId(payload, publisherIds[0])
 
     if (seedMode === 'reset-seeded') {
       await removeSeededPosts(payload)
@@ -320,20 +406,30 @@ const seed = async () => {
 
     for (let index = 0; index < seededPosts.length; index++) {
       const post = seededPosts[index]
-      const authorId = publisherAuthorIds[index % publisherAuthorIds.length]
+      const authorId = publisherIds[index % publisherIds.length]
+
       try {
         await createOrUpdatePost(payload, post, authorId, tenantId)
       } catch (error) {
         summary.failed++
-        log(
-          `failed ${post.slug}: ${error instanceof Error ? error.message : String(error)}`,
-        )
+        const message = error instanceof Error ? error.message : String(error)
+        const cause =
+          error && typeof error === 'object' && 'cause' in error
+            ? String((error as { cause?: unknown }).cause)
+            : null
+
+        log(`failed ${post.slug}: ${message}`)
+        if (cause && cause !== 'undefined') {
+          log(`failed ${post.slug} cause: ${cause}`)
+        }
       }
+
+      await delay(500)
     }
 
-    log(
-      `summary created=${summary.created} updated=${summary.updated} skipped=${summary.skipped} failed=${summary.failed}`,
-    )
+    log(`summary posts created=${summary.created} updated=${summary.updated} skipped=${summary.skipped} failed=${summary.failed}`)
+    log(`summary media created=${mediaSummary.created} reused=${mediaSummary.reused} failed=${mediaSummary.failed} skipped=${mediaSummary.skipped}`)
+
     process.exit(summary.failed > 0 ? 1 : 0)
   } catch (error) {
     console.error(`[seed] failed: ${error instanceof Error ? error.message : String(error)}`)

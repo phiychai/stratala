@@ -73,9 +73,9 @@ export default class SeedAll extends BaseCommand {
   };
 
   async run() {
-    const password = process.env.SEED_PASSWORD || 'strat2026';
-    this.logger.info('🚀 Starting comprehensive seed process...\n');
-    this.logger.info(`Using password: ${password.substring(0, 3)}***\n`);
+    const password = process.env.SEED_PASSWORD || 'strat2026ala!';
+    this.logger.info('[seed:all] starting comprehensive seed process\n');
+    this.logger.info(`[seed:all] using password: ${password.substring(0, 3)}***\n`);
 
     // Get database connection for direct email verification update
     const dbUri =
@@ -252,6 +252,7 @@ export default class SeedAll extends BaseCommand {
               betterAuthUser: betterAuthUserData,
               provider: 'email',
               role: userData.role,
+              password,
             });
           }
 
@@ -325,14 +326,9 @@ export default class SeedAll extends BaseCommand {
 
       await dbClient.end();
 
-      this.logger.info('\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
-      this.logger.success(`✅ Created: ${createdCount} users`);
-      this.logger.info(`🔄 Updated: ${updatedCount} users`);
-      this.logger.info(`⏭️  Skipped: ${skippedCount} users`);
-      if (failCount > 0) {
-        this.logger.error(`❌ Failed: ${failCount} users`);
-      }
-      this.logger.info('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n');
+      this.logger.info(
+        `[seed:all] summary users created=${createdCount} updated=${updatedCount} skipped=${skippedCount} failed=${failCount}`
+      );
     } catch (error: unknown) {
       this.logger.error(
         `❌ Seed failed: ${error instanceof Error ? error.message : String(error)}`
