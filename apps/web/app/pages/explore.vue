@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { useRoute, useRouter } from 'vue-router';
+import { useRoute } from 'vue-router';
 import type { UnifiedContent } from '~/types/content';
 import ContentCard from '~/components/content/ContentCard.vue';
 import { useFollowSpace } from '~/composables/useFollowSpace';
@@ -9,7 +9,6 @@ definePageMeta({
 });
 
 const route = useRoute();
-const router = useRouter();
 
 // Query parameters
 const searchQuery = computed(() => (route.query.search as string) || '');
@@ -33,14 +32,13 @@ const {
     category: selectedCategory,
     tag: selectedTag,
     type: contentType,
-    limit: 20,
+    limit: 80,
     page: 1,
   },
   watch: [searchQuery, selectedCategory, selectedTag, contentType],
 });
 
 const content = computed(() => data.value?.content || []);
-const categories = computed(() => data.value?.categories || []);
 const _tags = computed(() => data.value?.tags || []);
 
 // View mode (grid/list)
@@ -58,52 +56,6 @@ const spaces = computed(() => spacesData.value?.spaces || []);
 // Follow space functionality
 const { isFollowing: isFollowingMap, toggleFollow, loading: followLoading } = useFollowSpace();
 
-// Navigation menu items
-const categoryMenuItems = computed(() => {
-  const items = [
-    {
-      label: 'All Categories',
-      active: !selectedCategory.value,
-      click: () => {
-        router.push({ query: { ...route.query, category: undefined } });
-      },
-    },
-  ];
-
-  for (const cat of categories.value) {
-    items.push({
-      label: cat.name,
-      active: selectedCategory.value === cat.slug,
-      click: () => {
-        router.push({ query: { ...route.query, category: cat.slug } });
-      },
-    });
-  }
-
-  return items;
-});
-
-// Search handler
-const searchInput = ref(searchQuery.value);
-function handleSearch() {
-  router.push({
-    query: {
-      ...route.query,
-      search: searchInput.value || undefined,
-    },
-  });
-}
-
-// Type filter
-function setContentType(type: 'post' | 'video' | 'all') {
-  router.push({
-    query: {
-      ...route.query,
-      type,
-    },
-  });
-}
-
 useSeoMeta({
   title: 'Explore - Discover Content',
   description: 'Browse categories, tags, and search for posts and videos',
@@ -116,50 +68,7 @@ useSeoMeta({
       <!-- Header -->
       <div class="mb-6">
         <h1 class="text-3xl font-bold mb-4">Explore</h1>
-
-        <!-- Search Bar -->
-        <div class="flex gap-4 mb-4">
-          <UInput
-            v-model="searchInput"
-            placeholder="Search posts and videos..."
-            class="flex-1"
-            @keyup.enter="handleSearch"
-          >
-            <template #trailing>
-              <UButton icon="i-heroicons-magnifying-glass" variant="ghost" @click="handleSearch" />
-            </template>
-          </UInput>
-        </div>
-
-        <!-- Type Filter -->
-        <div class="flex gap-2 mb-4">
-          <UButton
-            :variant="contentType === 'all' ? 'solid' : 'outline'"
-            @click="setContentType('all')"
-          >
-            All
-          </UButton>
-          <UButton
-            :variant="contentType === 'post' ? 'solid' : 'outline'"
-            @click="setContentType('post')"
-          >
-            Posts
-          </UButton>
-          <UButton
-            :variant="contentType === 'video' ? 'solid' : 'outline'"
-            @click="setContentType('video')"
-          >
-            Videos
-          </UButton>
-        </div>
       </div>
-
-      <!-- Category Navigation -->
-      <UDashboardNavbar :ui="{ right: 'gap-3' }" class="border-b-0 mb-6">
-        <template #left>
-          <UNavigationMenu :items="categoryMenuItems" color="neutral" />
-        </template>
-      </UDashboardNavbar>
 
       <!-- Error State -->
       <div v-if="error" class="flex items-center justify-center py-12">
@@ -218,7 +127,6 @@ useSeoMeta({
                   ? 'vertical'
                   : 'horizontal'
             "
-            :class="[viewMode === 'grid' && index === 0 && 'col-span-full']"
           />
         </UBlogPosts>
       </div>

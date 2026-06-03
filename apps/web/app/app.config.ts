@@ -124,6 +124,14 @@ export default defineAppConfig({
         },
       },
     },
+    blogPost: {
+      body: 'flex flex-col pt-0',
+      variants: {
+        orientation: {
+          horizontal: 'sm:grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4',
+        },
+      },
+    },
     prose: {
       h1: {
         slots: {
