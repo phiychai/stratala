@@ -109,7 +109,9 @@ export interface Config {
     'block-gallery-items': BlockGalleryItemsSelect<false> | BlockGalleryItemsSelect<true>;
     'block-pricing': BlockPricingSelect<false> | BlockPricingSelect<true>;
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
-    'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
+    'payload-locked-documents':
+      | PayloadLockedDocumentsSelect<false>
+      | PayloadLockedDocumentsSelect<true>;
     'payload-preferences': PayloadPreferencesSelect<false> | PayloadPreferencesSelect<true>;
     'payload-migrations': PayloadMigrationsSelect<false> | PayloadMigrationsSelect<true>;
   };
@@ -709,7 +711,15 @@ export interface FormField {
   /**
    * Input type for the field
    */
-  type: 'text' | 'textarea' | 'checkbox' | 'checkbox_group' | 'radio' | 'file' | 'select' | 'hidden';
+  type:
+    | 'text'
+    | 'textarea'
+    | 'checkbox'
+    | 'checkbox_group'
+    | 'radio'
+    | 'file'
+    | 'select'
+    | 'hidden';
   /**
    * Default text shown in empty input.
    */
@@ -1675,7 +1685,6 @@ export interface CollectionsWidget {
 export interface Auth {
   [k: string]: unknown;
 }
-
 
 declare module 'payload' {
   export interface GeneratedTypes extends Config {}
