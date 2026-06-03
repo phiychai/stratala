@@ -325,9 +325,7 @@ const seed = async () => {
         await createOrUpdatePost(payload, post, authorId, tenantId)
       } catch (error) {
         summary.failed++
-        log(
-          `failed ${post.slug}: ${error instanceof Error ? error.message : String(error)}`,
-        )
+        log(`failed ${post.slug}: ${error instanceof Error ? error.message : String(error)}`)
       }
     }
 

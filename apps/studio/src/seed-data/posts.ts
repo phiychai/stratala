@@ -1,4 +1,10 @@
-import { bulletListNode, numberListNode, paragraphNode, richText, richTextFromNodes } from './lexical'
+import {
+  bulletListNode,
+  numberListNode,
+  paragraphNode,
+  richText,
+  richTextFromNodes,
+} from './lexical'
 import type { SeedPost } from './types'
 
 const day = 24 * 60 * 60 * 1000
@@ -22,7 +28,8 @@ export const seededPosts: SeedPost[] = [
   {
     title: 'Feature Flags in Multi-Tenant SaaS Without Configuration Debt',
     slug: 'feature-flags-in-multi-tenant-saas-without-debt',
-    description: 'How to structure flags by audience and lifecycle so stale toggles do not accumulate.',
+    description:
+      'How to structure flags by audience and lifecycle so stale toggles do not accumulate.',
     content: richText(
       'Feature flags are a release mechanism, not a permanent architecture layer.',
       'Add expiry dates and ownership metadata for every long-lived flag.',
@@ -48,7 +55,8 @@ export const seededPosts: SeedPost[] = [
   {
     title: 'Production Readiness Checklist for New Background Workers',
     slug: 'production-readiness-checklist-background-workers',
-    description: 'Queue visibility, retries, and idempotency checks before your first high-volume run.',
+    description:
+      'Queue visibility, retries, and idempotency checks before your first high-volume run.',
     content: richText(
       'Workers should be idempotent by default and safe to replay.',
       'Treat queue metrics and dead-letter handling as first-class release criteria.',
@@ -139,9 +147,12 @@ export const seededPosts: SeedPost[] = [
   {
     title: 'Running Cost Reviews Without Slowing Delivery Teams',
     slug: 'running-cost-reviews-without-slowing-delivery-teams',
-    description: 'A lightweight operating cadence for cloud cost accountability and faster tradeoff decisions.',
+    description:
+      'A lightweight operating cadence for cloud cost accountability and faster tradeoff decisions.',
     content: richTextFromNodes(
-      paragraphNode('Cost reviews work best when they are short, recurring, and tied to service-level ownership.'),
+      paragraphNode(
+        'Cost reviews work best when they are short, recurring, and tied to service-level ownership.',
+      ),
       numberListNode(
         'Review top spend deltas since the last release window.',
         'Decide which optimizations are immediate vs backlog.',
@@ -159,9 +170,12 @@ export const seededPosts: SeedPost[] = [
   {
     title: 'Release Trains vs Continuous Delivery in B2B Platforms',
     slug: 'release-trains-vs-continuous-delivery-b2b-platforms',
-    description: 'How to choose a release model based on customer coordination and platform coupling.',
+    description:
+      'How to choose a release model based on customer coordination and platform coupling.',
     content: richTextFromNodes(
-      paragraphNode('Both release trains and continuous delivery can be effective, depending on constraints.'),
+      paragraphNode(
+        'Both release trains and continuous delivery can be effective, depending on constraints.',
+      ),
       bulletListNode(
         'Use release trains when customers require predictable communication windows.',
         'Prefer continuous delivery when architecture supports independent deployability.',
@@ -179,9 +193,12 @@ export const seededPosts: SeedPost[] = [
   {
     title: 'Turning Support Tickets Into Product Discovery Inputs',
     slug: 'turning-support-tickets-into-product-discovery-inputs',
-    description: 'A repeatable method for converting recurring support pain into roadmap direction.',
+    description:
+      'A repeatable method for converting recurring support pain into roadmap direction.',
     content: richTextFromNodes(
-      paragraphNode('Support signals should influence product strategy before churn metrics react.'),
+      paragraphNode(
+        'Support signals should influence product strategy before churn metrics react.',
+      ),
       numberListNode(
         'Tag tickets by friction pattern and customer segment.',
         'Estimate operational cost of each friction pattern.',
@@ -199,9 +216,12 @@ export const seededPosts: SeedPost[] = [
   {
     title: 'Designing Better On-Call Rotations for Small Teams',
     slug: 'designing-better-oncall-rotations-for-small-teams',
-    description: 'Reduce burnout with practical constraints, escalation policy, and incident follow-through.',
+    description:
+      'Reduce burnout with practical constraints, escalation policy, and incident follow-through.',
     content: richTextFromNodes(
-      paragraphNode('Healthy on-call systems are built around recovery time, not only schedule fairness.'),
+      paragraphNode(
+        'Healthy on-call systems are built around recovery time, not only schedule fairness.',
+      ),
       bulletListNode(
         'Set clear ownership boundaries and escalation paths.',
         'Protect post-incident recovery windows in the rota.',
@@ -239,9 +259,12 @@ export const seededPosts: SeedPost[] = [
   {
     title: 'API Versioning Policy for Fast-Moving Product Teams',
     slug: 'api-versioning-policy-for-fast-moving-product-teams',
-    description: 'Balance backward compatibility with product velocity using explicit change classes.',
+    description:
+      'Balance backward compatibility with product velocity using explicit change classes.',
     content: richTextFromNodes(
-      paragraphNode('A clear versioning policy helps teams ship faster by reducing negotiation overhead.'),
+      paragraphNode(
+        'A clear versioning policy helps teams ship faster by reducing negotiation overhead.',
+      ),
       bulletListNode(
         'Classify changes as additive, behavior-changing, or breaking.',
         'Set deprecation windows and customer communication templates.',
@@ -259,9 +282,12 @@ export const seededPosts: SeedPost[] = [
   {
     title: 'Data Retention Rules Developers Can Actually Apply',
     slug: 'data-retention-rules-developers-can-apply',
-    description: 'Translate policy language into implementation-ready retention and deletion patterns.',
+    description:
+      'Translate policy language into implementation-ready retention and deletion patterns.',
     content: richTextFromNodes(
-      paragraphNode('Retention policy succeeds only when engineering teams can execute it repeatedly.'),
+      paragraphNode(
+        'Retention policy succeeds only when engineering teams can execute it repeatedly.',
+      ),
       numberListNode(
         'Map each data class to retention duration and legal basis.',
         'Define automatic deletion jobs with auditable logs.',
@@ -281,7 +307,9 @@ export const seededPosts: SeedPost[] = [
     slug: 'queue-backpressure-strategies-for-event-pipelines',
     description: 'Operational patterns to protect downstream dependencies under burst traffic.',
     content: richTextFromNodes(
-      paragraphNode('Backpressure is a product safety feature, not just an infrastructure concern.'),
+      paragraphNode(
+        'Backpressure is a product safety feature, not just an infrastructure concern.',
+      ),
       bulletListNode(
         'Throttle producers when consumer lag crosses policy thresholds.',
         'Use dead-letter queues with explicit replay contracts.',
@@ -301,7 +329,9 @@ export const seededPosts: SeedPost[] = [
     slug: 'migration-playbook-for-splitting-monolithic-services',
     description: 'A phased migration model that keeps customer-facing risk under control.',
     content: richTextFromNodes(
-      paragraphNode('Service extraction should follow business seams and measured runtime behavior.'),
+      paragraphNode(
+        'Service extraction should follow business seams and measured runtime behavior.',
+      ),
       numberListNode(
         'Identify domains with high change frequency and low coupling first.',
         'Introduce anti-corruption boundaries around shared contracts.',
@@ -321,7 +351,9 @@ export const seededPosts: SeedPost[] = [
     slug: 'practical-slo-reviews-for-product-and-engineering',
     description: 'Use shared SLO review rituals to align reliability tradeoffs with roadmap goals.',
     content: richTextFromNodes(
-      paragraphNode('SLO reviews are most effective when product and engineering interpret the same evidence.'),
+      paragraphNode(
+        'SLO reviews are most effective when product and engineering interpret the same evidence.',
+      ),
       bulletListNode(
         'Review burn-rate incidents and feature-release overlap.',
         'Document temporary reliability exceptions and expiry dates.',
