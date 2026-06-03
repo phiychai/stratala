@@ -16,6 +16,7 @@
     "seed": "cross-env NODE_OPTIONS=--no-deprecation tsx src/seed.ts",
     "lint": "cross-env NODE_OPTIONS=--no-deprecation next lint",
     "format": "prettier --write .",
+    "type-check": "cross-env NODE_OPTIONS=--no-deprecation tsc --noEmit -p tsconfig.json",
     "payload": "cross-env NODE_OPTIONS=--no-deprecation payload",
     "start": "cross-env NODE_OPTIONS=--no-deprecation next start",
     "test": "pnpm run test:int",

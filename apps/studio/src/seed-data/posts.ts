@@ -5,6 +5,7 @@ import {
   richText,
   richTextFromNodes,
 } from './lexical'
+
 import type { SeedPost } from './types'
 
 const day = 24 * 60 * 60 * 1000

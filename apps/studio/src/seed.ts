@@ -5,6 +5,7 @@ import dotenv from 'dotenv'
 import { getPayload } from 'payload'
 
 import { seededPosts, seededPostSlugs } from './seed-data/posts'
+
 import type { SeedMode, SeedSummary } from './seed-data/types'
 
 const __filename = fileURLToPath(import.meta.url)
