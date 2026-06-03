@@ -1,117 +1,99 @@
 # Payload CMS Seed Script
 
-This script seeds 20 blog posts with images in your Payload CMS instance using Payload's Local API (recommended approach).
+This script seeds deterministic studio posts using Payload Local API with rerun-safe behavior and explicit modes.
 
 ## Prerequisites
 
-1. **Payload CMS configured**: Make sure your `.env` file in `apps/studio/` has:
-   - `PAYLOAD_SECRET` - Required
-   - `DATABASE_URI` or `PAYLOAD_DATABASE_URI` - Required (PostgreSQL connection string)
-
-2. **Admin user exists**: You need at least one admin user in Payload CMS. The script will use the first admin user as the author.
-
-3. **Dependencies installed**: `tsx` is already installed as a dev dependency.
+1. `apps/studio/.env` must include:
+   - `PAYLOAD_SECRET`
+   - `DATABASE_URI` or `PAYLOAD_DATABASE_URI`
+2. Publisher users must exist (created by backend `seed:all`).
+3. Network access is required for remote image download unless image mode is skipped.
 
 ## Usage
-
-From the project root:
 
 ```bash
 cd apps/studio
 pnpm seed
 ```
 
-Or from the Payload directory:
+## Seed Modes
+
+`SEED_MODE` controls behavior for existing posts (lookup key: `slug`).
+
+- `create-missing` (default): create only missing posts, skip existing posts.
+- `refresh`: update existing seeded posts by slug and create missing posts.
+- `reset-seeded`: delete known seed slugs first, then recreate from dataset.
+
+Examples:
 
 ```bash
-pnpm seed
+SEED_MODE=refresh pnpm seed
+SEED_MODE=reset-seeded pnpm seed
 ```
 
-## What It Does
+## Dataset and Content Quality
 
-1. Initializes Payload using the Local API (no HTTP overhead)
-2. Finds the first admin user to use as the author
-3. Downloads 20 images from Unsplash URLs
-4. Uploads images to Payload's media collection
-5. Creates 20 posts with:
-   - Titles, descriptions, and content (Lexical format)
-   - Featured images
-   - Published status
-   - Published dates (spread over the past 100 days)
-   - Article type
+- Dataset contains **40 posts** from `apps/studio/src/seed-data/posts.ts`.
+- Posts are generated from structured content specs (intro, body, list, quote, optional code).
+- Rich text JSON is built by `apps/studio/src/seed-data/content-builders.ts`.
+- Post bodies demonstrate:
+  - ordered/unordered lists,
+  - quote blocks,
+  - inline image embeds (media relation nodes in content, not external URL links).
 
-## Posts Included
+## Image Behavior
 
-The script creates 20 posts covering various web development topics:
+- `SEED_SKIP_IMAGES=true` disables image fetch/upload.
+- Media is reused deterministically by hashed filename: `seed-<key>-<hash>.<ext>`.
+- Retry/timeout controls:
+  - `SEED_IMAGE_RETRIES` (default `2`)
+  - `SEED_IMAGE_TIMEOUT_MS` (default `15000`)
+- If a media download/upload fails, seeding continues with graceful fallback (post without that image embed/featured image).
 
-1. The Future of Web Development: AI-Powered Coding Assistants
-2. Building Scalable Microservices: Best Practices and Patterns
-3. The Art of Code Review: Building Better Software Together
-4. TypeScript vs JavaScript: When to Use Each
-5. Design Systems: Creating Consistency at Scale
-6. Performance Optimization: Making Your Web Apps Lightning Fast
-7. The Power of Serverless: Building Scalable Applications
-8. Accessibility First: Building Inclusive Web Experiences
-9. GraphQL vs REST: Choosing the Right API Architecture
-10. Modern CSS: Flexbox and Grid Layout Mastery
-11. React Hooks: A Complete Guide
-12. Vue 3 Composition API: The Modern Way
-13. Database Design: Normalization and Best Practices
-14. Docker and Containerization: A Developer's Guide
-15. CI/CD Pipelines: Automating Your Deployment
-16. Security Best Practices for Web Applications
-17. Testing Strategies: Unit, Integration, and E2E
-18. State Management in Modern Web Apps
-19. Progressive Web Apps: The Future of Mobile
-20. WebAssembly: High Performance in the Browser
+## Idempotency and Reruns
 
-## Advantages of This Approach
+- Default mode is `create-missing`, so reruns skip existing slugs and do not duplicate posts.
+- `refresh` can be used when you need to overwrite seeded records by slug.
+- `reset-seeded` removes known seed slugs and recreates the full dataset.
 
-✅ **Uses Payload Local API** - Direct database access, no HTTP overhead
-✅ **No authentication needed** - Runs in the same process as Payload
-✅ **Type-safe** - Written in TypeScript with full type checking
-✅ **Integrated** - Uses Payload's own APIs and data structures
-✅ **Faster** - No network requests, direct database operations
+## Summary Output
+
+Studio seed prints:
+
+- `summary posts created=<n> updated=<n> skipped=<n> failed=<n>`
+- `summary media created=<n> reused=<n> failed=<n> skipped=<n>`
+
+Expected outcomes:
+
+- First `create-missing` run: mostly `created`.
+- Second `create-missing` run: mostly `skipped`, with no duplicate slugs.
+- `refresh` run: existing seeded posts move to `updated`.
+
+## Quick Verification
+
+1. Run seed in default mode: `pnpm seed`.
+2. Verify total post count is 40 in Payload admin.
+3. Open multiple seeded posts and confirm body includes list + quote; inline image appears in a strong subset.
+4. Re-run `pnpm seed` and confirm summary shows mostly `skipped`.
+5. Run `SEED_SKIP_IMAGES=true pnpm seed` and confirm seed still completes.
 
 ## Troubleshooting
 
-### No Admin User Found
+### No publisher user found
 
-If you see "No admin user found", create an admin user first:
-
-1. Start Payload: `pnpm dev`
-2. Navigate to http://localhost:3002/admin
-3. Create your first admin user
-
-### Database Connection Error
-
-Make sure your database is running and the connection string is correct:
+Run backend user seed first:
 
 ```bash
-# Check if PostgreSQL is running
-docker-compose ps postgres
-
-# Verify DATABASE_URI in apps/studio/.env
+cd apps/backend
+node ace seed:all
 ```
 
-### Image Download Failed
+### Database connection error
 
-- Check your internet connection (images are downloaded from Unsplash)
-- Some images might fail to download - the script will continue without them
+Verify PostgreSQL is running and `DATABASE_URI` is valid.
 
-### Content Format
+### Image download failures
 
-The script uses Lexical editor format for content. If you need to modify the content structure, edit the `content` field in `src/seed.ts`. The current format is minimal - you can expand it with more paragraphs, headings, etc.
-
-## Notes
-
-- The script includes a 500ms delay between posts to avoid overwhelming the system
-- Images are downloaded from Unsplash (requires internet connection)
-- All posts are created with "published" status
-- Posts are assigned to the first admin user found
-- Content uses Lexical editor format (JSON structure)
-
-## Alternative: REST API Script
-
-If you prefer using the REST API approach (useful for remote seeding), see `scripts/seed-payload-posts.js` in the project root.
-
+- Use `SEED_SKIP_IMAGES=true` for offline/fast local runs.
+- Increase `SEED_IMAGE_TIMEOUT_MS` or `SEED_IMAGE_RETRIES` for unstable network conditions.

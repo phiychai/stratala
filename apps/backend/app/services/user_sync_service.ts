@@ -24,6 +24,7 @@ export interface SyncUserOptions {
   requestPath?: string;
   clientIp?: string;
   role?: UserRoleType; // Optional role override (for admin-created users)
+  password?: string;
 }
 
 export class UserSyncService {
@@ -58,7 +59,7 @@ export class UserSyncService {
    * For admin-created users: role can be specified (Payload user created if content role)
    */
   static async syncUser(options: SyncUserOptions): Promise<User | null> {
-    const { betterAuthUser, provider, requestPath, clientIp, role } = options;
+    const { betterAuthUser, provider, requestPath, clientIp, role, password } = options;
 
     try {
       // Validate input data before processing
@@ -138,7 +139,7 @@ export class UserSyncService {
         // Note: Password sync depends on authentication strategy
         // For now, we'll sync without password (Option B: Passwordless)
         // Admin can set password separately in Payload admin UI
-        await PayloadUserSyncService.syncUserToPayload(user, finalRole);
+        await PayloadUserSyncService.syncUserToPayload(user, finalRole, password);
       }
 
       logger.info(`User synced successfully: ${user.id} (${user.email})`);
