@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { useRoute, useRouter } from 'vue-router';
+import { useRoute } from 'vue-router';
 import type { UnifiedContent } from '~/types/content';
 import ContentCard from '~/components/content/ContentCard.vue';
 import { useFollowSpace } from '~/composables/useFollowSpace';
@@ -9,7 +9,6 @@ definePageMeta({
 });
 
 const route = useRoute();
-const router = useRouter();
 
 // Query parameters
 const searchQuery = computed(() => (route.query.search as string) || '');
@@ -40,7 +39,6 @@ const {
 });
 
 const content = computed(() => data.value?.content || []);
-const categories = computed(() => data.value?.categories || []);
 const _tags = computed(() => data.value?.tags || []);
 
 // View mode (grid/list)
@@ -57,52 +55,6 @@ const spaces = computed(() => spacesData.value?.spaces || []);
 
 // Follow space functionality
 const { isFollowing: isFollowingMap, toggleFollow, loading: followLoading } = useFollowSpace();
-
-// Navigation menu items
-const categoryMenuItems = computed(() => {
-  const items = [
-    {
-      label: 'All Categories',
-      active: !selectedCategory.value,
-      click: () => {
-        router.push({ query: { ...route.query, category: undefined } });
-      },
-    },
-  ];
-
-  for (const cat of categories.value) {
-    items.push({
-      label: cat.name,
-      active: selectedCategory.value === cat.slug,
-      click: () => {
-        router.push({ query: { ...route.query, category: cat.slug } });
-      },
-    });
-  }
-
-  return items;
-});
-
-// Search handler
-const searchInput = ref(searchQuery.value);
-function handleSearch() {
-  router.push({
-    query: {
-      ...route.query,
-      search: searchInput.value || undefined,
-    },
-  });
-}
-
-// Type filter
-function setContentType(type: 'post' | 'video' | 'all') {
-  router.push({
-    query: {
-      ...route.query,
-      type,
-    },
-  });
-}
 
 useSeoMeta({
   title: 'Explore - Discover Content',
