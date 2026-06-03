@@ -171,7 +171,7 @@ const publishedDate = computed(() => {
       v-bind="thumbnailUrl ? { image: thumbnailUrl } : {}"
       variant="ghost"
       :orientation="orientation || 'vertical'"
-      :ui="{ body: 'p-0' }"
+      :ui="{ body: 'min-w-0 flex-0  flex-col sm:pl-0 sm:pr-0 sm:pt-3' }"
     >
       <template #title>
         <slot name="title">{{ content.content.title }}</slot>
@@ -179,24 +179,27 @@ const publishedDate = computed(() => {
 
       <!-- Body slot - heading + avatar/name/date + video icon on same line -->
       <template #body>
-        <div class="text-lg text-pretty font-semibold text-highlighted mb-1">
+        <div class="text-lg text-pretty font-semibold text-highlighted mb-1 p-0">
           <slot name="title">{{ content.content.title }}</slot>
         </div>
         <!-- Title is already rendered by the component -->
         <!-- Author name, date, and video icon on same line -->
-        <div class="flex items-center gap-2 text-sm">
+        <div class="flex items-start gap-2 text-sm">
           <UAvatar
             :src="typeof authorAvatar === 'string' ? authorAvatar : undefined"
             :alt="authorName"
             variant="flat"
+            size="lg"
           />
-          <span v-if="authorName">{{ authorName }}</span>
-          <span v-if="authorName && publishedDate">•</span>
-          <span v-if="publishedDate">{{ publishedDate }}</span>
-          <span v-if="content.type === 'video'" class="ml-auto text-xs text-gray-500">
-            <UIcon name="i-heroicons-play-circle" class="w-4 h-4 inline mr-1" />
-            Video
-          </span>
+          <div class="flex flex-col items-start gap-0.5 text-sm">
+            <span v-if="authorName" class="mt-1">{{ authorName }}</span>
+
+            <span v-if="publishedDate">{{ publishedDate }}</span>
+            <span v-if="content.type === 'video'" class="ml-auto text-xs text-gray-500">
+              <UIcon name="i-heroicons-play-circle" class="w-4 h-4 inline mr-1" />
+              Video
+            </span>
+          </div>
         </div>
 
         <!-- Action bar: Like, Comment, Share (only shown when showActions is true) -->

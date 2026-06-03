@@ -33,7 +33,7 @@ const {
     category: selectedCategory,
     tag: selectedTag,
     type: contentType,
-    limit: 20,
+    limit: 80,
     page: 1,
   },
   watch: [searchQuery, selectedCategory, selectedTag, contentType],
@@ -116,50 +116,7 @@ useSeoMeta({
       <!-- Header -->
       <div class="mb-6">
         <h1 class="text-3xl font-bold mb-4">Explore</h1>
-
-        <!-- Search Bar -->
-        <div class="flex gap-4 mb-4">
-          <UInput
-            v-model="searchInput"
-            placeholder="Search posts and videos..."
-            class="flex-1"
-            @keyup.enter="handleSearch"
-          >
-            <template #trailing>
-              <UButton icon="i-heroicons-magnifying-glass" variant="ghost" @click="handleSearch" />
-            </template>
-          </UInput>
-        </div>
-
-        <!-- Type Filter -->
-        <div class="flex gap-2 mb-4">
-          <UButton
-            :variant="contentType === 'all' ? 'solid' : 'outline'"
-            @click="setContentType('all')"
-          >
-            All
-          </UButton>
-          <UButton
-            :variant="contentType === 'post' ? 'solid' : 'outline'"
-            @click="setContentType('post')"
-          >
-            Posts
-          </UButton>
-          <UButton
-            :variant="contentType === 'video' ? 'solid' : 'outline'"
-            @click="setContentType('video')"
-          >
-            Videos
-          </UButton>
-        </div>
       </div>
-
-      <!-- Category Navigation -->
-      <UDashboardNavbar :ui="{ right: 'gap-3' }" class="border-b-0 mb-6">
-        <template #left>
-          <UNavigationMenu :items="categoryMenuItems" color="neutral" />
-        </template>
-      </UDashboardNavbar>
 
       <!-- Error State -->
       <div v-if="error" class="flex items-center justify-center py-12">
@@ -218,7 +175,6 @@ useSeoMeta({
                   ? 'vertical'
                   : 'horizontal'
             "
-            :class="[viewMode === 'grid' && index === 0 && 'col-span-full']"
           />
         </UBlogPosts>
       </div>

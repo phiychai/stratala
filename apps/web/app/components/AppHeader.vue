@@ -182,7 +182,10 @@ const _toggleSlideover = () => {
         </template>
       </UPopover>
 
-      <UserMenu :collapsed="true" />
+      <UserMenu
+        :collapsed="true"
+        :ui="{ content: 'min-w-0 flex-0  flex-col sm:pl-0 sm:pr-0 sm:pt-3' }"
+      />
     </template>
     <template #body>
       <UNavigationMenu :items="items" orientation="vertical" class="-mx-2.5" />
