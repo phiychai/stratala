@@ -26,9 +26,10 @@ export interface SeedPost {
   title: string
   slug: string
   description: string
-  content: SeedContentSpec
+  content: Record<string, unknown>
   status: 'draft' | 'in_review' | 'published'
   type: 'article' | 'audio' | 'video'
+  imageUrl?: string
   featuredImageKey?: string
   publishedAt: string
 }
