@@ -79,7 +79,9 @@ export const buildLexicalContent = (
 
   children.push(listNode(spec.listType, spec.listItems))
 
-  const quoteText = spec.quote.by ? `"${spec.quote.text}" — ${spec.quote.by}` : `"${spec.quote.text}"`
+  const quoteText = spec.quote.by
+    ? `"${spec.quote.text}" — ${spec.quote.by}`
+    : `"${spec.quote.text}"`
   children.push(quoteNode(quoteText))
 
   if (spec.code) {
