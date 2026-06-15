@@ -36,7 +36,7 @@
     "payload": "3.84.1",
     "react": "19.1.0",
     "react-dom": "19.1.0",
-    "sharp": "0.34.5"
+    "sharp": "0.35.1"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3.3.5",
@@ -50,7 +50,7 @@
     "eslint-config-next": "16.2.6",
     "jsdom": "29.1.1",
     "playwright": "1.56.1",
-    "playwright-core": "1.56.1",
+    "playwright-core": "1.61.0",
     "prettier": "^3.7.4",
     "tsx": "^4.22.3",
     "typescript": "6.0.3",
