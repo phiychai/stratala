@@ -60,7 +60,7 @@
   "dependencies": {
     "@adonisjs/auth": "^10.1.0",
     "@adonisjs/bouncer": "^4.0.0",
-    "@adonisjs/core": "^7.3.3",
+    "@adonisjs/core": "^7.3.4",
     "@adonisjs/cors": "^3.0.0",
     "@adonisjs/lucid": "^22.4.2",
     "@adonisjs/redis": "^10.0.0",
@@ -74,7 +74,7 @@
     "better-sqlite3": "^12.10.0",
     "ioredis": "^5.10.1",
     "luxon": "^3.7.2",
-    "payload": "^3.84.1",
+    "payload": "^3.85.1",
     "pg": "^8.16.3",
     "reflect-metadata": "^0.2.2",
     "zxcvbn": "^4.4.2"
