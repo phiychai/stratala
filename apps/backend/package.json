@@ -74,7 +74,7 @@
     "better-sqlite3": "^12.10.0",
     "ioredis": "^5.10.1",
     "luxon": "^3.7.2",
-    "payload": "^3.87.0",
+    "payload": "^3.87.1",
     "pg": "^8.22.0",
     "reflect-metadata": "^0.2.2",
     "zxcvbn": "^4.4.2"
