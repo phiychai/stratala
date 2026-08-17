@@ -49,9 +49,9 @@
     "@types/node": "^25.9.1",
     "dotenv": "^16.4.7",
     "playwright": "^1.56.1",
-    "prettier": "^3.0.0",
-    "tsx": "^4.22.3",
-    "turbo": "^2.9.14",
+    "prettier": "^3.9.6",
+    "tsx": "^4.23.12",
+    "turbo": "^2.10.10",
     "typescript": "^6.0.3"
   },
   "resolutions": {
