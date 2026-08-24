@@ -50,7 +50,7 @@
     "nuxt": "^4.5.2",
     "nuxt-og-image": "^6.7.6",
     "nuxt-security": "^2.6.0",
-    "pinia": "^3.0.4",
+    "pinia": "^4.0.3",
     "pinia-plugin-persistedstate": "^4.7.1",
     "turndown": "^7.2.4",
     "unhead": "^2.0.19",
