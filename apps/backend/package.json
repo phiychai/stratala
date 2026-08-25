@@ -71,7 +71,7 @@
     "adonis-autoswagger": "^3.73.0",
     "better-auth": "^1.6.26",
     "better-call": "^1.4.0",
-    "better-sqlite3": "^12.10.0",
+    "better-sqlite3": "^13.0.3",
     "ioredis": "^5.10.1",
     "luxon": "^3.7.2",
     "payload": "^3.87.1",
