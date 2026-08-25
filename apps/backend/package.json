@@ -72,7 +72,7 @@
     "better-auth": "^1.6.26",
     "better-call": "^1.4.0",
     "better-sqlite3": "^12.10.0",
-    "ioredis": "^5.10.1",
+    "ioredis": "^6.0.0",
     "luxon": "^3.7.2",
     "payload": "^3.87.1",
     "pg": "^8.22.0",
