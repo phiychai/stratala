@@ -36,7 +36,7 @@
     "#types/*": "./types/*.js"
   },
   "devDependencies": {
-    "@adonisjs/assembler": "^8.5.2",
+    "@adonisjs/assembler": "^8.6.0",
     "@adonisjs/tsconfig": "^2.0.0",
     "@japa/api-client": "^3.2.1",
     "@japa/assert": "^4.2.0",
@@ -60,11 +60,11 @@
   "dependencies": {
     "@adonisjs/auth": "^10.1.0",
     "@adonisjs/bouncer": "^4.0.1",
-    "@adonisjs/core": "^7.5.2",
+    "@adonisjs/core": "^7.6.0",
     "@adonisjs/cors": "^3.0.0",
     "@adonisjs/lucid": "^22.4.2",
     "@adonisjs/redis": "^11.0.0",
-    "@adonisjs/session": "^8.1.0",
+    "@adonisjs/session": "^8.3.0",
     "@poppinss/ts-exec": "^1.4.4",
     "@stratala/shared-types": "workspace:*",
     "@vinejs/vine": "^4.4.0",
@@ -74,7 +74,7 @@
     "better-sqlite3": "^12.10.0",
     "ioredis": "^5.10.1",
     "luxon": "^3.7.2",
-    "payload": "^3.90.2",
+    "payload": "^3.92.0",
     "pg": "^8.22.0",
     "reflect-metadata": "^0.2.2",
     "zxcvbn": "^4.4.2"
