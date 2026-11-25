@@ -1,4 +1,4 @@
-export type SeedMode = 'create-missing' | 'refresh' | 'reset-seeded'
+export type SeedMode = 'create-missing'
 
 export interface SeedMediaRef {
   key: string
@@ -36,7 +36,6 @@ export interface SeedPost {
 
 export interface SeedSummary {
   created: number
-  updated: number
   skipped: number
   failed: number
 }

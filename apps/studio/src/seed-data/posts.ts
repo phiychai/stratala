@@ -9,8 +9,9 @@ import {
 import type { SeedPost } from './types'
 
 const day = 24 * 60 * 60 * 1000
-const now = Date.now()
-const isoDaysAgo = (daysAgo: number) => new Date(now - daysAgo * day).toISOString()
+// Keep dates stable across runs so refreshes do not produce needless changes.
+const seedReferenceDate = Date.parse('2025-01-01T00:00:00.000Z')
+const isoDaysAgo = (daysAgo: number) => new Date(seedReferenceDate - daysAgo * day).toISOString()
 
 export const seededPosts: SeedPost[] = [
   {
