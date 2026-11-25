@@ -121,5 +121,9 @@ public/uploads/
 .cursor/rules/documentation.mdc
 apps/web/.nuxtrc
 .codex/
-.kilo/
+.kilo/*
+!.kilo/agent/
+!.kilo/agent/*.md
 .kilocode/
+openspec
+.kilo
