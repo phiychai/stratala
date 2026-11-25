@@ -21,31 +21,30 @@ pnpm seed
 
 `SEED_MODE` controls behavior for existing posts (lookup key: `slug`).
 
-- `create-missing` (default): create only missing posts, skip existing posts.
-- `refresh`: update existing seeded posts by slug and create missing posts.
-- `reset-seeded`: delete known seed slugs first, then recreate from dataset.
+- `create-missing` (only mode): create missing posts and skip existing posts.
+
+Seeding is refused in `NODE_ENV=production` unless `ALLOW_PRODUCTION_SEED=true`.
 
 Examples:
 
 ```bash
-SEED_MODE=refresh pnpm seed
-SEED_MODE=reset-seeded pnpm seed
+pnpm seed
 ```
 
 ## Dataset and Content Quality
 
-- Dataset contains **40 posts** from `apps/studio/src/seed-data/posts.ts`.
-- Posts are generated from structured content specs (intro, body, list, quote, optional code).
-- Rich text JSON is built by `apps/studio/src/seed-data/content-builders.ts`.
-- Post bodies demonstrate:
-  - ordered/unordered lists,
-  - quote blocks,
-  - inline image embeds (media relation nodes in content, not external URL links).
+- Dataset contains **20 posts** from `apps/studio/src/seed-data/posts.ts` (15 published and 5 draft).
+- Post dates use a fixed 2025-01-01 reference date and are stable across runs.
+- Rich text JSON is built by `apps/studio/src/seed-data/lexical.ts`; some bodies include
+  textual Unsplash URLs, not inline media relationship nodes.
+- Each post is assigned to the tenant membership of its selected publisher author.
 
 ## Image Behavior
 
 - `SEED_SKIP_IMAGES=true` disables image fetch/upload.
-- Media is reused deterministically by hashed filename: `seed-<key>-<hash>.<ext>`.
+- Media is reused deterministically by the post slug filename (`<slug>.jpg`).
+- Only `image/*` responses are accepted and downloads are limited to 10 MiB, including
+  responses without a `Content-Length` header.
 - Retry/timeout controls:
   - `SEED_IMAGE_RETRIES` (default `2`)
   - `SEED_IMAGE_TIMEOUT_MS` (default `15000`)
@@ -54,27 +53,26 @@ SEED_MODE=reset-seeded pnpm seed
 ## Idempotency and Reruns
 
 - Default mode is `create-missing`, so reruns skip existing slugs and do not duplicate posts.
-- `refresh` can be used when you need to overwrite seeded records by slug.
-- `reset-seeded` removes known seed slugs and recreates the full dataset.
+- Existing slug matches and unique slug collisions are always skipped; the seed never updates
+  or deletes existing posts.
 
 ## Summary Output
 
 Studio seed prints:
 
-- `summary posts created=<n> updated=<n> skipped=<n> failed=<n>`
-- `summary media created=<n> reused=<n> failed=<n> skipped=<n>`
+- `summary created=<n> skipped=<n> failed=<n>`
 
 Expected outcomes:
 
 - First `create-missing` run: mostly `created`.
 - Second `create-missing` run: mostly `skipped`, with no duplicate slugs.
-- `refresh` run: existing seeded posts move to `updated`.
+- Subsequent runs: existing seeded posts are skipped and never updated.
 
 ## Quick Verification
 
 1. Run seed in default mode: `pnpm seed`.
-2. Verify total post count is 40 in Payload admin.
-3. Open multiple seeded posts and confirm body includes list + quote; inline image appears in a strong subset.
+2. Verify the 20 known seed slugs in Payload admin.
+3. Open multiple seeded posts and confirm body includes list + quote.
 4. Re-run `pnpm seed` and confirm summary shows mostly `skipped`.
 5. Run `SEED_SKIP_IMAGES=true pnpm seed` and confirm seed still completes.
 
