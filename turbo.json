@@ -47,8 +47,7 @@
       "cache": false
     },
     "seed": {
-      "cache": false,
-      "persistent": true
+      "cache": false
     }
   }
 }

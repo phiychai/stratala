@@ -30,8 +30,9 @@
     "docker:restart": "docker-compose restart",
     "docker:prod": "docker-compose -f docker-compose.yml -f docker-compose.prod.yml up -d",
     "docker:prod:build": "docker-compose -f docker-compose.yml -f docker-compose.prod.yml up --build -d",
-    "seed:reset": "tsx scripts/reset-all-databases.ts",
-    "seed:all": "cd apps/backend && node ace seed:all",
+    "seed:backend": "pnpm --filter backend exec node ace seed:all",
+    "seed:studio": "pnpm --filter studio seed",
+    "seed:all": "pnpm run seed:backend && pnpm run seed:studio",
     "plane-sync": "tsx scripts/plane-sync.ts"
   },
   "keywords": [
