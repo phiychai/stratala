@@ -13,7 +13,6 @@ import type {
 } from '#types/better_auth';
 
 import User from '#models/user';
-import billingService from '#services/billing_service';
 import { EmailService } from '#services/email_service';
 import { PasswordValidatorService } from '#services/password_validator_service';
 import { UserSyncService } from '#services/user_sync_service';
@@ -446,41 +445,12 @@ export const auth = betterAuth({
 
         // Upsert Adonis User record
         // This stores the mapping in our database (users.better_auth_user_id)
-        const adonisUser = await UserSyncService.syncUser({
+        await UserSyncService.syncUser({
           betterAuthUser: betterAuthUserWithUsername,
           provider: account?.providerId || 'email',
           requestPath: requestPath || undefined,
           clientIp: clientIp || undefined,
         });
-
-        // Create Lago customer only if email is verified
-        // Note: For email verification flow, customer will be created in onAfterSignIn after verification
-        if (adonisUser && user.email && user.emailVerified) {
-          try {
-            // Check if customer already exists to avoid duplicates
-            const existingCustomer = await billingService.getCustomer(adonisUser.id.toString());
-
-            if (!existingCustomer) {
-              const userName = user.name || user.email.split('@')[0] || 'User';
-
-              await billingService.createCustomer({
-                externalId: adonisUser.id.toString(),
-                name: userName,
-                email: user.email,
-                currency: 'USD',
-                timezone: 'UTC',
-              });
-
-              console.log(`Created Lago customer for user ${adonisUser.id} (${user.email})`);
-            } else {
-              console.log(`Lago customer already exists for user ${adonisUser.id} (${user.email})`);
-            }
-          } catch (billingError) {
-            // Log error but don't break registration flow
-            console.error('Failed to create Lago customer during registration:', billingError);
-            // Continue - user registration should succeed even if Lago fails
-          }
-        }
 
         // Return user unchanged - Better Auth continues with its flow
         // We don't modify Better Auth's user object or session metadata
@@ -540,33 +510,6 @@ export const auth = betterAuth({
             adonisUser.isActive = true; // Reactivate if was locked
           }
           await adonisUser.save();
-
-          // Create Lago customer if email is verified and customer doesn't exist
-          // This handles the case where user verifies email and auto-signs in
-          if (user.email && user.emailVerified) {
-            try {
-              const existingCustomer = await billingService.getCustomer(adonisUser.id.toString());
-
-              if (!existingCustomer) {
-                const userName = user.name || user.email.split('@')[0] || 'User';
-
-                await billingService.createCustomer({
-                  externalId: adonisUser.id.toString(),
-                  name: userName,
-                  email: user.email,
-                  currency: 'USD',
-                  timezone: 'UTC',
-                });
-
-                console.log(
-                  `Created Lago customer for verified user ${adonisUser.id} (${user.email})`
-                );
-              }
-            } catch (billingError) {
-              // Log error but don't break sign-in flow
-              console.error('Failed to create Lago customer after sign-in:', billingError);
-            }
-          }
         }
 
         // Return user unchanged - Better Auth continues with its flow

@@ -15,7 +15,6 @@ import { middleware } from '#start/kernel';
 
 const UserController = () => import('#controllers/user_controller');
 const CmsProxyController = () => import('#controllers/cms_proxy_controller');
-const BillingController = () => import('#controllers/billing_controller');
 const AuthController = () => import('#controllers/auth_controller');
 const AuthErrorsController = () => import('#controllers/admin/auth_errors_controller');
 const AdminController = () => import('#controllers/admin/admin_controller');
@@ -159,34 +158,6 @@ router
     router.delete('/sessions/:sessionToken', [AdminSessionsController, 'revokeSession']);
   })
   .prefix('/api/admin')
-  .use(middleware.auth());
-
-/*
-|||--------------------------------------------------------------------------
-||| Billing Routes (Lago)
-|||--------------------------------------------------------------------------
-*/
-router
-  .group(() => {
-    // Account management
-    router.get('/account', [BillingController, 'getOrCreateAccount']);
-
-    // Subscriptions
-    router.get('/subscriptions', [BillingController, 'getSubscriptions']);
-    router.post('/subscriptions', [BillingController, 'createSubscription']);
-    router.delete('/subscriptions/:id', [BillingController, 'cancelSubscription']);
-
-    // Invoices
-    router.get('/invoices', [BillingController, 'getInvoices']);
-
-    // Payment methods
-    router.get('/payment-methods', [BillingController, 'getPaymentMethods']);
-    router.post('/payment-methods', [BillingController, 'addPaymentMethod']);
-
-    // Plans (public)
-    router.get('/plans', [BillingController, 'getPlans']);
-  })
-  .prefix('/api/billing')
   .use(middleware.auth());
 
 /*

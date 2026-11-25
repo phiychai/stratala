@@ -26,11 +26,10 @@ detailed implementation guides, see the corresponding documentation sections.
    - **Status**: Core auth ✅, Email verification ✅, Password security ✅,
      Password reset ✅, Account lockout ✅, OAuth configured ⚠️
 
-2. **[Billing](./02-billing.md)** - Full Lago integration ⚠️ **In Progress**
+2. **[Billing](./02-billing.md)** - Provider-agnostic subscription billing
+   **Planned**
 
-   - **📋 Implementation**:
-     [Lago Billing Integration](../4.integrations/1.lago-billing.md)
-   - **Status**: Customer sync ✅, Backend service ✅, UI needs completion ⚠️
+   - **Status**: Backend service ✅, UI needs completion ⚠️
 
 3. **[Admin Dashboard](./03-admin-dashboard.md)** - User and subscription
    management ⚠️ **In Progress**
@@ -73,7 +72,7 @@ detailed implementation guides, see the corresponding documentation sections.
 - **Authentication**:
   [Authentication & Registration Plan](../2.authentication/1.authentication-plan.md) -
   Start here for auth implementation
-- **Billing**: [Lago Integration](../4.integrations/1.lago-billing.md)
+- **Billing**: [Billing Roadmap](./02-billing.md)
 - **Architecture**: [Architecture Overview](../3.architecture/1.index.md)
 
 ### Roadmap Tracking

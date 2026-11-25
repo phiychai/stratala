@@ -1,6 +1,5 @@
 import { useAuthStore } from '~/stores/auth';
 import { useUserStore } from '~/stores/user';
-import { useBillingStore } from '~/stores/billing';
 import { useUIStore } from '~/stores/ui';
 
 /**
@@ -57,6 +56,5 @@ export const useAuth = () => {
 export const useStores = () => ({
   auth: useAuthStore(),
   user: useUserStore(),
-  billing: useBillingStore(),
   ui: useUIStore(),
 });

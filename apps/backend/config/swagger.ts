@@ -15,7 +15,7 @@ export default {
     title: 'Stratala API',
     version: '1.0.0',
     description:
-      'A comprehensive RESTful API for managing users, authentication, content, billing, and administrative tasks. Built with AdonisJS and Better Auth.',
+      'A comprehensive RESTful API for managing users, authentication, content, and administrative tasks. Built with AdonisJS and Better Auth.',
   },
   snakeCase: true,
 

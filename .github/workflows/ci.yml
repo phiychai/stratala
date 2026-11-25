@@ -32,11 +32,8 @@ env:
   SESSION_DRIVER: memory
 
   # Payload CMS
-  PAYLOAD_PUBLIC_SERVER_URL: http://localhost:3001
+  PAYLOAD_PUBLIC_SERVER_URL: http://localhost:3002
   PAYLOAD_SECRET: test-secret-key-for-ci
-
-  # Lago
-  LAGO_API_URL: http://localhost:3100
 
 jobs:
   lint:
@@ -246,9 +243,8 @@ jobs:
       REDIS_HOST: localhost
       REDIS_PORT: 6379
       SESSION_DRIVER: memory
-      PAYLOAD_PUBLIC_SERVER_URL: http://localhost:3001
+      PAYLOAD_PUBLIC_SERVER_URL: http://localhost:3002
       PAYLOAD_SECRET: test-secret-key-for-ci
-      LAGO_API_URL: http://localhost:3100
 
     steps:
       - name: Checkout repository
@@ -304,9 +300,8 @@ jobs:
           REDIS_HOST=localhost
           REDIS_PORT=6379
           SESSION_DRIVER=memory
-          PAYLOAD_PUBLIC_SERVER_URL=http://localhost:3001
+          PAYLOAD_PUBLIC_SERVER_URL=http://localhost:3002
           PAYLOAD_SECRET=test-secret-key-for-ci
-          LAGO_API_URL=http://localhost:3100
           EOF
 
       - name: Cache Turbo

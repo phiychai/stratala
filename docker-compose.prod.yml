@@ -5,32 +5,37 @@ services:
   postgres:
     restart: always
     environment:
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?POSTGRES_PASSWORD is required in production}
     volumes:
       - postgres_data:/var/lib/postgresql/data
 
   redis:
     restart: always
-    command: redis-server --appendonly yes --requirepass ${REDIS_PASSWORD}
+    command: redis-server --appendonly yes --requirepass ${REDIS_PASSWORD:?REDIS_PASSWORD is required in production}
 
-  killbill:
+  payload:
+    working_dir: /app
     restart: always
     environment:
-      KILLBILL_SERVER_TEST_MODE: false
-
-  kaui:
-    restart: always
+      NODE_ENV: production
+      PORT: 3002
+      PAYLOAD_SECRET: ${PAYLOAD_SECRET:?PAYLOAD_SECRET is required in production}
+      PAYLOAD_PUBLIC_SERVER_URL: ${PAYLOAD_PUBLIC_SERVER_URL:?PAYLOAD_PUBLIC_SERVER_URL is required in production}
+    volumes: !override
+      - payload_uploads:/app/apps/studio/media
+    command: node server.js
 
   backend:
     build:
-      context: ./apps/backend
-      dockerfile: Dockerfile.prod
+      context: .
+      dockerfile: ./apps/backend/Dockerfile.prod
       args:
         NODE_ENV: production
     restart: always
     environment:
       NODE_ENV: production
       LOG_LEVEL: info
+      APP_KEY: ${APP_KEY:?APP_KEY is required in production}
     volumes:
       - backend_uploads:/app/uploads
     command: node bin/server.js

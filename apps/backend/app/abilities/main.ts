@@ -34,13 +34,6 @@ export const toggleUserStatus = Bouncer.ability(
     user.role === 'admin'
 );
 
-export const manageBilling = Bouncer.ability(
-  (_user: User) =>
-    // For now, all authenticated users can manage their billing
-    // Later, you might want to check subscription status
-    true
-);
-
 export const viewDashboard = Bouncer.ability(
   (user: User) =>
     // All authenticated users can view dashboard

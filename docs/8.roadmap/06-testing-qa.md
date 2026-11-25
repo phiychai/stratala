@@ -48,8 +48,8 @@ integration testing, E2E testing, and load testing.
   - Seed test data
   - Test endpoints end-to-end
   - Clean up after tests
-- **Test Lago integration**:
-  - Mock Lago API responses
+- **Test billing integration**:
+  - Mock billing provider responses
   - Test webhook handling
   - Test error scenarios
 - **Test Payload integration**:
@@ -153,7 +153,7 @@ integration testing, E2E testing, and load testing.
   - Realistic data scenarios
   - Edge case data
 - **Mock services**:
-  - Mock external APIs (Lago, Payload)
+  - Mock external APIs (billing provider, Payload)
   - Control responses for testing
   - Test error scenarios
 
@@ -207,7 +207,7 @@ integration testing, E2E testing, and load testing.
 - [ ] Add tests for admin functions
 - [ ] Set up integration test suite
 - [ ] Test API endpoints with real database
-- [ ] Test Lago integration
+- [ ] Test billing integration
 - [ ] Test Payload integration
 - [ ] Create E2E test suite for user flows
 - [ ] Create E2E test suite for admin flows

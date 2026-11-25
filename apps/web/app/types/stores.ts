@@ -2,25 +2,12 @@
  * Store state interfaces
  * Extracted from Pinia store files for better organization
  */
-import type { Plan, Subscription, Invoice, UserProfile } from '@stratala/shared-types';
+import type { UserProfile } from '@stratala/shared-types';
 
 export interface AuthState {
   user: UserProfile | null;
   loading: boolean;
   initialized: boolean;
-}
-
-export type { Plan, Subscription, Invoice };
-
-export interface BillingState {
-  plans: Plan[];
-  subscriptions: Subscription[];
-  invoices: Invoice[];
-  currentSubscription: Subscription | null;
-  loading: boolean;
-  plansLoading: boolean;
-  subscriptionsLoading: boolean;
-  invoicesLoading: boolean;
 }
 
 // UI Store

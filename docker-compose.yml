@@ -5,14 +5,14 @@ services:
   postgres:
     image: postgis/postgis:16-master
     platform: linux/amd64
-    container_name: saas-postgres
+    container_name: postgres
     restart: unless-stopped
     ports:
       - '${POSTGRES_PORT:-5432}:5432'
     environment:
       POSTGRES_USER: ${POSTGRES_USER:-postgres}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
-      POSTGRES_MULTIPLE_DATABASES: adonis_db,payload_db,lago_db
+      POSTGRES_MULTIPLE_DATABASES: adonis_db,payload_db
     volumes:
       - postgres_data:/var/lib/postgresql/data
       - ./scripts/init-db.sh:/docker-entrypoint-initdb.d/init-db.sh
@@ -27,7 +27,7 @@ services:
   # Redis - Shared cache for all services
   redis:
     image: redis:7-alpine
-    container_name: saas-redis
+    container_name: redis
     restart: unless-stopped
     ports:
       - '${REDIS_PORT:-6379}:6379'
@@ -46,10 +46,10 @@ services:
     build:
       context: .
       dockerfile: ./apps/studio/Dockerfile
-    container_name: saas-payload
+    container_name: payload
     restart: unless-stopped
     ports:
-      - '${PAYLOAD_PORT:-3001}:3001'
+      - '${PAYLOAD_PORT:-3002}:3002'
     depends_on:
       postgres:
         condition: service_healthy
@@ -57,10 +57,10 @@ services:
         condition: service_healthy
     environment:
       NODE_ENV: ${NODE_ENV:-development}
-      PORT: 3001
+      PORT: 3002
       PAYLOAD_SECRET: ${PAYLOAD_SECRET}
       PAYLOAD_DATABASE_URI: postgresql://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-postgres}@postgres:5432/payload_db
-      PAYLOAD_PUBLIC_SERVER_URL: ${PAYLOAD_PUBLIC_SERVER_URL:-http://localhost:3001}
+      PAYLOAD_PUBLIC_SERVER_URL: ${PAYLOAD_PUBLIC_SERVER_URL:-http://localhost:3002}
     volumes:
       # Mount entire monorepo to preserve workspace structure
       - .:/app
@@ -72,78 +72,15 @@ services:
       - payload_uploads:/app/apps/studio/media
     working_dir: /app/apps/studio
     networks:
-      - stratala-network
-    command: pnpm dev
-
-  # Lago - Billing & Subscription Management (All-in-One)
-  # This single container includes API (port 3000 internal) and Frontend (port 80 internal)
-  lago:
-    image: getlago/lago:latest
-    container_name: saas-lago
-    restart: unless-stopped
-    ports:
-      - '${LAGO_API_PORT:-3100}:3000' # API exposed on 3100 to avoid conflict with Nuxt
-      - '${LAGO_FRONT_PORT:-3001}:80' # Frontend Dashboard
-    depends_on:
-      postgres:
-        condition: service_healthy
-      redis:
-        condition: service_healthy
-    environment:
-      # Database
-      POSTGRES_HOST: postgres
-      POSTGRES_PORT: 5432
-      POSTGRES_DB: lago_db
-      POSTGRES_USER: ${POSTGRES_USER:-postgres}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
-      POSTGRES_POOL: 20
-
-      # Redis
-      REDIS_HOST: redis
-      REDIS_PORT: 6379
-      REDIS_PASSWORD: ${REDIS_PASSWORD:-}
-
-      # API Configuration (external URLs for browser access)
-      LAGO_API_URL: ${LAGO_API_URL:-http://localhost:3100}
-      API_URL: ${LAGO_API_URL:-http://localhost:3100}
-      LAGO_FRONT_URL: ${LAGO_FRONT_URL:-http://localhost:3001}
-      API_PORT: 3000
-      FRONT_PORT: 80
-
-      # Security Keys (CHANGE IN PRODUCTION!)
-      SECRET_KEY_BASE: ${LAGO_SECRET_KEY_BASE:-your-secret-key-base-change-me-min-64-chars}
-      LAGO_RSA_PRIVATE_KEY: ${LAGO_RSA_PRIVATE_KEY:-}
-      LAGO_ENCRYPTION_PRIMARY_KEY: ${LAGO_ENCRYPTION_PRIMARY_KEY:-your-encryption-primary-key-32-chars}
-      LAGO_ENCRYPTION_DETERMINISTIC_KEY: ${LAGO_ENCRYPTION_DETERMINISTIC_KEY:-your-deterministic-key-32-chars}
-      LAGO_ENCRYPTION_KEY_DERIVATION_SALT: ${LAGO_ENCRYPTION_KEY_DERIVATION_SALT:-your-derivation-salt-32-chars}
-
-      # Payment Providers (configure as needed)
-      STRIPE_API_KEY: ${STRIPE_SECRET_KEY:-}
-      STRIPE_PUBLISHABLE_KEY: ${STRIPE_PUBLISHABLE_KEY:-}
-
-      # Email (optional)
-      LAGO_FROM_EMAIL: ${LAGO_FROM_EMAIL:-noreply@example.com}
-      LAGO_SMTP_ADDRESS: ${LAGO_SMTP_ADDRESS:-}
-      LAGO_SMTP_PORT: ${LAGO_SMTP_PORT:-}
-      LAGO_SMTP_USERNAME: ${LAGO_SMTP_USERNAME:-}
-      LAGO_SMTP_PASSWORD: ${LAGO_SMTP_PASSWORD:-}
-
-      # Logs
-      LAGO_RAILS_STDOUT: true
-    networks:
       - saas-network
-    healthcheck:
-      test: ['CMD-SHELL', 'curl -f http://localhost:3000/health || exit 1']
-      interval: 10s
-      timeout: 5s
-      retries: 5
+    command: pnpm dev
 
   # AdonisJS Backend - API Gateway
   backend:
     build:
       context: .
       dockerfile: ./apps/backend/Dockerfile
-    container_name: saas-backend
+    container_name: backend
     restart: unless-stopped
     ports:
       - '${BACKEND_PORT:-3333}:3333'
@@ -154,8 +91,6 @@ services:
         condition: service_healthy
       payload:
         condition: service_started
-      lago:
-        condition: service_healthy
     environment:
       NODE_ENV: ${NODE_ENV:-development}
       PORT: 3333
@@ -175,14 +110,10 @@ services:
       REDIS_PORT: 6379
 
       # Payload CMS
-      PAYLOAD_URL: http://payload:3001
+      PAYLOAD_URL: http://payload:3002
       PAYLOAD_SECRET: ${PAYLOAD_SECRET}
       PAYLOAD_DATABASE_URI: postgresql://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-postgres}@postgres:5432/payload_db
-      PAYLOAD_PUBLIC_SERVER_URL: ${PAYLOAD_PUBLIC_SERVER_URL:-http://localhost:3001}
-
-      # Lago Billing
-      LAGO_API_URL: http://lago:3000
-      LAGO_API_KEY: ${LAGO_API_KEY:-}
+      PAYLOAD_PUBLIC_SERVER_URL: ${PAYLOAD_PUBLIC_SERVER_URL:-http://localhost:3002}
 
       # Payment Providers
       STRIPE_SECRET_KEY: ${STRIPE_SECRET_KEY:-}
@@ -205,7 +136,7 @@ services:
     build:
       context: .
       dockerfile: ./apps/web/Dockerfile
-    container_name: saas-web
+    container_name: web
     restart: unless-stopped
     ports:
       - '${WEB_PORT:-3000}:3000'

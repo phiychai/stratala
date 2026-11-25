@@ -120,7 +120,6 @@ handling, monitoring, rate limiting, backups, and performance optimization.
 - **Check dependencies**:
   - Database connectivity
   - Redis connectivity
-  - Lago API connectivity
   - Payload API connectivity
   - Email service connectivity
 - **Return detailed status**:
@@ -176,7 +175,7 @@ handling, monitoring, rate limiting, backups, and performance optimization.
 
 - **Automated daily PostgreSQL backups**:
   - Use `pg_dump` or PostgreSQL backup tools
-  - Backup all databases (adonis_db, payload_db, lago_db)
+  - Backup all application databases (adonis_db, payload_db)
   - Schedule daily backups (e.g., 2 AM)
 - **Backup retention policy**:
   - Keep daily backups for 30 days
@@ -197,9 +196,6 @@ handling, monitoring, rate limiting, backups, and performance optimization.
   - Backup `/payload/media` directory
   - Include file metadata
   - Schedule regular backups
-- **Lago data backup** (if self-hosted):
-  - Backup Lago database
-  - Backup Lago configuration
 - **Backup verification**:
   - Regularly test backups
   - Verify file integrity

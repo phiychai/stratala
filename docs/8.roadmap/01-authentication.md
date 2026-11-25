@@ -266,4 +266,4 @@ the [Authentication Plan](../2.authentication/1.authentication-plan.md).
 
 ---
 
-**Next**: [Billing - Full Lago Integration](./02-billing.md)
+**Next**: [Billing](./02-billing.md)

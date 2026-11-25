@@ -122,7 +122,7 @@ management, Payload integration, analytics, and proper permissions.
   - Choose plan
   - Set start date
   - Apply discounts/coupons
-  - Create subscription in Lago
+  - Create a subscription through the future provider-agnostic billing layer
 - **Cancel subscription**:
   - Cancel immediately or at period end
   - Reason for cancellation
@@ -207,7 +207,7 @@ management, Payload integration, analytics, and proper permissions.
     - Trial subscriptions
     - Canceled subscriptions this month
     - Subscription growth rate
-  - **Monthly revenue** (from Lago):
+- **Monthly revenue**:
     - Current month revenue
     - Previous month comparison
     - Revenue growth percentage
@@ -245,7 +245,6 @@ management, Payload integration, analytics, and proper permissions.
   - Database size
   - Connection pool usage
 - **Service connectivity**:
-  - Lago API connectivity
   - Payload API connectivity
   - Email service status
   - Redis connection status

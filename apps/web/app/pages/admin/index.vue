@@ -26,7 +26,6 @@ interface SystemHealth {
   database: HealthStatus;
   adonisApi: HealthStatus;
   payloadCms: HealthStatus;
-  lago: HealthStatus;
   timestamp: string;
 }
 
@@ -383,25 +382,6 @@ const getStatusIndicatorColor = (status: 'healthy' | 'degraded' | 'unhealthy'): 
                 </div>
                 <UBadge :color="getStatusColor(systemHealth.payloadCms.status)" variant="subtle">
                   {{ getStatusLabel(systemHealth.payloadCms.status) }}
-                </UBadge>
-              </div>
-              <div class="flex items-center justify-between">
-                <div class="flex items-center gap-2">
-                  <div
-                    :class="[
-                      'w-2 h-2 rounded-full',
-                      getStatusIndicatorColor(systemHealth.lago.status),
-                    ]"
-                  />
-                  <div class="flex flex-col">
-                    <span>Lago Billing</span>
-                    <span v-if="systemHealth.lago.responseTime" class="text-xs text-gray-500">
-                      {{ systemHealth.lago.responseTime }}ms
-                    </span>
-                  </div>
-                </div>
-                <UBadge :color="getStatusColor(systemHealth.lago.status)" variant="subtle">
-                  {{ getStatusLabel(systemHealth.lago.status) }}
                 </UBadge>
               </div>
               <div v-if="systemHealth.timestamp" class="pt-2 border-t text-xs text-gray-500">

@@ -66,14 +66,6 @@ export default await Env.create(new URL('../', import.meta.url), {
 
   /*
   |----------------------------------------------------------
-  | Variables for Lago Billing integration
-  |----------------------------------------------------------
-  */
-  LAGO_API_URL: Env.schema.string(),
-  LAGO_API_KEY: Env.schema.string.optional(),
-
-  /*
-  |----------------------------------------------------------
   | Variables for Payment Gateway integration
   |----------------------------------------------------------
   */

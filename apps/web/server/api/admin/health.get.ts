@@ -5,7 +5,6 @@
  * - Database (PostgreSQL via Adonis backend)
  * - Adonis API Backend
  * - Payload CMS
- * - Lago Billing Service
  */
 
 interface HealthStatus {
@@ -18,7 +17,6 @@ interface HealthCheckResult {
   database: HealthStatus;
   adonisApi: HealthStatus;
   payloadCms: HealthStatus;
-  lago: HealthStatus;
   timestamp: string;
 }
 
@@ -31,7 +29,6 @@ export default defineEventHandler(async (): Promise<HealthCheckResult> => {
     database: { status: 'unhealthy' },
     adonisApi: { status: 'unhealthy' },
     payloadCms: { status: 'unhealthy' },
-    lago: { status: 'unhealthy' },
     timestamp: new Date().toISOString(),
   };
 
@@ -107,43 +104,6 @@ export default defineEventHandler(async (): Promise<HealthCheckResult> => {
       status: 'unhealthy',
       message: error instanceof Error ? error.message : 'Connection failed',
     };
-  }
-
-  // Check Lago Billing Service (via Adonis backend billing endpoint)
-  try {
-    const { time } = await measureTime(async () => {
-      const response = await fetch(`${apiUrl}/api/billing/plans`, {
-        signal: AbortSignal.timeout(5000),
-      });
-      if (!response.ok && response.status !== 401 && response.status !== 403) {
-        throw new Error(`Request failed with status ${response.status}`);
-      }
-      return response.status;
-    });
-
-    // If we get a response (even if it's an auth error), Lago is reachable
-    results.lago = {
-      status: 'healthy',
-      message: 'Connected',
-      responseTime: time,
-    };
-  } catch (error) {
-    // Check if it's an auth error (401/403) which means Lago is reachable
-    const statusCode =
-      error && typeof error === 'object' && 'statusCode' in error
-        ? (error as { statusCode?: number }).statusCode
-        : undefined;
-
-    results.lago =
-      statusCode === 401 || statusCode === 403
-        ? {
-            status: 'healthy',
-            message: 'Connected (authentication required)',
-          }
-        : {
-            status: 'unhealthy',
-            message: error instanceof Error ? error.message : 'Connection failed',
-          };
   }
 
   return results;

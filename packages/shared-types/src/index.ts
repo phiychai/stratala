@@ -31,9 +31,6 @@ export type BlockPost = Extract<PageBlockItem, { blockType: 'posts' }>;
 export type BlockPricing = Extract<PageBlockItem, { blockType: 'pricing' }>;
 export type BlockForm = Extract<PageBlockItem, { blockType: 'form' }>;
 
-// Re-export billing types
-export type { Invoice, Plan, Subscription } from './billing';
-
 // Re-export user types
 export type { UserProfile } from './user';
 

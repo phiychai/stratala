@@ -147,7 +147,6 @@ deliverability, compliance, monitoring, alerts, and scalability preparation.
   - Replication lag (if applicable)
 - **Service health**:
   - Redis health
-  - Lago API health
   - Payload API health
   - Email service health
 

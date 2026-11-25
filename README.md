@@ -168,7 +168,7 @@ This will start:
 
 - 🌐 **Frontend** at http://localhost:3000
 - 🔌 **Backend API** at http://localhost:3333
-- 📦 **Studio** at http://localhost:3001
+- 📦 **Studio** at http://localhost:3002
 
 ### Environment Setup
 
@@ -177,7 +177,7 @@ Create `.env` files in each app:
 ```bash
 # apps/web/.env
 NUXT_PUBLIC_SITE_URL=http://localhost:3000
-PAYLOAD_PUBLIC_SERVER_URL=http://localhost:3001
+PAYLOAD_PUBLIC_SERVER_URL=http://localhost:3002
 NUXT_PUBLIC_ENABLE_VISUAL_EDITING=true
 
 # apps/backend/.env
@@ -196,10 +196,6 @@ GOOGLE_CLIENT_ID=your-google-client-id
 GOOGLE_CLIENT_SECRET=your-google-client-secret
 GITHUB_CLIENT_ID=your-github-client-id
 GITHUB_CLIENT_SECRET=your-github-client-secret
-
-# Lago Billing Configuration
-LAGO_API_URL=http://localhost:3100
-LAGO_API_KEY=your-lago-api-key
 
 # Payment Gateway (Stripe example)
 STRIPE_SECRET_KEY=sk_test_your_stripe_key
@@ -337,7 +333,6 @@ AdonisJS 6
 ├── Engagement APIs     // Follows, likes, views, comments
 ├── Feed Generation     // Personalized content feeds
 ├── Trending Engine     // Content discovery algorithms
-├── Billing Service     // Subscriptions and payments
 ├── Validator (Vine)    // Request validation
 ├── Swagger             // API documentation
 └── PostgreSQL/SQLite   // Database options
@@ -351,18 +346,6 @@ Payload
 ├── Local API          // Server-side integration
 ├── REST API           // Client-side integration
 └── Type Generation    // TypeScript types
-```
-
-#### Billing (Lago)
-
-```typescript
-Lago
-├── Subscription Management   // Recurring billing, tiers
-├── Usage-Based Billing      // Metered billing
-├── Invoice Generation       // PDF invoices, tax
-├── REST APIs                // Easy integration
-├── Multi-Gateway Support    // Stripe, PayPal, Adyen
-└── Admin Dashboard          // Billing management UI
 ```
 
 ### Package Dependencies
@@ -395,23 +378,8 @@ graph LR
 
 ## 💳 Monetization & Billing
 
-Stratala provides flexible monetization options for creators, powered by Lago.
-
-### Setup Lago
-
-```bash
-# Using Docker Compose (included in project)
-docker-compose up -d
-
-# Access Lago Admin Dashboard
-open http://localhost:3001
-
-# Create your first subscription plan via API
-curl -X POST http://localhost:3100/api/v1/plans \
-  -H "Authorization: Bearer YOUR_API_KEY" \
-  -H "Content-Type: application/json" \
-  -d '{"plan": {"code": "creator-pro", "name": "Creator Pro", "interval": "monthly", "amount_cents": 999}}'
-```
+Stratala's planned product direction includes flexible monetization options for
+creators. Billing implementation is not currently included.
 
 ### Monetization Features
 
@@ -443,41 +411,11 @@ curl -X POST http://localhost:3100/api/v1/plans \
 - **PayPal** - PayPal accounts and cards
 - **Adyen** - Global payment methods
 
-### Example: Creating a Paid Newsletter
-
-```typescript
-// apps/backend/app/services/billing_service.ts
-import BillingService from '#services/billing_service';
-
-// 1. Set up creator's billing account
-const customer = await BillingService.createCustomer({
-  externalId: creator.id,
-  name: creator.fullName,
-  email: creator.email,
-  currency: 'USD',
-});
-
-// 2. Create a subscription plan for premium content
-const subscription = await BillingService.createSubscription({
-  externalCustomerId: reader.id,
-  planCode: 'newsletter-premium',
-  name: 'Premium Newsletter Access',
-});
-
-// 3. Check if reader has access to premium content
-const hasAccess = await BillingService.checkSubscription(
-  reader.id,
-  'newsletter-premium'
-);
-
-// 4. Get creator's revenue
-const invoices = await BillingService.getInvoices(creator.id);
-```
+These monetization capabilities are product goals. Provider-agnostic billing
+integration, subscription management, and payment workflows are planned for a
+future release; no billing service or billing API is currently included.
 
 ### Documentation
-
-See [**LAGO_INTEGRATION.md**](./LAGO_INTEGRATION.md) for complete setup and
-usage guide
 
 ---
 
@@ -525,10 +463,6 @@ usage guide
 
 - [**Better Auth Integration**](./docs/authentication/BETTER_AUTH_INTEGRATION.md) -
   Technical implementation details
-- [**Lago Setup & Configuration**](./docs/integrations/LAGO_SETUP.md) - Complete
-  Lago billing setup guide
-- [**Lago Integration**](./docs/integrations/LAGO_INTEGRATION.md) - Billing and
-  subscription management API
 
 ### Deployment
 
@@ -542,7 +476,6 @@ usage guide
 - [AdonisJS Documentation](https://docs.adonisjs.com)
 - [Better Auth Documentation](https://www.better-auth.com/docs)
 - [Payload CMS Documentation](https://payloadcms.com/docs)
-- [Lago Documentation](https://docs.getlago.com)
 
 ### Guides & Tutorials
 
@@ -652,7 +585,6 @@ docker-compose -f docker-compose.prod.yml up -d
 - **Backend (AdonisJS)**: Railway, Render, DigitalOcean App Platform
 - **CMS (Payload)**: Self-hosted on any VPS or platform
 - **Media Storage**: AWS S3, Cloudflare R2, or MinIO for video/images
-- **Lago**: Docker Compose, Kubernetes, or managed hosting
 
 ### Scaling Considerations
 
@@ -695,7 +627,6 @@ Built with amazing open-source technologies:
 - [Nuxt](https://nuxt.com) - The Intuitive Vue Framework
 - [AdonisJS](https://adonisjs.com) - Elegant Node.js framework
 - [Payload CMS](https://payloadcms.com) - TypeScript headless CMS
-- [Lago](https://www.getlago.com) - Open-source billing platform
 - [Radix Vue](https://www.radix-vue.com) - Unstyled, accessible components
 - [Tailwind CSS](https://tailwindcss.com) - Utility-first CSS framework
 
