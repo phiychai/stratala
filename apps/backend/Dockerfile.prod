@@ -17,6 +17,9 @@ COPY packages ./packages
 # Copy backend app
 COPY apps/backend ./apps/backend
 
+# Payload Local API is loaded from the Studio TypeScript config at runtime.
+COPY apps/studio ./apps/studio
+
 # Install dependencies and build
 RUN pnpm install --frozen-lockfile
 RUN pnpm --filter backend build
@@ -31,12 +34,20 @@ COPY pnpm-lock.yaml pnpm-workspace.yaml package.json ./
 # Copy packages
 COPY packages ./packages
 
+# Keep the Studio config and its collection modules available to the backend
+# Local API without relying on a runtime repository bind mount.
+COPY --from=builder /app/apps/studio/src ./apps/studio/src
+COPY --from=builder /app/apps/studio/package.json ./apps/studio/package.json
+
 # Copy built backend
 COPY --from=builder /app/apps/backend/build ./apps/backend
 
-# Install production dependencies only
+# The backend dynamically loads Payload's TypeScript config (via jiti/tsx), so
+# retain the deterministic workspace install produced by the builder instead
+# of reinstalling only backend production dependencies.
+COPY --from=builder /app/node_modules ./node_modules
+
 WORKDIR /app/apps/backend
-RUN pnpm install --prod --frozen-lockfile
 
 # Create non-root user
 RUN addgroup -g 1001 -S nodejs && adduser -S nodejs -u 1001
@@ -46,5 +57,3 @@ USER nodejs
 EXPOSE 3333
 
 CMD ["node", "bin/server.js"]
-
-

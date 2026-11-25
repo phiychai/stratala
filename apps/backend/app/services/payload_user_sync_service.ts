@@ -2,7 +2,6 @@ import logger from '@adonisjs/core/services/logger';
 
 import type User from '#models/user';
 
-import payloadRestService from '#services/payload_rest_service';
 import payloadService from '#services/payload_service';
 
 type TenantRelation = {
@@ -147,7 +146,8 @@ export class PayloadUserSyncService {
   static async syncUserToPayload(
     user: User,
     role: string,
-    password?: string
+    password?: string,
+    options: { throwOnError?: boolean } = {}
   ): Promise<{ payloadUserId: string | null }> {
     // Only create Payload users for content roles
     if (!this.requiresPayloadUser(role)) {
@@ -161,122 +161,63 @@ export class PayloadUserSyncService {
     }
 
     try {
-      // Try Local API first, fallback to REST API if it fails
+      // Payload Local API is required here: REST endpoints are admin-only and
+      // the backend container has no authenticated Payload session.
       let payloadUserId: string | null = null;
-      let useRestApi = false;
+      const payload = (await payloadService.getPayload()) as unknown as PayloadLocalApi;
 
-      try {
-        const payload = (await payloadService.getPayload()) as unknown as PayloadLocalApi;
+      // Check if Payload user already exists
+      payloadUserId = user.payloadUserId || (await this.findPayloadUserByEmail(user.email));
 
-        // Check if Payload user already exists
-        payloadUserId = user.payloadUserId || (await this.findPayloadUserByEmail(user.email));
+      if (payloadUserId) {
+        // Update existing Payload user
+        const updateData: Record<string, unknown> = {
+          email: user.email,
+          role: payloadRole,
+          firstName: user.firstName || undefined,
+          lastName: user.lastName || undefined,
+          adonisUserId: user.id.toString(),
+        };
 
-        if (payloadUserId) {
-          // Update existing Payload user
-          const updateData: Record<string, unknown> = {
-            email: user.email,
-            role: payloadRole,
-            firstName: user.firstName || undefined,
-            lastName: user.lastName || undefined,
-            adonisUserId: user.id.toString(),
-          };
-
-          // Update password if provided (Option A: Password Sync)
-          if (password) {
-            updateData.password = password;
-          }
-
-          await payload.update({
-            collection: 'users',
-            id: payloadUserId,
-            data: updateData,
-          });
-
-          logger.info(`Updated Payload user ${payloadUserId} for Adonis user ${user.id}`);
-        } else {
-          // Create new Payload user
-          const userData: Record<string, unknown> = {
-            email: user.email,
-            role: payloadRole,
-            firstName: user.firstName || undefined,
-            lastName: user.lastName || undefined,
-            adonisUserId: user.id.toString(),
-          };
-
-          // Set password if provided (Option A: Password Sync)
-          // If no password, user will need to set it separately (Option B: Passwordless)
-          if (password) {
-            userData.password = password;
-          }
-
-          const createdUser = await payload.create({
-            collection: 'users',
-            data: userData,
-          });
-
-          payloadUserId = String(createdUser.id);
-          if (!payloadUserId) {
-            throw new Error('Payload user created but no ID returned');
-          }
-
-          logger.info(`Created Payload user ${payloadUserId} for Adonis user ${user.id}`);
-
-          // Create space for Publisher role
-          if (role === 'publisher') {
-            await this.createTenantForPublisher(payloadUserId, user);
-          }
+        // Update password if provided (Option A: Password Sync)
+        if (password) {
+          updateData.password = password;
         }
-      } catch (localApiError) {
-        // Local API failed, fallback to REST API
-        logger.warn({ err: localApiError }, 'Payload Local API failed, falling back to REST API');
-        useRestApi = true;
 
-        // Find user via REST API
-        const restUser = await payloadRestService.findUserByEmail(user.email);
-        payloadUserId = restUser?.id || null;
+        await payload.update({
+          collection: 'users',
+          id: payloadUserId,
+          data: updateData,
+        });
 
-        if (payloadUserId) {
-          // Update existing user
-          await payloadRestService.updateUser(payloadUserId, {
-            email: user.email,
-            role: payloadRole,
-            firstName: user.firstName ?? undefined,
-            lastName: user.lastName ?? undefined,
-            adonisUserId: user.id.toString(),
-            ...(password && { password }),
-          });
-          logger.info(
-            `Updated Payload user ${payloadUserId} via REST API for Adonis user ${user.id}`
-          );
-        } else {
-          // Create new user
-          if (!password) {
-            logger.warn('Password required for REST API user creation, skipping Payload sync');
-            return { payloadUserId: null };
-          }
+        logger.info(`Updated Payload user ${payloadUserId} for Adonis user ${user.id}`);
+      } else {
+        // Create new Payload user
+        const userData: Record<string, unknown> = {
+          email: user.email,
+          role: payloadRole,
+          firstName: user.firstName || undefined,
+          lastName: user.lastName || undefined,
+          adonisUserId: user.id.toString(),
+        };
 
-          const createdUser = await payloadRestService.createUser({
-            email: user.email,
-            password,
-            role: payloadRole,
-            firstName: user.firstName ?? undefined,
-            lastName: user.lastName ?? undefined,
-            adonisUserId: user.id.toString(),
-          });
-
-          payloadUserId = createdUser.id;
-          logger.info(
-            `Created Payload user ${payloadUserId} via REST API for Adonis user ${user.id}`
-          );
-
-          // Create space for Publisher role (via REST API if needed)
-          if (role === 'publisher') {
-            // Note: Space creation via REST API would need to be implemented separately
-            logger.info(
-              `Note: Space creation for publisher requires Local API or separate REST call`
-            );
-          }
+        // Set password if provided (Option A: Password Sync)
+        // If no password, user will need to set it separately (Option B: Passwordless)
+        if (password) {
+          userData.password = password;
         }
+
+        const createdUser = await payload.create({
+          collection: 'users',
+          data: userData,
+        });
+
+        payloadUserId = String(createdUser.id);
+        if (!payloadUserId) {
+          throw new Error('Payload user created but no ID returned');
+        }
+
+        logger.info(`Created Payload user ${payloadUserId} for Adonis user ${user.id}`);
       }
 
       // Update Adonis user with Payload user ID
@@ -285,15 +226,41 @@ export class PayloadUserSyncService {
         await user.save();
 
         // Create space for publisher if not already assigned (for both new and existing users)
-        if (role === 'publisher' && !useRestApi) {
-          await this.createTenantForPublisher(payloadUserId, user);
+        if (role === 'publisher') {
+          await this.createTenantForPublisher(payloadUserId, user, options.throwOnError);
         }
+      }
+
+      if (options.throwOnError && !payloadUserId) {
+        throw new Error('Payload user synchronization returned no user ID');
       }
 
       return { payloadUserId };
     } catch (error) {
       logger.error(`Failed to sync user ${user.id} to Payload: ${error}`);
+      if (options.throwOnError) throw error;
       return { payloadUserId: null };
+    }
+  }
+
+  /** Disable Payload access without deleting the user or authored content. */
+  static async revokePayloadAccess(
+    payloadUserId: string,
+    options: { throwOnError?: boolean } = {}
+  ): Promise<boolean> {
+    try {
+      const payload = (await payloadService.getPayload()) as unknown as PayloadLocalApi;
+      await payload.update({
+        collection: 'users',
+        id: payloadUserId,
+        data: { role: 'user', tenants: [] },
+      });
+      logger.info(`Revoked Payload access for user ${payloadUserId}`);
+      return true;
+    } catch (error) {
+      logger.error(`Failed to revoke Payload access for user ${payloadUserId}: ${error}`);
+      if (options.throwOnError) throw error;
+      return false;
     }
   }
 
@@ -301,7 +268,11 @@ export class PayloadUserSyncService {
    * Create space for Publisher role
    * Automatically creates a space (publication/stack) when a publisher user is synced to Payload
    */
-  static async createTenantForPublisher(payloadUserId: string, adonisUser: User): Promise<void> {
+  static async createTenantForPublisher(
+    payloadUserId: string,
+    adonisUser: User,
+    throwOnError = false
+  ): Promise<void> {
     try {
       const payload = (await payloadService.getPayload()) as unknown as PayloadLocalApi;
 
@@ -380,7 +351,7 @@ export class PayloadUserSyncService {
       logger.info(`Assigned space ${spaceId} to publisher ${payloadUserId}`);
     } catch (error) {
       logger.error(`Failed to create space for Payload user ${payloadUserId}: ${error}`);
-      // Don't throw - space creation failure shouldn't block user sync
+      if (throwOnError) throw error;
     }
   }
 
