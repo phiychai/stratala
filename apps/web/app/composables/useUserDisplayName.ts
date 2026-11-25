@@ -1,59 +1,51 @@
+import { computed } from 'vue';
+import type { Ref } from 'vue';
 import type { UserProfile } from '@stratala/shared-types';
 
-type UserDisplayNameInput =
-  | Pick<UserProfile, 'firstName' | 'lastName' | 'username' | 'email' | 'fullName'>
-  | null
-  | undefined;
+const FALLBACK_DISPLAY_NAME = 'User';
 
-/**
- * useUserDisplayName Composable
- *
- * Computes a user's display name from various fields.
- * Priority order:
- * 1. fullName (if provided)
- * 2. firstName + lastName
- * 3. firstName only
- * 4. lastName only
- * 5. username
- * 6. email (username part before @)
- * 7. 'User' (fallback)
- *
- * @param user - User object with name fields
- * @returns Computed display name
- */
-export function useUserDisplayName(user: Ref<UserDisplayNameInput>) {
-  const displayName = computed(() => {
-    const u = user.value;
-    if (!u) return 'User';
+type UserDisplayNameFields = Pick<
+  UserProfile,
+  'firstName' | 'lastName' | 'username' | 'email' | 'fullName'
+>;
 
-    // Priority 1: fullName
-    if (u.fullName?.trim()) return u.fullName.trim();
+type UserDisplayNameInput = UserDisplayNameFields | null | undefined;
 
-    // Priority 2: firstName + lastName
-    const firstName = u.firstName?.trim();
-    const lastName = u.lastName?.trim();
-    if (firstName && lastName) {
-      return `${firstName} ${lastName}`;
-    }
+function normalizeDisplayPart(value: string | null | undefined): string | undefined {
+  const trimmed = value?.trim();
+  return trimmed || undefined;
+}
 
-    // Priority 3: firstName only
-    if (firstName) return firstName;
+function getEmailLocalPart(email: string | null | undefined): string | undefined {
+  const normalizedEmail = normalizeDisplayPart(email);
+  if (!normalizedEmail) return undefined;
 
-    // Priority 4: lastName only
-    if (lastName) return lastName;
+  const atIndex = normalizedEmail.indexOf('@');
+  const localPart = atIndex === -1 ? normalizedEmail : normalizedEmail.slice(0, atIndex);
 
-    // Priority 5: username
-    if (u.username?.trim()) return u.username.trim();
+  return normalizeDisplayPart(localPart);
+}
 
-    // Priority 6: email (username part) - safer parsing
-    if (u.email?.trim()) {
-      const emailPart = u.email.split('@')[0]?.trim();
-      if (emailPart) return emailPart;
-    }
+export function getUserDisplayName(user: UserDisplayNameInput): string {
+  if (!user) return FALLBACK_DISPLAY_NAME;
 
-    // Fallback
-    return 'User';
-  });
+  const fullName = normalizeDisplayPart(user.fullName);
+  if (fullName) return fullName;
+
+  const firstName = normalizeDisplayPart(user.firstName);
+  const lastName = normalizeDisplayPart(user.lastName);
+
+  if (firstName && lastName) return `${firstName} ${lastName}`;
+  if (firstName) return firstName;
+  if (lastName) return lastName;
+
+  return (
+    normalizeDisplayPart(user.username) ?? getEmailLocalPart(user.email) ?? FALLBACK_DISPLAY_NAME
+  );
+}
+
+export function useUserDisplayName(user: Readonly<Ref<UserDisplayNameInput>>) {
+  const displayName = computed(() => getUserDisplayName(user.value));
 
   return { displayName };
 }
