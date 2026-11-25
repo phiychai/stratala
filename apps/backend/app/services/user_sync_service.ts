@@ -71,11 +71,22 @@ export class UserSyncService {
       // Use transaction with row locking to prevent race conditions
       const user = await db.transaction(async (trx) => {
         // Use SELECT FOR UPDATE to lock rows during sync
-        const existingUser = await User.query({ client: trx })
+        const byBetterAuthId = await User.query({ client: trx })
           .where('better_auth_user_id', betterAuthUser.id)
-          .orWhere('email', betterAuthUser.email)
           .forUpdate()
           .first();
+        const byEmail = await User.query({ client: trx })
+          .where('email', betterAuthUser.email)
+          .forUpdate()
+          .first();
+
+        if (byBetterAuthId && byEmail && byBetterAuthId.id !== byEmail.id) {
+          throw new Error(
+            `Identity collision: Better Auth user ${betterAuthUser.id} and email ${betterAuthUser.email} map to different Adonis users`
+          );
+        }
+
+        const existingUser = byBetterAuthId || byEmail;
 
         if (existingUser) {
           // Update existing user

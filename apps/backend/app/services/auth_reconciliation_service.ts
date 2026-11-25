@@ -165,11 +165,6 @@ export async function syncAllMissingUsers(): Promise<{
           .orWhere('email', baUser.email)
           .first();
 
-        if (existingUser) {
-          skipped++;
-          continue;
-        }
-
         // Map Better Auth user format
         const betterAuthUser = {
           id: baUser.id,
@@ -180,7 +175,14 @@ export async function syncAllMissingUsers(): Promise<{
           username: baUser.username || null,
         };
 
-        // Sync user
+        // Sync users that are absent, or whose email record is missing the
+        // Better Auth mapping. UserSyncService reconciles both identities
+        // transactionally instead of treating the email match as complete.
+        if (existingUser?.betterAuthUserId === baUser.id) {
+          skipped++;
+          continue;
+        }
+
         const adonisUser = await UserSyncService.syncUser({
           betterAuthUser,
           provider: 'email',
