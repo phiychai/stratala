@@ -1,6 +1,17 @@
+import { fileURLToPath } from 'node:url';
+
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
   telemetry: false,
+  // Resolve workspace source so dev startup does not depend on generated dist files.
+  alias: {
+    '@stratala/shared-types': fileURLToPath(
+      new URL('../../packages/shared-types/src/index.ts', import.meta.url)
+    ),
+    '@stratala/shared-utils': fileURLToPath(
+      new URL('../../packages/shared-utils/src/index.ts', import.meta.url)
+    ),
+  },
   components: [
     { path: '~/components', pathPrefix: false },
     { path: '~/components/block', pathPrefix: false },
