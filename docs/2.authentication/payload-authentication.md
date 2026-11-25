@@ -295,7 +295,7 @@ export const Users: CollectionConfig = {
 // apps/web/app/composables/usePayloadAdmin.ts
 export function usePayloadAdmin() {
   const { isAuthenticated } = useAuth();
-  const payloadAdminUrl = 'http://localhost:3001/admin';
+  const payloadAdminUrl = 'http://localhost:3002/admin';
 
   function openPayloadAdmin() {
     if (isAuthenticated.value) {
@@ -323,7 +323,7 @@ export function usePayloadAdmin() {
 
 **How it works:**
 
-1. Navigate to `http://localhost:3001/admin`
+1. Navigate to `http://localhost:3002/admin`
 2. Enter email and password (synced from Better Auth/AdonisJS)
 3. Payload validates credentials using its built-in auth
 4. Session created in Payload
@@ -807,7 +807,7 @@ export function usePayloadAdmin() {
   const config = useRuntimeConfig();
 
   const payloadAdminUrl =
-    config.public.payloadAdminUrl || 'http://localhost:3001/admin';
+    config.public.payloadAdminUrl || 'http://localhost:3002/admin';
 
   /**
    * Open Payload admin with SSO
