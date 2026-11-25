@@ -73,9 +73,22 @@ export default class SeedAll extends BaseCommand {
   };
 
   async run() {
-    const password = process.env.SEED_PASSWORD || 'strat2026ala!';
+    const password = process.env.SEED_PASSWORD?.trim();
+    if (!password) {
+      this.logger.error('[seed:all] SEED_PASSWORD must be set and non-empty');
+      this.exitCode = 1;
+      return;
+    }
+
+    if (process.env.NODE_ENV === 'production' && process.env.ALLOW_PRODUCTION_SEED !== 'true') {
+      this.logger.error(
+        '[seed:all] refusing to seed in production; set ALLOW_PRODUCTION_SEED=true to continue'
+      );
+      this.exitCode = 1;
+      return;
+    }
+
     this.logger.info('[seed:all] starting comprehensive seed process\n');
-    this.logger.info(`[seed:all] using password: ${password.substring(0, 3)}***\n`);
 
     // Get database connection for direct email verification update
     const dbUri =
@@ -98,59 +111,102 @@ export default class SeedAll extends BaseCommand {
           this.logger.info(`Creating ${userData.role}: ${userData.email}...`);
 
           // Check if user already exists
-          const existingUser = await User.findBy('email', userData.email);
+          let existingUser = await User.findBy('email', userData.email);
           if (existingUser) {
             this.logger.info(`  ⚠️  User ${userData.email} already exists`);
             let wasUpdated = false;
 
-            // Check if user needs Payload sync (role requires it but payloadUserId is missing)
+            const betterAuthRecord = await dbClient.query<{
+              id: string;
+              email: string;
+              name: string | null;
+              image: string | null;
+              emailVerified: boolean;
+              username?: string | null;
+            }>(
+              'SELECT id, email, name, image, "emailVerified", username FROM "user" WHERE email = $1',
+              [userData.email]
+            );
+            const matchingBetterAuth = betterAuthRecord.rows[0];
+            if (
+              matchingBetterAuth &&
+              existingUser.betterAuthUserId &&
+              existingUser.betterAuthUserId !== matchingBetterAuth.id
+            ) {
+              throw new Error(
+                `Identity collision: email ${userData.email} maps to Better Auth users ${existingUser.betterAuthUserId} and ${matchingBetterAuth.id}`
+              );
+            }
+            if (matchingBetterAuth && !existingUser.betterAuthUserId) {
+              const reconciled = await UserSyncService.syncUser({
+                betterAuthUser: matchingBetterAuth,
+                provider: 'email',
+              });
+              if (!reconciled) throw new Error('Failed to reconcile Better Auth identity');
+              existingUser = reconciled;
+              wasUpdated = true;
+            }
+
+            const previousRole = existingUser.role;
+            const roleChanged = previousRole !== userData.role;
+            if (roleChanged) {
+              existingUser.role = userData.role;
+              await existingUser.save();
+              this.logger.info(`  ✓ Role reconciled to ${userData.role}`);
+              wasUpdated = true;
+            }
+
+            if (
+              !PayloadUserSyncService.requiresPayloadUser(userData.role) &&
+              existingUser.payloadUserId
+            ) {
+              await PayloadUserSyncService.revokePayloadAccess(existingUser.payloadUserId, {
+                throwOnError: true,
+              });
+              wasUpdated = true;
+            }
+
+            // Reconcile content-role Payload records on role changes and make
+            // publisher tenant repair idempotent on every seed rerun.
             if (
               PayloadUserSyncService.requiresPayloadUser(userData.role) &&
-              !existingUser.payloadUserId
+              (!existingUser.payloadUserId || roleChanged || userData.role === 'publisher')
             ) {
               this.logger.info(
                 '  Attempting to sync to Payload (previous sync may have failed)...'
               );
-              try {
-                await PayloadUserSyncService.syncUserToPayload(
-                  existingUser,
-                  userData.role,
-                  password
-                );
-                await existingUser.refresh();
-                wasUpdated = true;
-                if (existingUser.payloadUserId) {
-                  this.logger.success(`  ✓ Synced to Payload (ID: ${existingUser.payloadUserId})`);
-                } else {
-                  this.logger.info('  ⚠️  Payload sync failed (Payload may be unavailable)');
-                }
-              } catch (payloadError) {
-                this.logger.info(
-                  `  ⚠️  Payload sync failed: ${payloadError instanceof Error ? payloadError.message : String(payloadError)}`
-                );
-                this.logger.info('  Continuing (user exists in Adonis/Better Auth)...');
+              await PayloadUserSyncService.syncUserToPayload(
+                existingUser,
+                userData.role,
+                password,
+                { throwOnError: true }
+              );
+              await existingUser.refresh();
+              wasUpdated = true;
+              if (existingUser.payloadUserId) {
+                this.logger.success(`  ✓ Synced to Payload (ID: ${existingUser.payloadUserId})`);
               }
             }
 
             // Verify email if not already verified
             if (existingUser.betterAuthUserId) {
               try {
-                await dbClient.query('UPDATE "user" SET "emailVerified" = true WHERE id = $1', [
-                  existingUser.betterAuthUserId,
-                ]);
-                this.logger.info('  ✓ Email verified');
-                wasUpdated = true;
-              } catch {
-                // Non-fatal - email might already be verified
-                this.logger.debug('  Email verification check skipped');
+                const verification = await dbClient.query<{ emailVerified: boolean }>(
+                  'SELECT "emailVerified" FROM "user" WHERE id = $1',
+                  [existingUser.betterAuthUserId]
+                );
+                if (verification.rows[0] && !verification.rows[0].emailVerified) {
+                  await dbClient.query('UPDATE "user" SET "emailVerified" = true WHERE id = $1', [
+                    existingUser.betterAuthUserId,
+                  ]);
+                  this.logger.info('  ✓ Email verified');
+                  wasUpdated = true;
+                }
+              } catch (error) {
+                throw new Error(
+                  `Failed to reconcile email verification: ${error instanceof Error ? error.message : String(error)}`
+                );
               }
-            }
-
-            if (existingUser.role !== userData.role) {
-              existingUser.role = userData.role;
-              await existingUser.save();
-              this.logger.info(`  ✓ Role reconciled to ${userData.role}`);
-              wasUpdated = true;
             }
 
             this.logger.info('  Skipping user creation (already exists)...');
@@ -164,8 +220,20 @@ export default class SeedAll extends BaseCommand {
 
           // Create user in Better Auth
           let betterAuthUser;
+          const existingBetterAuth = await dbClient.query<{
+            id: string;
+            email: string;
+            name: string | null;
+            image: string | null;
+            emailVerified: boolean;
+            username?: string | null;
+          }>(
+            'SELECT id, email, name, image, "emailVerified", username FROM "user" WHERE email = $1',
+            [userData.email]
+          );
+          betterAuthUser = existingBetterAuth.rows[0];
           try {
-            if (auth.api.signUpEmail) {
+            if (!betterAuthUser && auth.api.signUpEmail) {
               const result = await auth.api.signUpEmail({
                 body: {
                   email: userData.email,
@@ -200,7 +268,7 @@ export default class SeedAll extends BaseCommand {
               // Wait a bit for user to be created
               await new Promise((resolve) => setTimeout(resolve, 1000));
 
-              // Try to get the user that might have been created
+              // Try to get the user that might have been created by the hook.
               const possibleUser = await User.findBy('email', userData.email);
               if (possibleUser && possibleUser.betterAuthUserId) {
                 this.logger.info('  User found in database, continuing with sync...');
@@ -216,7 +284,21 @@ export default class SeedAll extends BaseCommand {
                   username: possibleUser.username || undefined,
                 };
               } else {
-                throw new Error(`Better Auth sign-up failed: ${errorMessage}`);
+                // A pre-existing Better Auth user may have no Adonis mapping yet.
+                const existingBetterAuth = await dbClient.query<{
+                  id: string;
+                  email: string;
+                  name: string | null;
+                  image: string | null;
+                  emailVerified: boolean;
+                  username?: string | null;
+                }>(
+                  'SELECT id, email, name, image, "emailVerified", username FROM "user" WHERE email = $1',
+                  [userData.email]
+                );
+                const baUser = existingBetterAuth.rows[0];
+                if (!baUser) throw new Error(`Better Auth sign-up failed: ${errorMessage}`);
+                betterAuthUser = baUser;
               }
             } else {
               throw new Error(`Better Auth sign-up failed: ${errorMessage}`);
@@ -251,7 +333,7 @@ export default class SeedAll extends BaseCommand {
             adonisUser = await UserSyncService.syncUser({
               betterAuthUser: betterAuthUserData,
               provider: 'email',
-              role: userData.role,
+              // Set the role below and perform Payload synchronization once.
               password,
             });
           }
@@ -275,36 +357,17 @@ export default class SeedAll extends BaseCommand {
           // Sync to Payload if role requires it
           if (PayloadUserSyncService.requiresPayloadUser(userData.role)) {
             this.logger.info('  Syncing to Payload...');
-            try {
-              const syncResult = await PayloadUserSyncService.syncUserToPayload(
-                adonisUser,
-                userData.role,
-                password
+            const syncResult = await PayloadUserSyncService.syncUserToPayload(
+              adonisUser,
+              userData.role,
+              password,
+              { throwOnError: true }
+            );
+            await adonisUser.refresh(); // Refresh to get payloadUserId
+            if (adonisUser.payloadUserId || syncResult.payloadUserId) {
+              this.logger.success(
+                `  ✓ Synced to Payload (ID: ${adonisUser.payloadUserId || syncResult.payloadUserId})`
               );
-              await adonisUser.refresh(); // Refresh to get payloadUserId
-              if (adonisUser.payloadUserId || syncResult.payloadUserId) {
-                this.logger.success(
-                  `  ✓ Synced to Payload (ID: ${adonisUser.payloadUserId || syncResult.payloadUserId})`
-                );
-              } else {
-                this.logger.info(
-                  '  ⚠️  Payload sync returned no user ID (Payload may be unavailable)'
-                );
-                this.logger.info(
-                  '  User created successfully in Adonis/Better Auth, but Payload sync failed'
-                );
-              }
-            } catch (payloadError) {
-              this.logger.info(
-                `  ⚠️  Payload sync failed: ${payloadError instanceof Error ? payloadError.message : String(payloadError)}`
-              );
-              this.logger.info(
-                '  User created successfully in Adonis/Better Auth, but Payload sync failed'
-              );
-              this.logger.info(
-                '  You can retry Payload sync later or start Payload CMS and run seed again'
-              );
-              // Don't throw - continue with next user even if Payload sync fails
             }
           }
 
@@ -329,6 +392,7 @@ export default class SeedAll extends BaseCommand {
       this.logger.info(
         `[seed:all] summary users created=${createdCount} updated=${updatedCount} skipped=${skippedCount} failed=${failCount}`
       );
+      if (failCount > 0) this.exitCode = 1;
     } catch (error: unknown) {
       this.logger.error(
         `❌ Seed failed: ${error instanceof Error ? error.message : String(error)}`
