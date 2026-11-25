@@ -14,7 +14,7 @@
     "generate:importmap": "cross-env NODE_OPTIONS=--no-deprecation payload generate:importmap",
     "generate:types": "cross-env NODE_OPTIONS=--no-deprecation payload generate:types",
     "seed": "cross-env NODE_OPTIONS=--no-deprecation tsx src/seed.ts",
-    "lint": "cross-env NODE_OPTIONS=--no-deprecation next lint",
+    "lint": "cross-env NODE_OPTIONS=--no-deprecation eslint .",
     "format": "prettier --write .",
     "type-check": "cross-env NODE_OPTIONS=--no-deprecation tsc --noEmit -p tsconfig.json",
     "payload": "cross-env NODE_OPTIONS=--no-deprecation payload",
